@@ -110,3 +110,21 @@ body{overflow-x:hidden;-webkit-overflow-scrolling:touch}
   100%{translate:0 0;scale:1}
 }
 .coin-sprite.coin-hop{animation:coin-hop 1.5s cubic-bezier(.22,.7,.2,1) both}
+
+/* Living streak flame — 16 frames, 8x2 sprite sheet */
+.flame-sprite{
+ display:block;width:46px;height:46px;flex:0 0 46px;
+ background-image:url("assets/images/sprites/flame-idle-sprite.png");
+ background-repeat:no-repeat;
+ background-size:368px 92px;
+ background-position:0 0;
+ filter:drop-shadow(0 0 7px rgba(255,143,31,.35));
+ animation:flame-breathe 1.65s ease-in-out infinite;
+ transform-origin:50% 92%;
+}
+@keyframes flame-breathe{
+ 0%,100%{transform:scale(.92) rotate(-1deg)}
+ 24%{transform:scale(1.02) rotate(1deg)}
+ 48%{transform:scale(1.09) rotate(-1.5deg)}
+ 72%{transform:scale(1.01) rotate(1.2deg)}
+}
