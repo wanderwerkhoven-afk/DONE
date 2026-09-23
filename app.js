@@ -26,14 +26,17 @@ const state={level:8,xp:340,maxXp:600,streak:6,coins:1240,tasks:[{title:"Verslag
 };
 
 function startFlameAnimation(){
+  // Sprite source is an 8x2 sheet. Background is sized to 8x2 element dimensions,
+  // so every frame occupies exactly the same viewport and cannot bleed into neighbours.
   const flame=document.querySelector(".flame-sprite");
   if(!flame)return;
-  let f=0; const fw=46, frames=16;
+  let f=0;
+  const frames=16;
   setInterval(()=>{
     f=(f+1)%frames;
     const col=f%8,row=Math.floor(f/8);
-    flame.style.backgroundPosition=(-col*fw)+"px "+(-row*fw)+"px";
-  },103);
+    flame.style.backgroundPosition=(col*(100/7))+"% "+(row*100)+"%";
+  },115);
 }
 
 render();
