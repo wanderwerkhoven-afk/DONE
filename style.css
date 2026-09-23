@@ -80,3 +80,21 @@
 @media(max-width:499px){
  .add{bottom:calc(70px + env(safe-area-inset-bottom) + 4px)}
 }
+
+/* Native-like scrolling: keep scrolling, hide browser scrollbars */
+html,body,#app,.phone{scrollbar-width:none;-ms-overflow-style:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar,#app::-webkit-scrollbar,.phone::-webkit-scrollbar{display:none;width:0;height:0}
+html{overflow-x:hidden}
+body{overflow-x:hidden;-webkit-overflow-scrolling:touch}
+@media(max-width:499px){
+ .phone{overflow-x:hidden}
+ .coin-sprite{
+   width:64px;height:64px;flex:0 0 64px;
+   transform:scale(.68);
+   transform-origin:center;
+   margin:-11px;
+   background-size:1024px 64px;
+   background-position:0 0;
+ }
+ .coin-sprite:active{transform:scale(.62)}
+}
