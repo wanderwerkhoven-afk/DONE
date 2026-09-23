@@ -75,3 +75,8 @@
    margin:0;
  }
 }
+
+/* Fine-tune FAB vertical position */
+@media(max-width:499px){
+ .add{bottom:calc(70px + env(safe-area-inset-bottom) + 4px)}
+}
