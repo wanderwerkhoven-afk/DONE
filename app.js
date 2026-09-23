@@ -22,4 +22,19 @@ const state={level:8,xp:340,maxXp:600,streak:6,coins:1240,tasks:[{title:"Verslag
     el.classList.remove("coin-hop");
     el.dataset.spinning="0";
   };
-  requestAnimationFrame(animate);\n};\n\nfunction startFlameAnimation(){\n  const flame=document.querySelector(".flame-sprite");\n  if(!flame)return;\n  let f=0; const fw=46, frames=16;\n  setInterval(()=>{\n    f=(f+1)%frames;\n    const col=f%8,row=Math.floor(f/8);\n    flame.style.backgroundPosition=(-col*fw)+"px "+(-row*fw)+"px";\n  },103);\n}\n\nrender();\nstartFlameAnimation();
+  requestAnimationFrame(animate);
+};
+
+function startFlameAnimation(){
+  const flame=document.querySelector(".flame-sprite");
+  if(!flame)return;
+  let f=0; const fw=46, frames=16;
+  setInterval(()=>{
+    f=(f+1)%frames;
+    const col=f%8,row=Math.floor(f/8);
+    flame.style.backgroundPosition=(-col*fw)+"px "+(-row*fw)+"px";
+  },103);
+}
+
+render();
+startFlameAnimation();
