@@ -38,3 +38,7 @@
 @media(max-height:760px) and (max-width:499px){
  .hero{height:270px}.content{padding-top:13px}.task{height:52px}.stat{height:54px}.progressrow{margin:10px 0}
 }
+/* Production coin sprite: 16 x 64px frames in one horizontal strip */
+.coin-sprite{display:block;flex:0 0 42px;width:42px;height:42px;background-image:url("assets/images/sprites/coin-spin-sprite.png");background-repeat:no-repeat;background-size:672px 42px;background-position:0 0;animation:coin-spin 1.15s steps(16) infinite;filter:drop-shadow(0 3px 5px #0005)}
+@keyframes coin-spin{to{background-position:-672px 0}}
+@media(prefers-reduced-motion:reduce){.coin-sprite{animation:none}}
