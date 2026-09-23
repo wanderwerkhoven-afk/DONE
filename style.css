@@ -62,3 +62,16 @@
  .nav{background:#03182ff2;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
  .add{bottom:76px}
 }
+
+/* FAB dock alignment: float fully above the fixed bottom navigation */
+@media(max-width:499px){
+ .add{
+   position:fixed;
+   z-index:20;
+   left:auto;
+   right:max(20px,calc((100vw - 430px)/2 + 20px));
+   bottom:calc(70px + env(safe-area-inset-bottom) + 14px);
+   transform:none;
+   margin:0;
+ }
+}
