@@ -349,7 +349,6 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   }
 }
 
-
 /* Task completed celebration */
 .completed-screen{height:100dvh;min-height:100dvh;padding:0;overflow:hidden;background:#03132f}
 .completed-scene{position:absolute;inset:0;background-image:linear-gradient(180deg,rgba(2,13,38,.12),rgba(2,13,38,.03) 56%,rgba(2,10,27,.42)),url("assets/images/home/hero-task-completed.png");background-size:cover;background-position:center center;overflow:hidden}
