@@ -85,7 +85,7 @@ window.openLevelUp=()=>{
     <main class="level-up-content">
       <header class="level-up-header">
         <h1>LEVEL UP!</h1>
-        <div class="level-ribbon"><span>Je bent nu level ${event.newLevel}!</span></div>
+        <div class="level-ribbon"><img src="Ribbon.png" alt="" aria-hidden="true"><span>Je bent nu level ${event.newLevel}!</span></div>
         ${extraLine}
       </header>
       <div class="level-up-spacer" aria-hidden="true"></div>
