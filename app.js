@@ -33,7 +33,7 @@ window.openProfile=()=>{
     <main class="profile-content">
       <header class="profile-heading"><h1>Profiel</h1><p>Jouw reis in cijfers.</p></header>
       <section class="profile-level">
-        <button class="profile-avatar" type="button" onclick="openAvatarPicker()" aria-label="Kies profielafbeelding"><img src="assets/images/Profile_${state.profileAvatar||1}.png" alt=""></button>
+        <button class="profile-avatar" type="button" onclick="openAvatarPicker()" aria-label="Kies profielafbeelding"><img src="assets/images/profile/Profile_${state.profileAvatar||1}.png" alt=""></button>
         <div class="profile-level-info"><h2>Level ${state.level}</h2><div class="profile-xpbar"><i style="width:${xpPct}%"></i></div><strong>${state.xp} / ${state.maxXp} XP</strong></div>
       </section>
       <section class="profile-primary-stats">
@@ -61,7 +61,7 @@ window.openAvatarPicker=()=>{
   const selected=Number(state.profileAvatar)||1;
   const picker=document.createElement("div");
   picker.className="avatar-picker";
-  picker.innerHTML=`<div class="avatar-picker-backdrop" onclick="closeAvatarPicker()"></div><section class="avatar-picker-sheet" role="dialog" aria-modal="true" aria-labelledby="avatarPickerTitle"><div class="avatar-picker-head"><div><h2 id="avatarPickerTitle">Kies je avatar</h2><p>Welke avonturier ben jij?</p></div><button type="button" onclick="closeAvatarPicker()" aria-label="Sluiten">×</button></div><div class="avatar-grid">${Array.from({length:12},(_,i)=>{const n=i+1;return `<button class="avatar-option ${selected===n?"selected":""}" type="button" onclick="selectProfileAvatar(${n})" aria-label="Profielafbeelding ${n}"><img src="assets/images/Profile_${n}.png" alt=""><span>✓</span></button>`}).join("")}</div></section>`;
+  picker.innerHTML=`<div class="avatar-picker-backdrop" onclick="closeAvatarPicker()"></div><section class="avatar-picker-sheet" role="dialog" aria-modal="true" aria-labelledby="avatarPickerTitle"><div class="avatar-picker-head"><div><h2 id="avatarPickerTitle">Kies je avatar</h2><p>Welke avonturier ben jij?</p></div><button type="button" onclick="closeAvatarPicker()" aria-label="Sluiten">×</button></div><div class="avatar-grid">${Array.from({length:12},(_,i)=>{const n=i+1;return `<button class="avatar-option ${selected===n?"selected":""}" type="button" onclick="selectProfileAvatar(${n})" aria-label="Profielafbeelding ${n}"><img src="assets/images/profile/Profile_${n}.png" alt=""><span>✓</span></button>`}).join("")}</div></section>`;
   document.querySelector(".profile-screen")?.appendChild(picker);
   requestAnimationFrame(()=>picker.classList.add("show"));
 };
