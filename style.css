@@ -1242,3 +1242,48 @@ input,textarea,[contenteditable="true"]{
   user-select:text;
   -webkit-touch-callout:default;
 }
+
+
+/* ===== Tasks empty state ===== */
+.tasks-empty-state{
+  min-height:190px;
+  border:1px solid rgba(139,177,216,.18);
+  border-radius:20px;
+  padding:24px 20px 20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:linear-gradient(180deg,rgba(13,49,87,.86),rgba(8,37,68,.9));
+  box-shadow:inset 0 1px rgba(255,255,255,.04),0 8px 20px rgba(0,0,0,.12);
+}
+.tasks-empty-icon{
+  width:58px;height:58px;margin-bottom:12px;border-radius:50%;
+  display:grid;place-items:center;
+  background:rgba(105,235,177,.11);
+  box-shadow:0 0 0 1px rgba(105,235,177,.16),0 0 22px rgba(105,235,177,.08);
+}
+.tasks-empty-icon svg{
+  width:42px;height:42px;fill:none;stroke:#77e8b6;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;
+}
+.tasks-empty-state h2{
+  margin:0;font-size:18px;line-height:1.1;font-weight:950;letter-spacing:-.3px;
+}
+.tasks-empty-state p{
+  margin:7px 0 16px;max-width:250px;color:#aec1d6;font-size:12px;line-height:1.45;font-weight:650;
+}
+.tasks-empty-state button{
+  min-width:172px;height:42px;padding:0 18px;border:0;border-radius:21px;
+  background:linear-gradient(180deg,#7d61ff,#5f42ef);
+  color:#fff;font:inherit;font-size:12px;font-weight:900;
+  box-shadow:0 6px 14px rgba(74,52,187,.28),inset 0 1px rgba(255,255,255,.28);
+  cursor:pointer;
+}
+.tasks-empty-state button:active{transform:scale(.98)}
+@media(max-height:760px) and (max-width:499px){
+  .tasks-empty-state{min-height:150px;padding:18px 16px 16px}
+  .tasks-empty-icon{width:50px;height:50px;margin-bottom:9px}
+  .tasks-empty-icon svg{width:36px;height:36px}
+  .tasks-empty-state p{margin-bottom:12px}
+}
