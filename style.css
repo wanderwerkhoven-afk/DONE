@@ -889,3 +889,15 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){
   .completed-screen.play .completed-btn{animation:none!important;opacity:1;transform:translateX(-50%) scale(1)}
 }
+
+/* Bottom navigation — slightly larger touch area and icons */
+@media(max-width:499px){
+  .nav{
+    height:78px;
+    padding-top:8px;
+    padding-bottom:max(7px,env(safe-area-inset-bottom));
+  }
+  .nav .ni{font-size:27px}
+  .nav button{font-size:10px;gap:3px}
+  .add{bottom:calc(78px + env(safe-area-inset-bottom) + 4px)}
+}
