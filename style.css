@@ -299,3 +299,17 @@ body{overflow-x:hidden;-webkit-overflow-scrolling:touch}
    background-repeat:no-repeat;
  }
 }
+
+
+/* Mobile app interaction: prevent gesture/double-tap zoom and iOS input focus zoom */
+html,body,#app,.phone{
+  touch-action:pan-x pan-y;
+}
+button,.task-input,input,textarea,select{
+  touch-action:manipulation;
+}
+@media(max-width:499px){
+  .task-input,input,textarea,select{
+    font-size:16px!important;
+  }
+}
