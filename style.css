@@ -901,3 +901,16 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   .nav button{font-size:10px;gap:3px}
   .add{bottom:calc(78px + env(safe-area-inset-bottom) + 4px)}
 }
+
+/* Completion screen is a fixed, non-scrollable reward state */
+.completed-screen{
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+  overscroll-behavior:none;
+  touch-action:none;
+}
+.completed-screen .completed-scene{
+  height:100%!important;
+  overflow:hidden!important;
+}
