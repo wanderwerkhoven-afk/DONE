@@ -289,3 +289,13 @@ body{overflow-x:hidden;-webkit-overflow-scrolling:touch}
   font-weight:1000;
   letter-spacing:-1.4px;
 }
+
+
+/* Slightly tighter crop on the new-task character */
+@media(max-width:499px){
+ .new-task-hero{
+   background-size:112% auto;
+   background-position:center 60%;
+   background-repeat:no-repeat;
+ }
+}
