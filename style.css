@@ -322,3 +322,12 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   }
   .task-input,input,textarea,select{font-size:16px!important}
 }
+
+
+/* iOS safe-area: keep app chrome above the hero */
+@media(max-width:499px){
+  .phone{padding-top:env(safe-area-inset-top)}
+  .hero.hero-image{height:330px;background-position:center 60%}
+  .new-task-header{top:env(safe-area-inset-top)}
+  .new-task-hero{margin-top:0}
+}
