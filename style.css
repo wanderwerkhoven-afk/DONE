@@ -604,3 +604,28 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   .completion-quote{top:35%!important}
   .completion-character{width:min(46vw,190px)!important}
 }
+
+/* Use uploaded happy idle character */
+.completion-character{
+  background-image:url("assets/idle-character-happy.png")!important;
+  background-position:center bottom!important;
+  background-size:contain!important;
+  background-repeat:no-repeat!important;
+  bottom:7.5%!important;
+  width:min(58vw,245px)!important;
+}
+.completed-screen.play .completion-character{
+  animation:happy-idle-arrive .62s cubic-bezier(.16,.9,.22,1.18) .42s forwards,
+             happy-idle-float 2.4s ease-in-out 1.04s infinite!important;
+}
+@keyframes happy-idle-arrive{
+  0%{opacity:0;transform:translate(-50%,54px) scale(.76)}
+  38%{opacity:.62}
+  72%{opacity:1;transform:translate(-50%,-11px) scale(1.07)}
+  88%{transform:translate(-50%,3px) scale(.985)}
+  100%{opacity:1;transform:translate(-50%,0) scale(1)}
+}
+@keyframes happy-idle-float{
+  0%,100%{opacity:1;transform:translate(-50%,0) scale(1)}
+  50%{opacity:1;transform:translate(-50%,-5px) scale(1.012)}
+}
