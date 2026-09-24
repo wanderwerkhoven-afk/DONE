@@ -889,3 +889,25 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){
   .completed-screen.play .completed-btn{animation:none!important;opacity:1;transform:translateX(-50%) scale(1)}
 }
+
+/* More-confetti control — keep Nice exactly centered */
+.more-confetti-btn{
+  position:absolute;z-index:20;
+  left:calc(50% + 132px);
+  bottom:calc(env(safe-area-inset-bottom) + 12px);
+  width:62px;height:62px;padding:0;border-radius:50%;
+  border:2px solid rgba(255,255,255,.78);
+  background:linear-gradient(180deg,#9b72ff,#6948f4);
+  color:#fff;font-size:25px;line-height:1;
+  display:grid;place-items:center;
+  box-shadow:0 0 18px rgba(127,88,255,.42),inset 0 1px rgba(255,255,255,.35);
+  opacity:0;transform:scale(.9);
+}
+.completed-screen.play .more-confetti-btn{animation:more-confetti-enter .46s cubic-bezier(.18,.82,.22,1.18) 1.50s forwards}
+@keyframes more-confetti-enter{0%{opacity:0;transform:scale(.9)}65%{opacity:1;transform:scale(1.05)}100%{opacity:1;transform:scale(1)}}
+.more-confetti-btn:active{transform:scale(.92)!important}
+.confetti.replay i{animation:party-popper-shot 1.55s cubic-bezier(.08,.66,.18,1) calc(var(--i)*.006s) forwards!important}
+@media(max-height:760px){
+ .more-confetti-btn{width:57px;height:57px;left:calc(50% + 120px);font-size:23px}
+}
+@media(prefers-reduced-motion:reduce){.completed-screen.play .more-confetti-btn{animation:none;opacity:1;transform:none}}
