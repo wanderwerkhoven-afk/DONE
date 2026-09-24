@@ -80,18 +80,23 @@ window.openLevelUp=()=>{
   const coinsAwarded=Math.max(0,Number(event.coinsAwarded)||0);
   const extraLine=levelJump>1?`<span class="level-up-jump">+${levelJump} levels in één keer</span>`:"";
   document.querySelector("#app").innerHTML=`<div class="phone level-up-screen">
-    <div class="level-up-sky" aria-hidden="true"><div class="level-up-rays"></div><i class="level-cloud cloud-a"></i><i class="level-cloud cloud-b"></i><i class="level-cloud cloud-c"></i><i class="floating-island island-left"></i><i class="floating-island island-right"></i><i class="floating-island island-back"></i></div>
+    <div class="level-up-art" aria-hidden="true"></div>
+    <div class="level-up-shade" aria-hidden="true"></div>
     <main class="level-up-content">
-      <header class="level-up-header"><h1>LEVEL UP!</h1><div class="level-ribbon"><span>Je bent nu level ${event.newLevel}!</span></div>${extraLine}</header>
-      <section class="level-up-hero" aria-label="Nieuwe level bereikt"><div class="level-aura"></div><div class="level-island"><div class="level-island-top"></div><div class="level-island-rock"></div><img src="assets/images/characters/idle-character-happy.png" alt="" class="level-up-character"></div></section>
+      <header class="level-up-header">
+        <h1>LEVEL UP!</h1>
+        <div class="level-ribbon"><span>Je bent nu level ${event.newLevel}!</span></div>
+        ${extraLine}
+      </header>
+      <div class="level-up-spacer" aria-hidden="true"></div>
       <section class="level-reward-card" aria-label="Beloningen">
         <div class="level-reward-row"><span class="reward-symbol reward-star" aria-hidden="true">★</span><strong>+${xpAwarded} XP</strong></div>
         <div class="level-reward-row"><span class="reward-symbol reward-coin" aria-hidden="true"><i></i></span><strong>+${coinsAwarded} coins</strong></div>
-        <div class="level-reward-row"><span class="reward-symbol reward-map" aria-hidden="true"><svg viewBox="0 0 44 44"><path d="m5 9 10-4 14 5 10-4v29l-10 4-14-5-10 4z"/><path d="M15 5v29M29 10v29"/><path d="m9 26 5-5 5 4 5-8 9 5"/></svg></span><strong>Level ${event.newLevel}<br>ontgrendeld!</strong></div>
+        <div class="level-reward-row"><span class="reward-symbol reward-map" aria-hidden="true"><svg viewBox="0 0 44 44"><path d="m5 9 10-4 14 5 10-4v29l-10 4-14-5-10 4z"/><path d="M15 5v29M29 10v29"/><path d="m9 26 5-5 5 4 5-8 9 5"/></svg></span><strong>Nieuw level<br>ontgrendeld!</strong></div>
       </section>
       <button class="level-up-continue" type="button" onclick="continueLevelUp()">Doorgaan</button>
     </main>
-    <div class="level-up-sparkles" aria-hidden="true">${Array.from({length:18},(_,i)=>`<i style="--i:${i}"></i>`).join("")}</div>
+    <div class="level-up-sparkles" aria-hidden="true">${Array.from({length:14},(_,i)=>`<i style="--i:${i}"></i>`).join("")}</div>
   </div>`;
   requestAnimationFrame(()=>{window.scrollTo(0,0);const root=document.querySelector("#app");if(root)root.scrollTop=0;document.querySelector(".level-up-screen")?.classList.add("play")});
 };
