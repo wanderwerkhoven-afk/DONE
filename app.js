@@ -25,7 +25,7 @@ const archiveOldCompletedTasks=()=>{
 const saveState=()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}};
 archiveOldCompletedTasks();
 saveState();
-function render(){archiveOldCompletedTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image"><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>Goedemiddag! 👋</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${taskPct}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<button class="task ${t.done?"done":""}" onclick="toggleTask(${i})"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${t.title}</div>${t.meta?`<div class="taskmeta">${t.meta}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button>`}).join("")}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`}
+function render(){cancelTaskLongPress?.();activeTaskEditIndex=null;archiveOldCompletedTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image"><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>Goedemiddag! 👋</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${taskPct}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<div class="task-wrap" data-task-index="${i}"><button class="task ${t.done?"done":""}" onclick="handleTaskClick(event,${i})" onpointerdown="startTaskLongPress(event,${i},this)" onpointerup="endTaskLongPress(event)" onpointercancel="cancelTaskLongPress()" onpointerleave="cancelTaskLongPress()" onpointermove="trackTaskLongPress(event)" oncontextmenu="return false"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${t.title}</div>${t.meta?`<div class="taskmeta">${t.meta}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button><button class="task-delete-btn" type="button" aria-label="Verwijder taak ${t.title.replace(/"/g,"&quot;")}" onclick="deleteTask(event,${i})"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button></div>`}).join("")}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`}
 
 const addXp=amount=>{state.xp+=amount;let levelsGained=0;while(state.xp>=state.maxXp){state.xp-=state.maxXp;state.level++;levelsGained++;state.maxXp=xpForLevel(state.level)}saveState();return levelsGained};
 const updateStreak=()=>{
@@ -35,6 +35,75 @@ const updateStreak=()=>{
   state.streak=last===localDateKey(y)?Math.max(1,Number(state.streak)||0)+1:1;
   state.lastActiveDate=today;
 };
+let taskLongPressTimer=null;
+let taskLongPressStartPoint=null;
+let taskLongPressTriggered=false;
+let activeTaskEditIndex=null;
+
+const clearTaskEditMode=()=>{
+  document.querySelectorAll(".task-wrap.task-editing").forEach(el=>el.classList.remove("task-editing"));
+  activeTaskEditIndex=null;
+};
+
+window.startTaskLongPress=(event,index,button)=>{
+  if(event.pointerType==="mouse"&&event.button!==0)return;
+  cancelTaskLongPress();
+  taskLongPressTriggered=false;
+  taskLongPressStartPoint={x:event.clientX,y:event.clientY,pointerId:event.pointerId};
+  taskLongPressTimer=setTimeout(()=>{
+    taskLongPressTimer=null;
+    taskLongPressTriggered=true;
+    clearTaskEditMode();
+    activeTaskEditIndex=index;
+    button.closest(".task-wrap")?.classList.add("task-editing");
+    if(navigator.vibrate)navigator.vibrate(35);
+  },2000);
+};
+
+window.trackTaskLongPress=event=>{
+  if(!taskLongPressTimer||!taskLongPressStartPoint)return;
+  const dx=event.clientX-taskLongPressStartPoint.x;
+  const dy=event.clientY-taskLongPressStartPoint.y;
+  if(Math.hypot(dx,dy)>12)cancelTaskLongPress();
+};
+
+window.cancelTaskLongPress=()=>{
+  if(taskLongPressTimer){clearTimeout(taskLongPressTimer);taskLongPressTimer=null}
+  taskLongPressStartPoint=null;
+};
+
+window.endTaskLongPress=()=>{
+  cancelTaskLongPress();
+};
+
+window.handleTaskClick=(event,index)=>{
+  if(taskLongPressTriggered){
+    taskLongPressTriggered=false;
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+  if(activeTaskEditIndex!==null){
+    if(activeTaskEditIndex===index)return;
+    clearTaskEditMode();
+    return;
+  }
+  toggleTask(index);
+};
+
+window.deleteTask=(event,index)=>{
+  event.preventDefault();
+  event.stopPropagation();
+  cancelTaskLongPress();
+  const task=state.tasks[index];
+  if(!task)return;
+  if(!window.confirm(`Taak “${task.title}” verwijderen?`))return;
+  state.tasks.splice(index,1);
+  clearTaskEditMode();
+  saveState();
+  render();
+};
+
 window.toggleTask=i=>{
   const t=state.tasks[i];
   if(!t.done){
