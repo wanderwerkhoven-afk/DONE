@@ -427,3 +427,16 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 /* Old separate character sprite is intentionally disabled; character is baked into the 4 full frames. */
 .victory-sprite{display:none!important}
 .completed-copy,.celebration-rays,.completion-check,.xp-pop,.completion-quote,.confetti,.completed-btn{position:absolute}
+
+/* Completion timing + fixed-center glow override */
+.completed-screen.play .completed-bg-frame.f1{animation:completion-frame-fast-1 .72s linear forwards}
+.completed-screen.play .completed-bg-frame.f2{animation:completion-frame-fast-2 .72s linear forwards}
+.completed-screen.play .completed-bg-frame.f3{animation:completion-frame-fast-3 .72s linear forwards}
+.completed-screen.play .completed-bg-frame.f4{animation:completion-frame-fast-4 .72s linear forwards}
+@keyframes completion-frame-fast-1{0%,18%{opacity:1}31%,100%{opacity:0}}
+@keyframes completion-frame-fast-2{0%,16%{opacity:0}29%,43%{opacity:1}56%,100%{opacity:0}}
+@keyframes completion-frame-fast-3{0%,41%{opacity:0}54%,68%{opacity:1}81%,100%{opacity:0}}
+@keyframes completion-frame-fast-4{0%,66%{opacity:0}79%,100%{opacity:1}}
+.completed-screen.play .celebration-rays{animation:rays-fixed-in .45s ease-out .08s forwards,rays-fixed-spin 10s linear .53s infinite}
+@keyframes rays-fixed-in{from{opacity:0;transform:translate(-50%,-50%) scale(.45) rotate(0)}to{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}}
+@keyframes rays-fixed-spin{from{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}to{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(360deg)}}
