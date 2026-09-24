@@ -628,3 +628,63 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   0%,100%{opacity:1;transform:translate(-50%,0) scale(1)}
   50%{opacity:1;transform:translate(-50%,-5px) scale(1.012)}
 }
+
+/* Completion reference-match pass */
+.completed-copy{top:calc(env(safe-area-inset-top) + 44px)}
+.completed-copy h1{font-size:23px;letter-spacing:-.8px;text-shadow:0 2px 0 #9a4d20,0 0 7px rgba(255,160,65,.32)}
+.completed-copy p{margin-top:7px;font-size:13px}
+
+.completion-check{top:22%;width:94px;height:94px;border-width:5px}
+.completion-check span{font-size:51px}
+.celebration-rays{top:22%;width:205px;height:205px}
+
+.xp-pop{top:32.5%;font-size:28px}
+.completion-quote{top:38%;width:188px;padding:9px 12px;font-size:11.5px;border-radius:13px}
+
+.completion-character{bottom:8%;width:min(52vw,220px)}
+.landing-glow{bottom:7.5%;width:275px;height:160px}
+.completed-btn{width:154px;height:46px;font-size:15px;bottom:calc(env(safe-area-inset-bottom) + 13px)}
+
+/* Confetti explodes radially from the character instead of falling as one column */
+.confetti i{
+  left:50%;top:68%;
+  width:7px;height:15px;
+  --a:calc(var(--i) * 20deg - 170deg);
+  --d:calc(112px + (var(--i) % 5) * 13px);
+}
+.completed-screen.play .confetti i{
+  animation:confetti-explode .82s cubic-bezier(.12,.72,.18,1) calc(1.12s + (var(--i) % 3)*.012s) forwards;
+}
+@keyframes confetti-explode{
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(0deg) scale(.35)}
+  8%{opacity:1}
+  72%{opacity:1}
+  100%{
+    opacity:0;
+    transform:
+      translate(
+        calc(-50% + cos(var(--a)) * var(--d)),
+        calc(-50% + sin(var(--a)) * var(--d) + 34px)
+      )
+      rotate(calc(240deg + var(--i)*37deg))
+      scale(1);
+  }
+}
+
+/* Fallback radial burst for browsers without trig functions */
+@supports not (width:calc(cos(0deg) * 1px)){
+  .confetti i:nth-child(1){--x:-132px;--y:-28px}.confetti i:nth-child(2){--x:-118px;--y:-72px}
+  .confetti i:nth-child(3){--x:-84px;--y:-112px}.confetti i:nth-child(4){--x:-42px;--y:-132px}
+  .confetti i:nth-child(5){--x:0px;--y:-142px}.confetti i:nth-child(6){--x:44px;--y:-130px}
+  .confetti i:nth-child(7){--x:88px;--y:-108px}.confetti i:nth-child(8){--x:122px;--y:-68px}
+  .confetti i:nth-child(9){--x:140px;--y:-20px}.confetti i:nth-child(10){--x:138px;--y:28px}
+  .confetti i:nth-child(11){--x:110px;--y:68px}.confetti i:nth-child(12){--x:76px;--y:96px}
+  .confetti i:nth-child(13){--x:38px;--y:112px}.confetti i:nth-child(14){--x:-38px;--y:112px}
+  .confetti i:nth-child(15){--x:-78px;--y:96px}.confetti i:nth-child(16){--x:-112px;--y:68px}
+  .confetti i:nth-child(17){--x:-138px;--y:30px}.confetti i:nth-child(18){--x:-145px;--y:2px}
+  @keyframes confetti-explode{
+    0%{opacity:0;transform:translate(-50%,-50%) rotate(0) scale(.35)}
+    8%{opacity:1}72%{opacity:1}
+    100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(calc(240deg + var(--i)*37deg)) scale(1)}
+  }
+}
