@@ -1088,21 +1088,25 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   pointer-events:none;
   user-select:none;
 }
-.level-ribbon span{
-  position:relative;
+.level-ribbon-text{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
   z-index:1;
-  display:block;
-  width:72%;
-  margin-top:-2%;
-  text-align:center;
-  color:#2b2314;
-  font-size:17px;
-  line-height:1;
-  font-weight:1000;
-  letter-spacing:-.35px;
-  text-shadow:0 1px rgba(255,255,255,.2);
-  white-space:nowrap;
+  overflow:visible;
+  pointer-events:none;
 }
+.level-ribbon-text text{
+  fill:#2b2314;
+  font-size:17px;
+  font-weight:1000;
+  letter-spacing:-.25px;
+  paint-order:stroke fill;
+  stroke:rgba(255,255,255,.18);
+  stroke-width:.6px;
+}
+.level-ribbon-text textPath{dominant-baseline:middle}
 .level-up-jump{display:inline-block;margin-top:9px;padding:5px 11px;border-radius:999px;background:rgba(18,54,107,.42);border:1px solid rgba(255,255,255,.25);font-size:11px;font-weight:900}
 .level-up-spacer{min-height:0}
 .level-reward-card{
@@ -1144,7 +1148,7 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 @media(max-height:760px){
   .level-up-content{padding-top:calc(env(safe-area-inset-top) + 12px);transform:translateY(20px)}
   .level-up-header h1{font-size:40px;margin-bottom:7px}
-  .level-ribbon{width:min(292px,82vw)}.level-ribbon span{font-size:15px}
+  .level-ribbon{width:min(292px,82vw)}.level-ribbon-text text{font-size:15px}
   .level-reward-card{width:min(320px,87vw);padding:10px 15px;gap:3px;margin-bottom:9px}
   .level-reward-row{min-height:33px}.level-reward-row strong{font-size:14px}
   .level-up-continue{height:55px;font-size:18px}
@@ -1153,7 +1157,7 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 @media(max-height:670px){
   .level-up-content{padding-top:calc(env(safe-area-inset-top) + 8px);transform:translateY(10px)}
   .level-up-header h1{font-size:36px}
-  .level-ribbon{width:min(268px,78vw)}.level-ribbon span{font-size:14px}
+  .level-ribbon{width:min(268px,78vw)}.level-ribbon-text text{font-size:14px}
   .level-up-jump{display:none}
   .level-reward-card{width:min(302px,85vw);padding:8px 11px;grid-template-columns:repeat(3,1fr);gap:4px}
   .level-reward-row{display:flex;flex-direction:column;justify-content:center;text-align:center;gap:2px}
