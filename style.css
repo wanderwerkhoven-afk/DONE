@@ -547,3 +547,60 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 }
 .completed-btn{width:190px;height:54px;bottom:calc(env(safe-area-inset-bottom) + 18px);font-size:17px;z-index:20}
 .confetti{z-index:11}
+
+/* Completion composition v2: compact reference proportions */
+.completed-copy{top:calc(env(safe-area-inset-top) + 28px)!important}
+.completed-copy h1{font-size:25px!important;line-height:1!important;letter-spacing:-1.1px!important}
+.completed-copy p{margin-top:6px!important;font-size:14px!important}
+
+.completion-check{top:19.5%!important;width:108px!important;height:108px!important;border-width:5px!important}
+.completion-check span{font-size:58px!important}
+.celebration-rays{top:19.5%!important;width:245px!important;height:245px!important}
+
+.xp-pop{top:29.5%!important;font-size:31px!important}
+.completion-quote{
+  top:35.5%!important;
+  width:205px!important;
+  padding:10px 13px!important;
+  border-radius:14px!important;
+  font-size:12.5px!important;
+  line-height:1.32!important;
+}
+
+.landing-glow{
+  bottom:8%!important;
+  width:300px!important;
+  height:175px!important;
+}
+.completion-character{
+  bottom:8.5%!important;
+  width:min(50vw,210px)!important;
+}
+
+.completed-btn{
+  width:168px!important;
+  height:50px!important;
+  bottom:calc(env(safe-area-inset-bottom) + 14px)!important;
+  font-size:16px!important;
+}
+
+/* More celebration activity around the lower character zone */
+.confetti i{top:62%!important}
+.completed-screen.play .confetti i{
+  animation:confetti-character-burst 1.35s cubic-bezier(.12,.65,.28,1) calc(.42s + var(--i)*.018s) forwards!important
+}
+@keyframes confetti-character-burst{
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(0)}
+  10%{opacity:1}
+  100%{
+    opacity:0;
+    transform:translate(calc(-50% + (var(--i) - 8.5)*18px),calc(-50% + 190px + (var(--i)%4)*22px)) rotate(calc(var(--i)*95deg))
+  }
+}
+@media(max-height:760px){
+  .completed-copy{top:calc(env(safe-area-inset-top) + 22px)!important}
+  .completion-check,.celebration-rays{top:19%!important}
+  .xp-pop{top:29%!important}
+  .completion-quote{top:35%!important}
+  .completion-character{width:min(46vw,190px)!important}
+}
