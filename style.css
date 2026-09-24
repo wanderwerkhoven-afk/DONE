@@ -1047,7 +1047,7 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   position:absolute;inset:0;z-index:0;
   background-image:url("assets/images/level-up/level-up-hero.png");
   background-size:cover;
-  background-position:center 42%;
+  background-position:center 46%;
   background-repeat:no-repeat;
   transform:scale(1.012);
 }
@@ -1060,7 +1060,8 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .level-up-content{
   position:relative;z-index:3;height:100%;box-sizing:border-box;
   padding:calc(env(safe-area-inset-top) + 22px) 18px calc(env(safe-area-inset-bottom) + 16px);
-  display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;align-items:center
+  display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;align-items:center;
+  transform:translateY(28px)
 }
 .level-up-header{align-self:start;text-align:center;width:100%;position:relative;z-index:5}
 .level-up-header h1{
@@ -1141,16 +1142,16 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 @keyframes level-button-glow{0%,100%{box-shadow:0 0 18px rgba(129,86,255,.55),0 10px 20px rgba(56,39,145,.3),inset 0 2px rgba(255,255,255,.35),inset 0 -4px rgba(49,27,154,.28)}50%{box-shadow:0 0 29px rgba(158,114,255,.8),0 10px 22px rgba(56,39,145,.32),inset 0 2px rgba(255,255,255,.42),inset 0 -4px rgba(49,27,154,.28)}}
 @keyframes level-sparkle{0%,100%{opacity:0;transform:scale(.25)}35%{opacity:1;transform:scale(1.2)}60%{opacity:.8;transform:scale(.7)}}
 @media(max-height:760px){
-  .level-up-content{padding-top:calc(env(safe-area-inset-top) + 12px)}
+  .level-up-content{padding-top:calc(env(safe-area-inset-top) + 12px);transform:translateY(20px)}
   .level-up-header h1{font-size:40px;margin-bottom:7px}
   .level-ribbon{width:min(292px,82vw)}.level-ribbon span{font-size:15px}
   .level-reward-card{width:min(320px,87vw);padding:10px 15px;gap:3px;margin-bottom:9px}
   .level-reward-row{min-height:33px}.level-reward-row strong{font-size:14px}
   .level-up-continue{height:55px;font-size:18px}
-  .level-up-art{background-position:center 40%}
+  .level-up-art{background-position:center 44%}
 }
 @media(max-height:670px){
-  .level-up-content{padding-top:calc(env(safe-area-inset-top) + 8px)}
+  .level-up-content{padding-top:calc(env(safe-area-inset-top) + 8px);transform:translateY(10px)}
   .level-up-header h1{font-size:36px}
   .level-ribbon{width:min(268px,78vw)}.level-ribbon span{font-size:14px}
   .level-up-jump{display:none}
@@ -1158,7 +1159,7 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   .level-reward-row{display:flex;flex-direction:column;justify-content:center;text-align:center;gap:2px}
   .level-reward-row strong{font-size:12px}.reward-symbol{height:29px;transform:scale(.72)}
   .level-up-continue{height:50px}
-  .level-up-art{background-position:center 38%}
+  .level-up-art{background-position:center 42%}
 }
 @media(prefers-reduced-motion:reduce){.level-up-screen *{animation:none!important}.level-up-sparkles{display:none}}
 
