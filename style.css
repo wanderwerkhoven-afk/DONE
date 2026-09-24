@@ -1215,3 +1215,25 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 /* Long-press task edit mode */
 .tasks{overflow:visible}
 .task-wrap{width:100%}
+
+
+/* ===== Global app text selection behavior ===== */
+/* App UI text should behave like a native app: no accidental text selection. */
+html,body,#app,.phone,
+button,label,nav,section,article,header,footer,main,
+.task,.task-wrap,.tasktitle,.taskmeta,.reward,
+.logo,.tag,.level,.greet,.stat,
+.profile-screen,.profile-content,
+.completed-screen,.level-up-screen,
+.achievements-screen,.task-log-screen{
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+}
+
+/* Keep editable controls usable. */
+input,textarea,[contenteditable="true"]{
+  -webkit-user-select:text;
+  user-select:text;
+  -webkit-touch-callout:default;
+}
