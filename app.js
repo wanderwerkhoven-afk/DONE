@@ -125,11 +125,11 @@ const achievementIcon=(type,locked=false)=>{
 const achievementCheck=()=>'<span class="achievement-check">✓</span>';
 const achievementRow=a=>{
   const pct=a.goal?Math.min(100,Math.round(a.value/a.goal*100)):100;
-  return \`<article class="achievement-card \${a.locked?"achievement-locked":""}" data-category="\${a.category}">
-    \${achievementIcon(a.icon,a.locked)}
-    <div class="achievement-copy"><strong>\${a.title}</strong><small>\${a.subtitle}</small>\${a.goal?\`<div class="achievement-progress"><i style="width:\${pct}%"></i></div>\`:""}</div>
-    \${a.complete?achievementCheck():a.goal?\`<b class="achievement-count">\${a.value} / \${a.goal}</b>\`:""}
-  </article>\`;
+  return `<article class="achievement-card ${a.locked?"achievement-locked":""}" data-category="${a.category}">
+    ${achievementIcon(a.icon,a.locked)}
+    <div class="achievement-copy"><strong>${a.title}</strong><small>${a.subtitle}</small>${a.goal?`<div class="achievement-progress"><i style="width:${pct}%"></i></div>`:""}</div>
+    ${a.complete?achievementCheck():a.goal?`<b class="achievement-count">${a.value} / ${a.goal}</b>`:""}
+  </article>`;
 };
 window.filterAchievements=(category,button)=>{
   document.querySelectorAll(".achievement-filter").forEach(b=>b.classList.toggle("active",b===button));
@@ -146,7 +146,7 @@ window.openAchievements=()=>{
     {title:"Vroege vogel",subtitle:"5 dagen op rij vóór 10:00\\neen taak afronden",category:"tasks",icon:"clock",value:Math.min(Number(state.earlyBirdDays)||0,5),goal:5},
     {title:"Wereldbouwer",subtitle:"Ontgrendel 10 items in je wereld",category:"world",icon:"star",value:Math.min(Number(state.worldItems)||0,10),goal:10,locked:(Number(state.worldItems)||0)===0}
   ];
-  const css=\`<style id="achievement-page-style">
+  const css=`<style id="achievement-page-style">
   .achievements-screen{height:100dvh;overflow:hidden;padding-bottom:0;background:radial-gradient(circle at 50% -15%,#0a3762 0,#052747 38%,#031a31 100%);color:#fff}
   .achievements-content{height:calc(100dvh - 78px);overflow-y:auto;padding:calc(env(safe-area-inset-top) + 25px) 16px 28px;scrollbar-width:none}.achievements-content::-webkit-scrollbar{display:none}
   .achievements-heading{padding:0 2px}.achievements-heading h1{margin:0;font-size:30px;font-weight:1000;letter-spacing:-1px;text-shadow:0 3px 0 rgba(0,0,0,.28)}.achievements-heading p{margin:5px 0 22px;color:#d5dfed;font-size:15px;font-weight:750}
@@ -160,8 +160,8 @@ window.openAchievements=()=>{
   .achievement-progress{height:7px;margin-top:10px;border-radius:6px;background:#06192c;border:1px solid #1a456d;overflow:hidden}.achievement-progress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#7547ff,#bd6cff);box-shadow:0 0 7px rgba(158,85,255,.55)}
   .achievement-locked .achievement-copy strong,.achievement-locked .achievement-copy small,.achievement-locked .achievement-count{color:#9baec4}.achievements-nav{background:#061d35!important;border-top:1px solid rgba(255,255,255,.07)!important}.achievements-nav button{color:#91a8c4!important}.achievements-nav button.active{color:#ffd273!important;text-shadow:0 0 10px rgba(255,185,65,.45)}
   @media(max-height:760px){.achievements-content{padding-top:calc(env(safe-area-inset-top) + 18px)}.achievements-heading p{margin-bottom:14px}.achievement-filters{margin-bottom:14px}.achievement-card{min-height:70px}.achievement-list{gap:8px}}
-  </style>\`;
-  document.querySelector("#app").innerHTML=css+\`<div class="phone achievements-screen">
+  </style>`;
+  document.querySelector("#app").innerHTML=css+`<div class="phone achievements-screen">
     <main class="achievements-content">
       <header class="achievements-heading"><h1>Achievements</h1><p>Kleine overwinningen. Grote impact.</p></header>
       <div class="achievement-filters">
@@ -170,10 +170,10 @@ window.openAchievements=()=>{
         <button class="achievement-filter" onclick="filterAchievements('tasks',this)">Taken</button>
         <button class="achievement-filter" onclick="filterAchievements('world',this)">Wereld</button>
       </div>
-      <section class="achievement-list">\${achievements.map(achievementRow).join("")}</section>
+      <section class="achievement-list">${achievements.map(achievementRow).join("")}</section>
     </main>
-    <nav class="nav achievements-nav"><button onclick="render()"><span class="ni">\${navIcon("today")}</span>Vandaag</button><button><span class="ni">\${navIcon("world")}</span>Wereld</button><button class="active" onclick="openAchievements()"><span class="ni">\${navIcon("achievements")}</span>Achievements</button><button onclick="openProfile()"><span class="ni">\${navIcon("profile")}</span>Profiel</button></nav>
-  </div>\`;
+    <nav class="nav achievements-nav"><button onclick="render()"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button class="active" onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav>
+  </div>`;
   requestAnimationFrame(()=>{window.scrollTo(0,0);const c=document.querySelector(".achievements-content");if(c)c.scrollTop=0});
 };
 
