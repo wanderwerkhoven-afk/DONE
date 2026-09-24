@@ -975,3 +975,9 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .task-log-item{min-height:64px;margin-bottom:8px;padding:10px 13px;border-radius:15px;background:#0d2e4c;display:flex;align-items:center;gap:11px;box-shadow:inset 0 1px rgba(255,255,255,.04)}
 .task-log-check{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:#65e5a4;color:#124b37;font-weight:1000}.task-log-item strong,.task-log-item small{display:block}.task-log-item strong{font-size:14px}.task-log-item small{margin-top:4px;color:#9eb2c8;font-size:10px}
 .task-log-empty{text-align:center;padding:80px 24px;color:#b7c8dc}.task-log-empty>span{width:62px;height:62px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:#164367;color:#65e5a4;font-size:30px}.task-log-empty h2{margin:0 0 7px;color:#fff;font-size:19px}.task-log-empty p{margin:0;font-size:12px;line-height:1.5}
+
+/* Bottom nav vector icons */
+.nav .ni{width:27px;height:27px;display:grid;place-items:center}
+.nav .ni svg{width:25px;height:25px;display:block;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nav button.active .ni svg{stroke-width:2.2;filter:drop-shadow(0 0 5px rgba(255,195,78,.55))}
+@media(max-width:499px){.nav .ni{width:30px;height:30px}.nav .ni svg{width:28px;height:28px}}
