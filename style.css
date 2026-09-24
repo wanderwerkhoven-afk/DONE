@@ -819,3 +819,15 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   70%{opacity:1}
   100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(.85) rotate(calc(260deg + var(--i)*43deg))}
 }
+
+/* Wider full-screen confetti burst */
+.confetti i:nth-child(1){--x:-390px;--y:-155px}.confetti i:nth-child(2){--x:-350px;--y:-260px}
+.confetti i:nth-child(3){--x:-270px;--y:-355px}.confetti i:nth-child(4){--x:-165px;--y:-405px}
+.confetti i:nth-child(5){--x:-65px;--y:-370px}.confetti i:nth-child(6){--x:55px;--y:-420px}
+.confetti i:nth-child(7){--x:175px;--y:-365px}.confetti i:nth-child(8){--x:285px;--y:-290px}
+.confetti i:nth-child(9){--x:390px;--y:-185px}.confetti i:nth-child(10){--x:415px;--y:-65px}
+.confetti i:nth-child(11){--x:365px;--y:65px}.confetti i:nth-child(12){--x:285px;--y:125px}
+.confetti i:nth-child(13){--x:180px;--y:165px}.confetti i:nth-child(14){--x:60px;--y:185px}
+.confetti i:nth-child(15){--x:-90px;--y:175px}.confetti i:nth-child(16){--x:-215px;--y:125px}
+.confetti i:nth-child(17){--x:-340px;--y:60px}.confetti i:nth-child(18){--x:-420px;--y:-45px}
+.completed-screen.play .confetti i{animation-duration:1.18s!important}
