@@ -130,6 +130,10 @@ window.openProfile=()=>{
         <label><span>⚙️ <b>Haptische feedback</b></span><input type="checkbox" data-setting="haptics" onchange="saveProfileSetting(this)" ${state.haptics!==false?"checked":""}><i></i></label>
         <label><span>🌙 <b>Donkere modus</b></span><input type="checkbox" data-setting="darkMode" onchange="saveProfileSetting(this)" ${state.darkMode!==false?"checked":""}><i></i></label>
       </section>
+      <button class="profile-reset-progress" type="button" onclick="resetProgress()" aria-label="Reset level en XP">
+        <span class="profile-reset-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8V4m0 0h4M4 4l3.1 3.1A7 7 0 1 1 5 13"/></svg></span>
+        <span><b>Refresh voortgang</b><small>Zet level en XP terug naar het begin</small></span>
+      </button>
     </main>
     <nav class="nav profile-nav"><button onclick="render()"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements</button><button class="active"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav>
   </div>`;
@@ -146,6 +150,18 @@ window.openAvatarPicker=()=>{
 };
 window.closeAvatarPicker=()=>{const picker=document.querySelector(".avatar-picker");if(!picker)return;picker.classList.remove("show");setTimeout(()=>picker.remove(),180)};
 window.selectProfileAvatar=n=>{state.profileAvatar=n;saveState();closeAvatarPicker();setTimeout(()=>openProfile(),120)};
+
+window.resetProgress=()=>{
+  const confirmed=window.confirm("Weet je zeker dat je je level en XP wilt resetten? Je taken blijven behouden.");
+  if(!confirmed)return;
+  state.level=1;
+  state.xp=0;
+  state.maxXp=xpForLevel(1);
+  state.pendingLevelUp=null;
+  state.lastSeenLevel=1;
+  saveState();
+  openProfile();
+};
 
 window.saveProfileSetting=el=>{state[el.dataset.setting]=el.checked;saveState()};
 
