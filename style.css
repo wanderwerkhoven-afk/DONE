@@ -238,3 +238,25 @@ body{overflow-x:hidden;-webkit-overflow-scrolling:touch}
   .new-task-form{padding-left:20px;padding-right:20px}
   .size-card{height:116px}
 }
+
+
+/* New task header position + quote removal */
+.new-task-screen .quote-bubble{display:none!important}
+@media(max-width:499px){
+ .new-task-header{
+   height:64px;
+   padding:0 18px 10px;
+   align-items:flex-end;
+ }
+ .new-task-header h1{
+   font-size:22px;
+   line-height:1;
+ }
+ .new-task-header .back-btn{
+   left:18px;
+   top:auto;
+   bottom:3px;
+   width:38px;
+   height:38px;
+ }
+}
