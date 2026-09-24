@@ -1137,3 +1137,52 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 }
 @media(prefers-reduced-motion:reduce){.level-up-screen *{animation:none!important}.level-up-sparkles{display:none}}
 
+/* ===== Team GO: Level Up lower rewards refinement ===== */
+/* Lower the reward/CTA group so the hero keeps more visual breathing room. */
+.level-reward-card{
+  transform:translateY(46px);
+}
+.level-up-continue{
+  transform:translateY(46px);
+}
+
+/* Preserve the lower resting position after entrance animations. */
+@keyframes level-card-in{
+  0%{opacity:0;transform:translateY(68px) scale(.92)}
+  100%{opacity:1;transform:translateY(46px) scale(1)}
+}
+@keyframes level-button-in{
+  0%{opacity:0;transform:translateY(62px) scale(.92)}
+  100%{opacity:1;transform:translateY(46px) scale(1)}
+}
+
+/* Keep press feedback at the shifted resting position. */
+.level-up-continue:active{
+  transform:translateY(46px) scale(.98);
+}
+
+@media(max-height:760px){
+  .level-reward-card,.level-up-continue{transform:translateY(32px)}
+  @keyframes level-card-in{
+    0%{opacity:0;transform:translateY(52px) scale(.92)}
+    100%{opacity:1;transform:translateY(32px) scale(1)}
+  }
+  @keyframes level-button-in{
+    0%{opacity:0;transform:translateY(48px) scale(.92)}
+    100%{opacity:1;transform:translateY(32px) scale(1)}
+  }
+  .level-up-continue:active{transform:translateY(32px) scale(.98)}
+}
+
+@media(max-height:670px){
+  .level-reward-card,.level-up-continue{transform:translateY(18px)}
+  @keyframes level-card-in{
+    0%{opacity:0;transform:translateY(38px) scale(.92)}
+    100%{opacity:1;transform:translateY(18px) scale(1)}
+  }
+  @keyframes level-button-in{
+    0%{opacity:0;transform:translateY(34px) scale(.92)}
+    100%{opacity:1;transform:translateY(18px) scale(1)}
+  }
+  .level-up-continue:active{transform:translateY(18px) scale(.98)}
+}
