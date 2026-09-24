@@ -313,3 +313,21 @@ button,.task-input,input,textarea,select{
     font-size:16px!important;
   }
 }
+
+
+/* Motivational quote restored on new-task hero */
+.new-task-screen .quote-bubble{
+ display:block!important;
+ top:92px;
+ width:260px;
+ padding:13px 17px 14px;
+ border-radius:16px;
+ background:linear-gradient(145deg,rgba(72,132,224,.78),rgba(55,103,190,.72));
+ border:1px solid rgba(181,214,255,.22);
+ backdrop-filter:blur(2px);
+ -webkit-backdrop-filter:blur(2px);
+ box-shadow:inset 0 1px rgba(255,255,255,.13),0 8px 22px rgba(0,17,55,.18);
+ font-size:14px;
+ line-height:1.42;
+ font-weight:700;
+}
