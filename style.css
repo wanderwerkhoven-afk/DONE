@@ -361,3 +361,9 @@ button,.task-input,input,textarea,select{
 @media(max-width:499px){
  .new-task-hero{background-position:43% 60%}
 }
+
+
+/* Align character head with the visual center */
+@media(max-width:499px){
+ .new-task-hero{background-position:38% 60%}
+}
