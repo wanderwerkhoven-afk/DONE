@@ -154,7 +154,7 @@ window.openLevelUp=()=>{
     <main class="level-up-content">
       <header class="level-up-header">
         <h1>LEVEL UP!</h1>
-        <div class="level-ribbon"><img src="assets/images/level-up/level-up-ribbon.png" alt="" aria-hidden="true"><span>Je bent nu level ${event.newLevel}!</span></div>
+        <div class="level-ribbon"><img src="assets/images/level-up/level-up-ribbon.png" alt="" aria-hidden="true"><svg class="level-ribbon-text" viewBox="0 0 330 100" aria-hidden="true"><defs><path id="levelRibbonCurve" d="M 48 58 Q 165 28 282 58"/></defs><text><textPath href="#levelRibbonCurve" startOffset="50%" text-anchor="middle">Je bent nu level ${event.newLevel}!</textPath></text></svg></div>
         ${extraLine}
       </header>
       <div class="level-up-spacer" aria-hidden="true"></div>
