@@ -40,8 +40,20 @@ window.toggleTask=i=>{
   if(!t.done){
     t.done=true;t.completedAt=new Date().toISOString();
     let levelsGained=0,coins=0;
+    const previousLevel=state.level;
     if(!t.rewardClaimed){
       t.rewardClaimed=true;levelsGained=addXp(t.xp);coins=coinReward(t.xp);state.coins=(Number(state.coins)||0)+coins;updateStreak();
+      if(levelsGained>0){
+        state.pendingLevelUp={
+          id:`level-up-${Date.now()}`,
+          previousLevel,
+          newLevel:state.level,
+          levelsGained,
+          xpAwarded:t.xp,
+          coinsAwarded:coins,
+          createdAt:new Date().toISOString()
+        };
+      }
     }
     saveState();openTaskCompleted(t,{coins,levelsGained});return;
   }
@@ -54,7 +66,36 @@ window.openNewTask=()=>{document.querySelector("#app").innerHTML=`<div class="ph
 window.selectTaskSize=el=>{document.querySelectorAll(".size-card").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")};
 window.saveNewTask=()=>{const input=document.querySelector("#taskName"),size=document.querySelector(".size-card.selected")?.dataset.size||"normal";if(!input.value.trim()){input.focus();return}const values={small:["Kleine taak",10,"🌱"],normal:["Normale taak",25,"🔥"],large:["Grote taak",50,"⛰️"]}[size];state.tasks.unshift({id:`task-${Date.now()}`,title:input.value.trim(),meta:values[0],xp:values[1],icon:values[2],done:false,rewardClaimed:false,createdAt:new Date().toISOString()});saveState();render()};
 
-window.openTaskCompleted=(t,reward={coins:0,levelsGained:0})=>{window.scrollTo(0,0);document.querySelector("#app").scrollTop=0;document.querySelector("#app").innerHTML=`<div class="phone completed-screen"><section class="completed-scene"><div class="completed-copy"><h1 class="arched-title" aria-label="Taak voltooid!"><span style="--n:0">T</span><span style="--n:1">a</span><span style="--n:2">a</span><span style="--n:3">k</span><span class="gap" style="--n:4">&nbsp;</span><span style="--n:5">v</span><span style="--n:6">o</span><span style="--n:7">l</span><span style="--n:8">t</span><span style="--n:9">o</span><span style="--n:10">o</span><span style="--n:11">i</span><span style="--n:12">d</span><span style="--n:13">!</span></h1><p>Goed bezig!</p></div><div class="celebration-rays"></div><div class="completion-check"><span>✓</span></div><div class="xp-pop">+${t.xp} XP${reward.coins?`<small>+${reward.coins} coins</small>`:""}${reward.levelsGained?`<em>Level ${state.level}!</em>`:""}</div><div class="completion-quote">“Consistentie bouwt<br>een betere jij.”</div><div class="landing-glow" aria-hidden="true"></div><div class="completion-character" aria-hidden="true"></div><div class="confetti" aria-hidden="true">${Array.from({length:32},(_,i)=>`<i class="${i<16?"pop-left":"pop-right"}" style="--i:${i%16}"></i>`).join("")}</div></section><button class="completed-btn" onclick="render()">Nice! ✨</button></div>`;requestAnimationFrame(()=>{window.scrollTo(0,0);const app=document.querySelector("#app");if(app)app.scrollTop=0;const screen=document.querySelector(".completed-screen");if(screen){screen.scrollTop=0;screen.classList.add("play")}})};
+window.openTaskCompleted=(t,reward={coins:0,levelsGained:0})=>{window.scrollTo(0,0);document.querySelector("#app").scrollTop=0;const nextAction=reward.levelsGained>0?"openLevelUp()":"render()";document.querySelector("#app").innerHTML=`<div class="phone completed-screen"><section class="completed-scene"><div class="completed-copy"><h1 class="arched-title" aria-label="Taak voltooid!"><span style="--n:0">T</span><span style="--n:1">a</span><span style="--n:2">a</span><span style="--n:3">k</span><span class="gap" style="--n:4">&nbsp;</span><span style="--n:5">v</span><span style="--n:6">o</span><span style="--n:7">l</span><span style="--n:8">t</span><span style="--n:9">o</span><span style="--n:10">o</span><span style="--n:11">i</span><span style="--n:12">d</span><span style="--n:13">!</span></h1><p>Goed bezig!</p></div><div class="celebration-rays"></div><div class="completion-check"><span>✓</span></div><div class="xp-pop">+${t.xp} XP${reward.coins?`<small>+${reward.coins} coins</small>`:""}${reward.levelsGained?`<em>Level ${state.level}!</em>`:""}</div><div class="completion-quote">“Consistentie bouwt<br>een betere jij.”</div><div class="landing-glow" aria-hidden="true"></div><div class="completion-character" aria-hidden="true"></div><div class="confetti" aria-hidden="true">${Array.from({length:32},(_,i)=>`<i class="${i<16?"pop-left":"pop-right"}" style="--i:${i%16}"></i>`).join("")}</div></section><button class="completed-btn" onclick="${nextAction}">Nice! ✨</button></div>`;requestAnimationFrame(()=>{window.scrollTo(0,0);const app=document.querySelector("#app");if(app)app.scrollTop=0;const screen=document.querySelector(".completed-screen");if(screen){screen.scrollTop=0;screen.classList.add("play")}})};
+
+
+window.openLevelUp=()=>{
+  const event=state.pendingLevelUp;
+  if(!event){render();return}
+  window.scrollTo(0,0);
+  const appRoot=document.querySelector("#app");
+  if(appRoot)appRoot.scrollTop=0;
+  const levelJump=Number(event.levelsGained)||Math.max(1,(Number(event.newLevel)||state.level)-(Number(event.previousLevel)||state.level-1));
+  const xpAwarded=Math.max(0,Number(event.xpAwarded)||0);
+  const coinsAwarded=Math.max(0,Number(event.coinsAwarded)||0);
+  const extraLine=levelJump>1?`<span class="level-up-jump">+${levelJump} levels in één keer</span>`:"";
+  document.querySelector("#app").innerHTML=`<div class="phone level-up-screen">
+    <div class="level-up-sky" aria-hidden="true"><div class="level-up-rays"></div><i class="level-cloud cloud-a"></i><i class="level-cloud cloud-b"></i><i class="level-cloud cloud-c"></i><i class="floating-island island-left"></i><i class="floating-island island-right"></i><i class="floating-island island-back"></i></div>
+    <main class="level-up-content">
+      <header class="level-up-header"><h1>LEVEL UP!</h1><div class="level-ribbon"><span>Je bent nu level ${event.newLevel}!</span></div>${extraLine}</header>
+      <section class="level-up-hero" aria-label="Nieuwe level bereikt"><div class="level-aura"></div><div class="level-island"><div class="level-island-top"></div><div class="level-island-rock"></div><img src="assets/images/characters/idle-character-happy.png" alt="" class="level-up-character"></div></section>
+      <section class="level-reward-card" aria-label="Beloningen">
+        <div class="level-reward-row"><span class="reward-symbol reward-star" aria-hidden="true">★</span><strong>+${xpAwarded} XP</strong></div>
+        <div class="level-reward-row"><span class="reward-symbol reward-coin" aria-hidden="true"><i></i></span><strong>+${coinsAwarded} coins</strong></div>
+        <div class="level-reward-row"><span class="reward-symbol reward-map" aria-hidden="true"><svg viewBox="0 0 44 44"><path d="m5 9 10-4 14 5 10-4v29l-10 4-14-5-10 4z"/><path d="M15 5v29M29 10v29"/><path d="m9 26 5-5 5 4 5-8 9 5"/></svg></span><strong>Level ${event.newLevel}<br>ontgrendeld!</strong></div>
+      </section>
+      <button class="level-up-continue" type="button" onclick="continueLevelUp()">Doorgaan</button>
+    </main>
+    <div class="level-up-sparkles" aria-hidden="true">${Array.from({length:18},(_,i)=>`<i style="--i:${i}"></i>`).join("")}</div>
+  </div>`;
+  requestAnimationFrame(()=>{window.scrollTo(0,0);const root=document.querySelector("#app");if(root)root.scrollTop=0;document.querySelector(".level-up-screen")?.classList.add("play")});
+};
+window.continueLevelUp=()=>{if(state.pendingLevelUp){state.lastSeenLevel=Math.max(Number(state.lastSeenLevel)||1,Number(state.pendingLevelUp.newLevel)||state.level);state.pendingLevelUp=null;saveState()}render()};
 
 window.openSettings=()=>openProfile();
 window.openProfile=()=>{
@@ -177,4 +218,4 @@ window.openAchievements=()=>{
   requestAnimationFrame(()=>{window.scrollTo(0,0);const c=document.querySelector(".achievements-content");if(c)c.scrollTop=0});
 };
 
-render();
+state.pendingLevelUp?openLevelUp():render();
