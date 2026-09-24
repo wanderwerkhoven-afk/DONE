@@ -57,7 +57,7 @@ window.startTaskLongPress=(event,index,button)=>{
     activeTaskEditIndex=index;
     button.closest(".task-wrap")?.classList.add("task-editing");
     if(navigator.vibrate)navigator.vibrate(35);
-  },2000);
+  },1200);
 };
 
 window.trackTaskLongPress=event=>{
