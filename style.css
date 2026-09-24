@@ -210,3 +210,31 @@ body{overflow-x:hidden;-webkit-overflow-scrolling:touch}
  .quote-bubble{width:250px}
  .size-card{height:120px}
 }
+
+
+/* New task: reference-proportion override */
+@media(max-width:499px){
+  .new-task-screen{height:100dvh;min-height:100dvh;overflow-y:auto;background:linear-gradient(180deg,#062456 0,#03182f 48%,#020d20 100%)}
+  .new-task-header{height:78px;top:0;align-items:flex-end;padding:0 18px 14px;background:rgba(2,19,48,.42)}
+  .new-task-header h1{font-size:22px;line-height:1}
+  .back-btn{top:auto;bottom:7px;left:18px;width:38px;height:38px;font-size:31px}
+  .new-task-hero{height:365px;background-size:cover;background-position:center 57%}
+  .new-task-hero:after{height:30px;background:linear-gradient(180deg,transparent,#03182f)}
+  .quote-bubble{top:116px;width:260px;padding:14px 17px 15px;border-radius:16px;font-size:14px;line-height:1.42}
+  .new-task-form{margin-top:0;padding:17px 24px 26px;background:linear-gradient(180deg,#03182f,#020d20)}
+  .new-task-form label,.new-task-form legend{font-size:14px;margin-bottom:9px}
+  .task-input{height:57px;border-radius:17px;border-width:2px;font-size:14px;padding:0 16px}
+  .new-task-form fieldset{margin:20px 0 22px}
+  .size-grid{gap:8px}
+  .size-card{height:122px;border-radius:16px;gap:4px}
+  .size-card .size-icon{font-size:29px}
+  .size-card strong{font-size:15px}
+  .size-card b{font-size:13px}
+  .submit-task{height:58px;border-radius:30px;font-size:17px}
+}
+@media(max-width:380px){
+  .new-task-hero{height:345px}
+  .quote-bubble{top:108px;width:238px}
+  .new-task-form{padding-left:20px;padding-right:20px}
+  .size-card{height:116px}
+}
