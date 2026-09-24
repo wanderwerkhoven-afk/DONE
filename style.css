@@ -1002,7 +1002,7 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 }
 .level-up-art{
   position:absolute;inset:0;z-index:0;
-  background-image:url("assets/images/home/hero-level-ip.png");
+  background-image:url("assets/images/level-up/level-up-hero.png");
   background-size:cover;
   background-position:center 42%;
   background-repeat:no-repeat;
