@@ -807,3 +807,15 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   .completion-character{width:min(73vw,305px)!important}
   .completed-btn{width:210px!important;height:57px!important}
 }
+
+/* Confetti v2 — explicit vectors; !important opacity removed so keyframes can animate */
+.confetti{position:absolute!important;z-index:14!important;inset:0!important;overflow:hidden!important;pointer-events:none!important}
+.confetti i{position:absolute!important;left:50%!important;top:67%!important;width:9px!important;height:19px!important;border-radius:2px!important;opacity:0;background:hsl(calc(var(--i)*47deg),90%,68%)!important}
+.confetti i:nth-child(1){--x:-175px;--y:-80px}.confetti i:nth-child(2){--x:-155px;--y:-135px}.confetti i:nth-child(3){--x:-118px;--y:-175px}.confetti i:nth-child(4){--x:-70px;--y:-195px}.confetti i:nth-child(5){--x:-25px;--y:-180px}.confetti i:nth-child(6){--x:28px;--y:-198px}.confetti i:nth-child(7){--x:78px;--y:-178px}.confetti i:nth-child(8){--x:125px;--y:-145px}.confetti i:nth-child(9){--x:170px;--y:-92px}.confetti i:nth-child(10){--x:182px;--y:-32px}.confetti i:nth-child(11){--x:160px;--y:28px}.confetti i:nth-child(12){--x:125px;--y:62px}.confetti i:nth-child(13){--x:78px;--y:82px}.confetti i:nth-child(14){--x:25px;--y:92px}.confetti i:nth-child(15){--x:-38px;--y:88px}.confetti i:nth-child(16){--x:-92px;--y:65px}.confetti i:nth-child(17){--x:-145px;--y:32px}.confetti i:nth-child(18){--x:-180px;--y:-22px}
+.completed-screen.play .confetti i{animation:confetti-burst-v3 .95s cubic-bezier(.12,.72,.18,1) calc(1.08s + var(--i)*.008s) forwards!important}
+@keyframes confetti-burst-v3{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(0)}
+  6%{opacity:1;transform:translate(-50%,-50%) scale(1.25) rotate(20deg)}
+  70%{opacity:1}
+  100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(.85) rotate(calc(260deg + var(--i)*43deg))}
+}
