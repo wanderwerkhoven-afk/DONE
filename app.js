@@ -25,7 +25,7 @@ const archiveOldCompletedTasks=()=>{
 const saveState=()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}};
 archiveOldCompletedTasks();
 saveState();
-function render(){archiveOldCompletedTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image"><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>Goedemiddag! 👋</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${taskPct}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<button class="task ${t.done?"done":""}" onclick="toggleTask(${i})"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${t.title}</div>${t.meta?`<div class="taskmeta">${t.meta}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button>`}).join("")}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button><span class="ni">${navIcon("achievements")}</span>Achievements</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`}
+function render(){archiveOldCompletedTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image"><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>Goedemiddag! 👋</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${taskPct}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<button class="task ${t.done?"done":""}" onclick="toggleTask(${i})"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${t.title}</div>${t.meta?`<div class="taskmeta">${t.meta}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button>`}).join("")}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`}
 
 const addXp=amount=>{state.xp+=amount;let levelsGained=0;while(state.xp>=state.maxXp){state.xp-=state.maxXp;state.level++;levelsGained++;state.maxXp=xpForLevel(state.level)}saveState();return levelsGained};
 const updateStreak=()=>{
@@ -85,7 +85,7 @@ window.openProfile=()=>{
         <label><span>🌙 <b>Donkere modus</b></span><input type="checkbox" data-setting="darkMode" onchange="saveProfileSetting(this)" ${state.darkMode!==false?"checked":""}><i></i></label>
       </section>
     </main>
-    <nav class="nav profile-nav"><button onclick="render()"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button><span class="ni">${navIcon("achievements")}</span>Achievements</button><button class="active"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav>
+    <nav class="nav profile-nav"><button onclick="render()"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements</button><button class="active"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav>
   </div>`;
 };
 
@@ -109,6 +109,72 @@ window.openTaskLog=()=>{
   const groups=all.reduce((acc,t)=>{const k=localDateKey(t.completedAt);(acc[k]??=[]).push(t);return acc},{});
   const fmt=k=>new Date(k+"T12:00:00").toLocaleDateString("nl-NL",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
   document.querySelector("#app").innerHTML=`<div class="phone task-log-screen"><header class="task-log-header"><button class="back-btn" onclick="render()" aria-label="Terug">←</button><div><h1>Takenlogboek</h1><p>Alles wat je hebt afgemaakt.</p></div></header><main class="task-log-content">${all.length?Object.entries(groups).map(([date,tasks])=>`<section class="task-log-day"><h2>${fmt(date)}</h2>${tasks.map(t=>`<article class="task-log-item"><span class="task-log-check">✓</span><div><strong>${t.title}</strong><small>${new Date(t.completedAt).toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"})} · +${t.xp} XP · +${coinReward(t.xp)} coins</small></div></article>`).join("")}</section>`).join(""):`<div class="task-log-empty"><span>✓</span><h2>Nog geen voltooide taken</h2><p>Je afgeronde taken verschijnen hier automatisch.</p></div>`}</main></div>`;
+};
+
+
+const achievementIcon=(type,locked=false)=>{
+  if(locked)return '<span class="achievement-medal locked-medal"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 22v-5a9 9 0 0 1 18 0v5"/><rect x="10" y="21" width="28" height="23" rx="8"/><path d="M24 29v7"/></svg></span>';
+  const icons={
+    star:'<span class="achievement-medal medal-gold"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="19"/><circle cx="24" cy="24" r="15"/><path d="m24 13 3.2 6.5 7.2 1-5.2 5.1 1.2 7.2-6.4-3.4-6.4 3.4 1.2-7.2-5.2-5.1 7.2-1z"/></svg></span>',
+    week:'<span class="achievement-medal medal-week"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 8 7 18l4 5-2 11 9 2 6 8 6-8 9-2-2-11 4-5-5-10-12 3z"/><path d="m24 16 2.7 5.5 6.1.9-4.4 4.3 1 6-5.4-2.9-5.4 2.9 1-6-4.4-4.3 6.1-.9z"/></svg></span>',
+    badge:'<span class="achievement-medal medal-badge"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 7h18l2 5 5 3-2 19-14 8-14-8-2-19 5-3z"/><path d="m17 24 5 5 10-11"/></svg></span>',
+    clock:'<span class="achievement-medal medal-badge"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 7h18l2 5 5 3-2 19-14 8-14-8-2-19 5-3z"/><circle cx="24" cy="24" r="8"/><path d="M24 19v6l4 2"/></svg></span>'
+  };
+  return icons[type]||icons.star;
+};
+const achievementCheck=()=>'<span class="achievement-check">✓</span>';
+const achievementRow=a=>{
+  const pct=a.goal?Math.min(100,Math.round(a.value/a.goal*100)):100;
+  return \`<article class="achievement-card \${a.locked?"achievement-locked":""}" data-category="\${a.category}">
+    \${achievementIcon(a.icon,a.locked)}
+    <div class="achievement-copy"><strong>\${a.title}</strong><small>\${a.subtitle}</small>\${a.goal?\`<div class="achievement-progress"><i style="width:\${pct}%"></i></div>\`:""}</div>
+    \${a.complete?achievementCheck():a.goal?\`<b class="achievement-count">\${a.value} / \${a.goal}</b>\`:""}
+  </article>\`;
+};
+window.filterAchievements=(category,button)=>{
+  document.querySelectorAll(".achievement-filter").forEach(b=>b.classList.toggle("active",b===button));
+  document.querySelectorAll(".achievement-card").forEach(card=>{card.hidden=category!=="all"&&card.dataset.category!==category});
+};
+window.openAchievements=()=>{
+  archiveOldCompletedTasks();saveState();
+  const completed=state.taskHistory.length+state.tasks.filter(t=>t.done).length;
+  const achievements=[
+    {title:"Eerste stap",subtitle:"Voltooi je eerste taak",category:"tasks",icon:"star",complete:completed>=1},
+    {title:"Streak 3",subtitle:"3 dagen op rij taken afronden",category:"streak",icon:"star",complete:state.streak>=3},
+    {title:"Productieve week",subtitle:"7 dagen op rij",category:"streak",icon:"week",value:Math.min(state.streak,7),goal:7},
+    {title:"Taakheld",subtitle:"50 taken voltooien",category:"tasks",icon:"badge",value:Math.min(completed,50),goal:50},
+    {title:"Vroege vogel",subtitle:"5 dagen op rij vóór 10:00\\neen taak afronden",category:"tasks",icon:"clock",value:Math.min(Number(state.earlyBirdDays)||0,5),goal:5},
+    {title:"Wereldbouwer",subtitle:"Ontgrendel 10 items in je wereld",category:"world",icon:"star",value:Math.min(Number(state.worldItems)||0,10),goal:10,locked:(Number(state.worldItems)||0)===0}
+  ];
+  const css=\`<style id="achievement-page-style">
+  .achievements-screen{height:100dvh;overflow:hidden;padding-bottom:0;background:radial-gradient(circle at 50% -15%,#0a3762 0,#052747 38%,#031a31 100%);color:#fff}
+  .achievements-content{height:calc(100dvh - 78px);overflow-y:auto;padding:calc(env(safe-area-inset-top) + 25px) 16px 28px;scrollbar-width:none}.achievements-content::-webkit-scrollbar{display:none}
+  .achievements-heading{padding:0 2px}.achievements-heading h1{margin:0;font-size:30px;font-weight:1000;letter-spacing:-1px;text-shadow:0 3px 0 rgba(0,0,0,.28)}.achievements-heading p{margin:5px 0 22px;color:#d5dfed;font-size:15px;font-weight:750}
+  .achievement-filters{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}.achievement-filter{height:47px;border:1px solid rgba(106,143,184,.16);border-radius:25px;background:#0c3155;color:#c7d5e8;font-weight:850;font-size:13px;box-shadow:inset 0 1px rgba(255,255,255,.04),0 5px 14px rgba(0,0,0,.13)}.achievement-filter.active{color:#fff;background:linear-gradient(135deg,#493cf4,#8b62ff);border-color:#7b73ff;box-shadow:0 0 14px rgba(113,83,255,.42),inset 0 1px rgba(255,255,255,.25)}
+  .achievement-list{display:flex;flex-direction:column;gap:10px}.achievement-card{position:relative;min-height:78px;border-radius:18px;background:linear-gradient(100deg,#0d3152,#0a2948);box-shadow:inset 0 1px rgba(255,255,255,.045),0 7px 17px rgba(0,0,0,.12);display:grid;grid-template-columns:62px 1fr auto;align-items:center;padding:10px 14px 10px 9px;gap:8px}.achievement-card[hidden]{display:none}
+  .achievement-copy{min-width:0;padding-right:2px}.achievement-copy strong,.achievement-copy small{display:block}.achievement-copy strong{font-size:16px;line-height:1.15;font-weight:950}.achievement-copy small{white-space:pre-line;margin-top:3px;color:#b7c7da;font-size:11px;font-weight:650;line-height:1.25}
+  .achievement-medal{width:54px;height:54px;display:grid;place-items:center;filter:drop-shadow(0 4px 4px rgba(0,0,0,.28))}.achievement-medal svg{width:52px;height:52px;overflow:visible}.medal-gold svg circle:first-child{fill:#f7a900;stroke:#ffdf55;stroke-width:2}.medal-gold svg circle:nth-child(2){fill:#f8bb22;stroke:#ffe372;stroke-width:2}.medal-gold svg path{fill:#fff1b0;stroke:#fff5c8;stroke-width:1}
+  .medal-week svg>path:first-child{fill:#ed6072;stroke:#ff9b7d;stroke-width:2}.medal-week svg>path:last-child{fill:#ffd12f;stroke:#ffe66d;stroke-width:1.5}.medal-badge svg>path:first-child{fill:#f6b91f;stroke:#ffdc52;stroke-width:2}.medal-badge svg>path:last-child,.medal-badge svg circle{fill:none;stroke:#fff7d1;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+  .locked-medal{width:52px;height:52px;border-radius:50%;background:#173c62;box-shadow:inset 0 0 0 2px #244e78;filter:none}.locked-medal svg{width:34px;height:34px;fill:#617fa6;stroke:#9bb0cc;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .achievement-check{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#79e6b7;color:#0b5742;border:2px solid #b6f5da;font-size:19px;font-weight:1000;box-shadow:0 0 9px rgba(104,234,184,.25)}.achievement-count{align-self:start;margin-top:6px;min-width:48px;text-align:right;font-size:14px}
+  .achievement-progress{height:7px;margin-top:10px;border-radius:6px;background:#06192c;border:1px solid #1a456d;overflow:hidden}.achievement-progress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#7547ff,#bd6cff);box-shadow:0 0 7px rgba(158,85,255,.55)}
+  .achievement-locked .achievement-copy strong,.achievement-locked .achievement-copy small,.achievement-locked .achievement-count{color:#9baec4}.achievements-nav{background:#061d35!important;border-top:1px solid rgba(255,255,255,.07)!important}.achievements-nav button{color:#91a8c4!important}.achievements-nav button.active{color:#ffd273!important;text-shadow:0 0 10px rgba(255,185,65,.45)}
+  @media(max-height:760px){.achievements-content{padding-top:calc(env(safe-area-inset-top) + 18px)}.achievements-heading p{margin-bottom:14px}.achievement-filters{margin-bottom:14px}.achievement-card{min-height:70px}.achievement-list{gap:8px}}
+  </style>\`;
+  document.querySelector("#app").innerHTML=css+\`<div class="phone achievements-screen">
+    <main class="achievements-content">
+      <header class="achievements-heading"><h1>Achievements</h1><p>Kleine overwinningen. Grote impact.</p></header>
+      <div class="achievement-filters">
+        <button class="achievement-filter active" onclick="filterAchievements('all',this)">Alle</button>
+        <button class="achievement-filter" onclick="filterAchievements('streak',this)">Streak</button>
+        <button class="achievement-filter" onclick="filterAchievements('tasks',this)">Taken</button>
+        <button class="achievement-filter" onclick="filterAchievements('world',this)">Wereld</button>
+      </div>
+      <section class="achievement-list">\${achievements.map(achievementRow).join("")}</section>
+    </main>
+    <nav class="nav achievements-nav"><button onclick="render()"><span class="ni">\${navIcon("today")}</span>Vandaag</button><button><span class="ni">\${navIcon("world")}</span>Wereld</button><button class="active" onclick="openAchievements()"><span class="ni">\${navIcon("achievements")}</span>Achievements</button><button onclick="openProfile()"><span class="ni">\${navIcon("profile")}</span>Profiel</button></nav>
+  </div>\`;
+  requestAnimationFrame(()=>{window.scrollTo(0,0);const c=document.querySelector(".achievements-content");if(c)c.scrollTop=0});
 };
 
 render();
