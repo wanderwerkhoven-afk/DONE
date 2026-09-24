@@ -324,10 +324,27 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 }
 
 
-/* iOS safe-area: keep app chrome above the hero */
+
+
+/* iOS fullscreen hero: artwork continues behind the status bar, with a contrast fade */
 @media(max-width:499px){
-  .phone{padding-top:env(safe-area-inset-top)}
-  .hero.hero-image{height:330px;background-position:center 60%}
-  .new-task-header{top:env(safe-area-inset-top)}
-  .new-task-hero{margin-top:0}
+  .phone{padding-top:0}
+  .hero.hero-image{height:calc(330px + env(safe-area-inset-top));background-position:center 60%}
+  .hero.hero-image::before{
+    content:"";
+    position:absolute;
+    z-index:2;
+    top:0;left:0;right:0;
+    height:calc(env(safe-area-inset-top) + 58px);
+    pointer-events:none;
+    background:linear-gradient(180deg,rgba(2,11,29,.72) 0%,rgba(2,11,29,.40) 45%,rgba(2,11,29,0) 100%);
+  }
+  .hero-image .brand,.hero-image .level{top:calc(env(safe-area-inset-top) + 27px)}
+  .new-task-header{top:0;padding-top:env(safe-area-inset-top);height:calc(64px + env(safe-area-inset-top))}
+  .new-task-hero{height:calc(365px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
+  .new-task-hero::before{
+    content:"";position:absolute;z-index:1;top:0;left:0;right:0;
+    height:calc(env(safe-area-inset-top) + 52px);pointer-events:none;
+    background:linear-gradient(180deg,rgba(2,11,29,.66),rgba(2,11,29,.28) 55%,transparent);
+  }
 }
