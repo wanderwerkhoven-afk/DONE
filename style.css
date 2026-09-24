@@ -347,3 +347,11 @@ button,.task-input,input,textarea,select{
  bottom:-10px;
  border-width:10px 3px 0 14px;
 }
+
+
+/* Center character more precisely in new-task hero */
+@media(max-width:499px){
+ .new-task-hero{
+   background-position:46% 60%;
+ }
+}
