@@ -478,3 +478,12 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 @keyframes completion8-6{0%,62.49%{opacity:0}62.5%,74.99%{opacity:1}75%,100%{opacity:0}}
 @keyframes completion8-7{0%,74.99%{opacity:0}75%,87.49%{opacity:1}87.5%,100%{opacity:0}}
 @keyframes completion8-8{0%,87.49%{opacity:0}87.5%,100%{opacity:1}}
+
+/* Restore original completion hero from home folder */
+.completed-scene{
+  background-image:linear-gradient(180deg,rgba(2,13,38,.12),rgba(2,13,38,.03) 56%,rgba(2,10,27,.42)),url("assets/images/home/hero-task-completed.png")!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+}
+.completed-bg-sequence,.completed-bg-frame{display:none!important}
