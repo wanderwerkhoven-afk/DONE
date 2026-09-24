@@ -606,7 +606,7 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 
 /* Use uploaded happy idle character */
 .completion-character{
-  background-image:url("assets/idle-character-happy.png")!important;
+  background-image:url("assets/images/characters/idle-character-happy.png")!important;
   background-position:center bottom!important;
   background-size:contain!important;
   background-repeat:no-repeat!important;
