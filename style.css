@@ -331,3 +331,19 @@ button,.task-input,input,textarea,select{
  line-height:1.42;
  font-weight:700;
 }
+
+
+/* Compact quote: keep it clear of the character */
+.new-task-screen .quote-bubble{
+ top:76px;
+ width:238px;
+ padding:10px 15px 11px;
+ border-radius:15px;
+ font-size:13px;
+ line-height:1.38;
+}
+.new-task-screen .quote-bubble:after{
+ right:34px;
+ bottom:-10px;
+ border-width:10px 3px 0 14px;
+}
