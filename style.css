@@ -355,3 +355,9 @@ button,.task-input,input,textarea,select{
    background-position:46% 60%;
  }
 }
+
+
+/* Final character centering nudge */
+@media(max-width:499px){
+ .new-task-hero{background-position:43% 60%}
+}
