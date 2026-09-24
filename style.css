@@ -1017,3 +1017,135 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 @media(max-height:760px){.level-up-content{padding-top:calc(env(safe-area-inset-top) + 16px);grid-template-rows:auto minmax(185px,1fr) auto auto}.level-up-header h1{font-size:44px;margin-bottom:8px}.level-ribbon{height:48px;font-size:17px}.level-up-hero{min-height:190px}.level-island{height:176px;width:min(72vw,310px)}.level-island-top{bottom:65px}.level-island-rock{height:100px}.level-up-character{width:min(47vw,205px);bottom:76px}.level-reward-card{padding:11px 16px;gap:4px;margin-bottom:9px}.level-reward-row{min-height:35px}.level-reward-row strong{font-size:16px}.reward-symbol{transform:scale(.86)}.level-up-continue{height:58px;font-size:20px}}
 @media(max-height:670px){.level-up-content{grid-template-rows:auto minmax(145px,1fr) auto auto}.level-up-header h1{font-size:38px}.level-ribbon{height:43px;font-size:15px;width:min(275px,78vw)}.level-up-jump{display:none}.level-island{height:145px}.level-island-top{bottom:52px;height:52px}.level-island-rock{height:80px}.level-up-character{width:min(40vw,170px);bottom:59px}.level-reward-card{grid-template-columns:repeat(3,1fr);gap:4px;padding:8px 10px}.level-reward-row{display:flex;flex-direction:column;justify-content:center;text-align:center;gap:2px}.level-reward-row strong{font-size:12px}.reward-symbol{height:30px;transform:scale(.72)}.level-up-continue{height:52px}}
 @media(prefers-reduced-motion:reduce){.level-up-screen *{animation:none!important}.level-up-sparkles{display:none}}
+
+/* ===== Team GO: Level Up v2 refinement ===== */
+/* Review-agent fixes based on mobile screenshot comparison */
+.level-up-content{
+  padding-top:calc(env(safe-area-inset-top) + 20px);
+  grid-template-rows:auto minmax(220px,1fr) auto auto;
+}
+
+.level-up-header{
+  transform:translateY(-8px);
+}
+.level-up-header h1{
+  margin:0 0 7px;
+  font-size:clamp(40px,10.8vw,56px);
+  letter-spacing:-2.4px;
+}
+.level-ribbon{
+  width:min(286px,79vw);
+  height:49px;
+  font-size:17px;
+  border-radius:15px 15px 11px 11px;
+}
+.level-ribbon:before,
+.level-ribbon:after{
+  width:45px;
+  height:32px;
+  top:12px;
+}
+.level-ribbon:before{left:-31px}
+.level-ribbon:after{right:-31px}
+
+.level-up-hero{
+  min-height:245px;
+  transform:translateY(8px);
+}
+.level-aura{
+  top:43%;
+  width:min(68vw,315px);
+}
+.level-island{
+  width:min(72vw,315px);
+  height:178px;
+  margin-bottom:9px;
+}
+.level-island-top{
+  left:7%;
+  right:7%;
+  bottom:68px;
+  height:57px;
+}
+.level-island-rock{
+  left:19%;
+  right:19%;
+  height:104px;
+  clip-path:polygon(5% 0,95% 0,90% 25%,78% 48%,70% 72%,58% 100%,48% 76%,37% 92%,28% 66%,17% 46%);
+}
+.level-up-character{
+  bottom:76px;
+  width:min(43vw,188px);
+}
+
+.cloud-a{left:-66px;top:31%;transform:scale(.95)}
+.cloud-b{right:-67px;top:29%;transform:scale(.8)}
+.cloud-c{right:-31px;top:58%;transform:scale(.48);opacity:.58}
+.island-left{left:6%;top:51%;transform:scale(.58)}
+.island-right{right:8%;top:47%;transform:scale(.72)}
+.island-back{right:17%;top:61%;transform:scale(.34);opacity:.62}
+
+.level-reward-card{
+  width:min(332px,88vw);
+  margin:0 auto 12px;
+  padding:12px 16px;
+  gap:5px;
+  border-radius:21px;
+}
+.level-reward-row{
+  min-height:37px;
+  grid-template-columns:48px 1fr;
+}
+.level-reward-row strong{
+  font-size:16px;
+}
+.reward-symbol{
+  width:35px;
+  height:35px;
+}
+.reward-star{font-size:34px}
+.reward-coin{
+  width:30px;
+  height:30px;
+}
+.reward-map svg{
+  width:34px;
+  height:34px;
+}
+
+.level-up-continue{
+  width:min(360px,90vw);
+  height:60px;
+  margin-bottom:4px;
+  border-radius:30px;
+  font-size:20px;
+}
+
+@media(max-height:760px){
+  .level-up-content{
+    padding-top:calc(env(safe-area-inset-top) + 12px);
+    grid-template-rows:auto minmax(185px,1fr) auto auto;
+  }
+  .level-up-header{transform:translateY(-5px)}
+  .level-up-header h1{font-size:39px}
+  .level-ribbon{width:min(265px,76vw);height:44px;font-size:15px}
+  .level-up-hero{min-height:195px;transform:translateY(4px)}
+  .level-island{width:min(65vw,285px);height:154px}
+  .level-island-top{bottom:57px;height:49px}
+  .level-island-rock{height:88px}
+  .level-up-character{bottom:64px;width:min(39vw,168px)}
+  .level-reward-card{width:min(315px,87vw);padding:9px 14px;gap:3px;margin-bottom:8px}
+  .level-reward-row{min-height:32px}
+  .level-reward-row strong{font-size:14px}
+  .level-up-continue{height:54px;font-size:18px}
+}
+
+@media(max-height:670px){
+  .level-up-header{transform:none}
+  .level-up-hero{transform:none}
+  .level-up-character{width:min(36vw,150px);bottom:54px}
+  .level-island{height:132px}
+  .level-island-top{bottom:48px}
+  .level-island-rock{height:74px}
+  .level-reward-card{width:min(300px,86vw)}
+}
