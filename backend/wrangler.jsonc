@@ -1,0 +1,41 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+
+  // ==========================================================================
+  // WORKER
+  // ==========================================================================
+  "name": "done-push-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-24",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+
+  // ==========================================================================
+  // PUBLIC / NON-SECRET CONFIG
+  // VAPID_PRIVATE_KEY and optional TEST_PUSH_TOKEN must be Worker secrets.
+  // ==========================================================================
+  "vars": {
+    "VAPID_SUBJECT": "https://github.com/wanderwerkhoven-afk/DONE",
+    "VAPID_PUBLIC_KEY": "BAHsoqe_z2R1kvyCEEkWMYrroUcjcklR2UvQS7uTw90isC-4Jbc7pYzIrnSZ90IsYGaLbkwDUr1azZUEBX1ylzg",
+    "APP_ORIGIN": "*"
+  },
+
+  // ==========================================================================
+  // D1 DATABASE
+  // ==========================================================================
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "done-push",
+      "database_id": "c6de0871-0337-4487-a206-ed73425760d1"
+    }
+  ],
+
+  // ==========================================================================
+  // REMINDER CRON
+  // Check every minute; each subscription is evaluated in its own timezone.
+  // ==========================================================================
+  "triggers": {
+    "crons": ["* * * * *"]
+  }
+}
