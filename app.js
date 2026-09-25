@@ -997,28 +997,27 @@ window.backupForIconInstall=async button=>{
   }
 };
 
-const appIconSafariBridgeUrl=id=>{
-  const backendUrl=getReminderBackendUrl();
+const openInstallPageInSafari=id=>{
   const target=appIconInstallUrl(id);
-  return backendUrl?`${backendUrl}/open-safari?target=${encodeURIComponent(target)}`:target;
+
+  // iOS 17+ supports Safari's dedicated URL scheme. In standalone PWA mode
+  // this leaves the installed web-app container and opens the URL in Safari.
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||
+    (navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+
+  if(isIOS){
+    window.location.href=`x-safari-${target}`;
+    return;
+  }
+
+  const opened=window.open(target,"_blank","noopener");
+  if(!opened)window.location.href=target;
 };
 
 window.openChosenIconInstallPage=id=>{
   const wizard=document.querySelector(".app-icon-install");
   if(!wizard||wizard.dataset.backupReady!=="true")return;
-  const url=appIconSafariBridgeUrl(id);
-
-  // A same-origin URL stays inside an installed iOS PWA. The bridge lives on
-  // our Worker origin, so iOS hands the navigation to Safari first; the Worker
-  // then redirects Safari back to the icon-specific install page.
-  const anchor=document.createElement("a");
-  anchor.href=url;
-  anchor.target="_blank";
-  anchor.rel="noopener external";
-  anchor.style.display="none";
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
+  openInstallPageInSafari(id);
 };
 
 // ============================================================================
