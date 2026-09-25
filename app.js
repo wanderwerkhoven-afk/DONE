@@ -69,11 +69,63 @@ const getReminderClientId=()=>{
 
 const getReminderBackendUrl=()=>String(window.DONE_CONFIG?.backendUrl||"").replace(/\/$/,"");
 
+// ============================================================================
+// PUSH SERVICE WORKER & SUBSCRIPTION
+// Registreert de push-only service worker en maakt alleen bij ingeschakelde
+// reminders een Web Push subscription aan met de publieke VAPID key.
+// ============================================================================
+const registerDoneServiceWorker=async()=>{
+  if(!("serviceWorker" in navigator))return null;
+  try{
+    return await navigator.serviceWorker.register("./sw.js");
+  }catch(error){
+    console.warn("Service worker registratie mislukt",error);
+    return null;
+  }
+};
+
 const getActivePushSubscription=async()=>{
   if(!("serviceWorker" in navigator)||!("PushManager" in window))return null;
   const registration=await navigator.serviceWorker.getRegistration();
   if(!registration)return null;
   return registration.pushManager.getSubscription();
+};
+
+const base64UrlToUint8Array=value=>{
+  const padding="=".repeat((4-value.length%4)%4);
+  const base64=(value+padding).replace(/-/g,"+").replace(/_/g,"/");
+  const raw=atob(base64);
+  return Uint8Array.from([...raw].map(ch=>ch.charCodeAt(0)));
+};
+
+const getOrCreatePushSubscription=async()=>{
+  if(!("serviceWorker" in navigator)||!("PushManager" in window))return null;
+  if(!("Notification" in window)||Notification.permission!=="granted")return null;
+
+  let registration=await navigator.serviceWorker.getRegistration();
+  if(!registration)registration=await registerDoneServiceWorker();
+  if(!registration)return null;
+
+  await navigator.serviceWorker.ready;
+
+  const existing=await registration.pushManager.getSubscription();
+  if(existing)return existing;
+
+  const backendUrl=getReminderBackendUrl();
+  if(!backendUrl)throw new Error("De push-backend is nog niet gekoppeld.");
+
+  const response=await fetch(`${backendUrl}/vapid-public-key`,{
+    headers:{Accept:"application/json"}
+  });
+  if(!response.ok)throw new Error("Publieke VAPID-key ophalen mislukt.");
+
+  const payload=await response.json();
+  if(!payload?.publicKey)throw new Error("Publieke VAPID-key ontbreekt.");
+
+  return registration.pushManager.subscribe({
+    userVisibleOnly:true,
+    applicationServerKey:base64UrlToUint8Array(payload.publicKey)
+  });
 };
 
 const syncReminderBackendState=async(force=false)=>{
@@ -90,7 +142,7 @@ const syncReminderBackendState=async(force=false)=>{
 
     if(!("Notification" in window)||Notification.permission!=="granted")return false;
 
-    const subscription=await getActivePushSubscription();
+    const subscription=await getOrCreatePushSubscription();
     if(!subscription)return false;
 
     const response=await fetch(`${backendUrl}/subscription`,{
@@ -203,6 +255,17 @@ window.toggleDailyReminder=async el=>{
 
   state.reminderEnabled=true;
   saveState();
+
+  try{
+    await getOrCreatePushSubscription();
+  }catch(error){
+    state.reminderEnabled=false;
+    saveState();
+    el.checked=false;
+    alert(error?.message||"Pushnotificaties konden niet worden geactiveerd.");
+    return;
+  }
+
   scheduleTaskReminder();
   await syncReminderBackendState(true);
 };
@@ -655,6 +718,14 @@ window.openAchievements=()=>{
   </div>`;
   requestAnimationFrame(()=>{window.scrollTo(0,0);const c=document.querySelector(".achievements-content");if(c)c.scrollTop=0});
 };
+
+registerDoneServiceWorker().then(()=>{
+  if(state.reminderEnabled&&Notification.permission==="granted"){
+    getOrCreatePushSubscription()
+      .then(()=>syncReminderBackendState())
+      .catch(error=>console.warn("Push subscription herstellen mislukt",error));
+  }
+});
 
 scheduleTaskReminder();
 queueReminderBackendSync();
