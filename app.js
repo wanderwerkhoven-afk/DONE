@@ -3,12 +3,13 @@
 // Centrale state, level/XP-berekening en persistente opslag in localStorage.
 // ============================================================================
 const STORAGE_KEY="done-state-v1";
+const REMINDER_CLIENT_ID_KEY="done-reminder-client-id";
 // ============================================================================
 // SHARED NAVIGATION ICONS
 // SVG-iconen die door de onderste navigatie op meerdere schermen worden gebruikt.
 // ============================================================================
 const navIcon=name=>({today:`<svg viewBox="0 0 32 32" aria-hidden="true"><rect class="icon-fill" x="5" y="7" width="22" height="20" rx="6"/><path class="icon-cut" d="M10 5v5M22 5v5M9 14h14"/><path class="icon-detail" d="M11 18.5c1.3 2.5 3 3.7 5 3.7s3.7-1.2 5-3.7"/></svg>`,world:`<svg viewBox="0 0 32 32" aria-hidden="true"><circle class="icon-fill" cx="16" cy="16" r="11"/><path class="icon-cut" d="M7.2 13.2c3.2-.2 5.2.6 6.2 2.4.8 1.4.2 2.6-.3 3.8-.6 1.4-.4 2.7.9 4M17.5 5.4c-.4 2.4.5 4 2.7 4.8 2.2.8 3.4 2.3 3.5 4.4.1 1.5 1 2.4 2.5 2.7M16.5 11.3c1.1 1.1 1.2 2.1.3 3-.9.9-2 1-3.2.2"/></svg>`,achievements:`<svg viewBox="0 0 32 32" aria-hidden="true"><path class="icon-fill" d="M10 6h12v7c0 4-2.4 6.5-6 6.5S10 17 10 13z"/><path class="icon-fill" d="M10 9H5v2.5c0 4 2.4 6 6.3 6M22 9h5v2.5c0 4-2.4 6-6.3 6M14 19h4v5h4v3H10v-3h4z"/><circle class="icon-cut" cx="16" cy="12" r="2.2"/></svg>`,profile:`<svg viewBox="0 0 32 32" aria-hidden="true"><circle class="icon-fill" cx="16" cy="10" r="6"/><path class="icon-fill" d="M6 27c.6-6.2 3.9-9.3 10-9.3S25.4 20.8 26 27z"/></svg>`})[name];
-const defaultState={level:1,xp:0,maxXp:100,streak:0,coins:0,profileAvatar:1,tasks:[{title:"Verslag afmaken",meta:"Grote taak",xp:50,icon:"🧠"},{title:"Mail beantwoorden",meta:"Kleine taak",xp:10,icon:"✉️"},{title:"Was ophangen",meta:"",xp:10,icon:"🧹",done:true},{title:"20 min sporten",meta:"Normale taak",xp:25,icon:"🏋️"}]};
+const defaultState={level:1,xp:0,maxXp:100,streak:0,coins:0,profileAvatar:1,reminderEnabled:false,reminderTime:"17:00",reminderLastSent:null,tasks:[{title:"Verslag afmaken",meta:"Grote taak",xp:50,icon:"🧠"},{title:"Mail beantwoorden",meta:"Kleine taak",xp:10,icon:"✉️"},{title:"Was ophangen",meta:"",xp:10,icon:"🧹",done:true},{title:"20 min sporten",meta:"Normale taak",xp:25,icon:"🏋️"}]};
 const xpForLevel=level=>100+(Math.max(1,level)-1)*50;
 const savedState=(()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"null")}catch(e){return null}})();
 const state={...defaultState,...(savedState||{})};
@@ -35,6 +36,175 @@ const archiveOldCompletedTasks=()=>{
   state.tasks=keep;
 };
 const saveState=()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}};
+
+// ============================================================================
+// DAILY REMINDERS
+// Losse reminderlaag: permission, lokale planning en optionele push/backend-sync.
+// Deze code wijzigt geen layout en registreert zelf geen service worker.
+// ============================================================================
+let reminderTimer=null;
+let reminderBackendSyncTimer=null;
+
+const hasOpenTasksToday=()=>{
+  const today=localDateKey();
+  return state.tasks.some(t=>!t.done&&(!t.completedAt||localDateKey(t.completedAt)===today));
+};
+
+const getReminderClientId=()=>{
+  let id=localStorage.getItem(REMINDER_CLIENT_ID_KEY);
+  if(id)return id;
+  if(crypto.randomUUID)id=crypto.randomUUID();
+  else{
+    const bytes=new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    id=`done-${[...bytes].map(x=>x.toString(16).padStart(2,"0")).join("")}`;
+  }
+  localStorage.setItem(REMINDER_CLIENT_ID_KEY,id);
+  return id;
+};
+
+const getReminderBackendUrl=()=>String(window.DONE_CONFIG?.backendUrl||"").replace(/\/$/,"");
+
+const getActivePushSubscription=async()=>{
+  if(!("serviceWorker" in navigator)||!("PushManager" in window))return null;
+  const registration=await navigator.serviceWorker.getRegistration();
+  if(!registration)return null;
+  return registration.pushManager.getSubscription();
+};
+
+const syncReminderBackendState=async(force=false)=>{
+  const backendUrl=getReminderBackendUrl();
+  if(!backendUrl)return false;
+
+  try{
+    const clientId=getReminderClientId();
+
+    if(!state.reminderEnabled){
+      await fetch(`${backendUrl}/subscription?clientId=${encodeURIComponent(clientId)}`,{method:"DELETE"});
+      return true;
+    }
+
+    if(!("Notification" in window)||Notification.permission!=="granted")return false;
+
+    const subscription=await getActivePushSubscription();
+    if(!subscription)return false;
+
+    const response=await fetch(`${backendUrl}/subscription`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        clientId,
+        subscription:subscription.toJSON(),
+        timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||"Europe/Amsterdam",
+        reminderTime:state.reminderTime||"17:00",
+        hasOpenTasks:hasOpenTasksToday(),
+        enabled:true
+      })
+    });
+
+    if(!response.ok)throw new Error("Reminder backend synchronisatie mislukt");
+    return true;
+  }catch(error){
+    if(force)console.warn("Reminder sync mislukt",error);
+    return false;
+  }
+};
+
+const queueReminderBackendSync=()=>{
+  if(!getReminderBackendUrl())return;
+  clearTimeout(reminderBackendSyncTimer);
+  reminderBackendSyncTimer=setTimeout(()=>syncReminderBackendState(),350);
+};
+
+const showTaskReminder=async()=>{
+  if(!state.reminderEnabled||!("Notification" in window)||Notification.permission!=="granted")return false;
+
+  const today=localDateKey();
+  if(state.reminderLastSent===today||!hasOpenTasksToday())return false;
+
+  const openCount=state.tasks.filter(t=>!t.done&&(!t.completedAt||localDateKey(t.completedAt)===today)).length;
+  const body=openCount===1
+    ?"Je hebt nog 1 open taak voor vandaag."
+    :`Je hebt nog ${openCount} open taken voor vandaag.`;
+
+  try{
+    const registration=("serviceWorker" in navigator)?await navigator.serviceWorker.getRegistration():null;
+    if(registration){
+      await registration.showNotification("DONE.",{
+        body,
+        tag:"done-open-tasks-reminder",
+        data:{url:"./"}
+      });
+    }else{
+      new Notification("DONE.",{body,tag:"done-open-tasks-reminder"});
+    }
+
+    state.reminderLastSent=today;
+    saveState();
+    return true;
+  }catch(error){
+    console.warn("Dagelijkse herinnering kon niet worden getoond",error);
+    return false;
+  }
+};
+
+const scheduleTaskReminder=()=>{
+  if(reminderTimer){
+    clearTimeout(reminderTimer);
+    reminderTimer=null;
+  }
+
+  if(!state.reminderEnabled||!("Notification" in window)||Notification.permission!=="granted")return;
+
+  const [rawHour,rawMinute]=String(state.reminderTime||"17:00").split(":").map(Number);
+  const hour=Number.isFinite(rawHour)?rawHour:17;
+  const minute=Number.isFinite(rawMinute)?rawMinute:0;
+  const now=new Date();
+  const next=new Date(now);
+  next.setHours(hour,minute,0,0);
+
+  if(next<=now)next.setDate(next.getDate()+1);
+
+  reminderTimer=setTimeout(async()=>{
+    await showTaskReminder();
+    scheduleTaskReminder();
+  },Math.min(next-now,2147483647));
+};
+
+window.toggleDailyReminder=async el=>{
+  if(!el.checked){
+    state.reminderEnabled=false;
+    saveState();
+    scheduleTaskReminder();
+    await syncReminderBackendState(true);
+    return;
+  }
+
+  if(!("Notification" in window)){
+    el.checked=false;
+    state.reminderEnabled=false;
+    saveState();
+    alert("Notificaties worden op dit apparaat niet ondersteund.");
+    return;
+  }
+
+  let permission=Notification.permission;
+  if(permission!=="granted")permission=await Notification.requestPermission();
+
+  if(permission!=="granted"){
+    el.checked=false;
+    state.reminderEnabled=false;
+    saveState();
+    alert(`Sta notificaties toe om de dagelijkse herinnering om ${state.reminderTime||"17:00"} te gebruiken.`);
+    return;
+  }
+
+  state.reminderEnabled=true;
+  if(!state.reminderTime)state.reminderTime="17:00";
+  saveState();
+  scheduleTaskReminder();
+  await syncReminderBackendState(true);
+};
 archiveOldCompletedTasks();
 saveState();
 // ============================================================================
@@ -152,9 +322,9 @@ window.toggleTask=i=>{
         };
       }
     }
-    saveState();openTaskCompleted(t,{coins,levelsGained});return;
+    saveState();queueReminderBackendSync();openTaskCompleted(t,{coins,levelsGained});return;
   }
-  t.done=false;t.completedAt=null;saveState();render();
+  t.done=false;t.completedAt=null;saveState();queueReminderBackendSync();render();
 };
 
 // ============================================================================
@@ -169,7 +339,7 @@ window.spinCoin=el=>{if(el.dataset.spinning==="1")return;el.dataset.spinning="1"
 // ============================================================================
 window.openNewTask=()=>{document.querySelector("#app").innerHTML=`<div class="phone new-task-screen"><header class="new-task-header"><button class="back-btn" onclick="render()" aria-label="Terug">←</button><h1>Nieuwe taak</h1></header><section class="new-task-hero"><div class="quote-bubble">Elke grote reis<br>begint met een kleine stap.</div></section><main class="new-task-form"><label for="taskName">Wat wil je doen?</label><input id="taskName" class="task-input" placeholder="Bijv. Verslag afmaken..." maxlength="80"><fieldset><legend>Hoe groot is deze taak?</legend><div class="size-grid"><button class="size-card" data-size="small" onclick="selectTaskSize(this)"><span class="size-icon">🌱</span><strong>Klein</strong><b>+10 XP</b></button><button class="size-card selected" data-size="normal" onclick="selectTaskSize(this)"><span class="size-icon">🔥</span><strong>Normaal</strong><b>+25 XP</b></button><button class="size-card" data-size="large" onclick="selectTaskSize(this)"><span class="size-icon">⛰️</span><strong>Groot</strong><b>+50 XP</b></button></div></fieldset><button class="submit-task" onclick="saveNewTask()">Taak toevoegen</button></main></div>`};
 window.selectTaskSize=el=>{document.querySelectorAll(".size-card").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")};
-window.saveNewTask=()=>{const input=document.querySelector("#taskName"),size=document.querySelector(".size-card.selected")?.dataset.size||"normal";if(!input.value.trim()){input.focus();return}const values={small:["Kleine taak",10,"🌱"],normal:["Normale taak",25,"🔥"],large:["Grote taak",50,"⛰️"]}[size];state.tasks.unshift({id:`task-${Date.now()}`,title:input.value.trim(),meta:values[0],xp:values[1],icon:values[2],done:false,rewardClaimed:false,createdAt:new Date().toISOString()});saveState();render()};
+window.saveNewTask=()=>{const input=document.querySelector("#taskName"),size=document.querySelector(".size-card.selected")?.dataset.size||"normal";if(!input.value.trim()){input.focus();return}const values={small:["Kleine taak",10,"🌱"],normal:["Normale taak",25,"🔥"],large:["Grote taak",50,"⛰️"]}[size];state.tasks.unshift({id:`task-${Date.now()}`,title:input.value.trim(),meta:values[0],xp:values[1],icon:values[2],done:false,rewardClaimed:false,createdAt:new Date().toISOString()});saveState();queueReminderBackendSync();render()};
 
 // ============================================================================
 // TASK COMPLETED SCREEN
@@ -246,6 +416,7 @@ window.openProfile=()=>{
         <label><span>🔊 <b>Geluid</b></span><input type="checkbox" data-setting="sound" onchange="saveProfileSetting(this)" ${state.sound!==false?"checked":""}><i></i></label>
         <label><span>⚙️ <b>Haptische feedback</b></span><input type="checkbox" data-setting="haptics" onchange="saveProfileSetting(this)" ${state.haptics!==false?"checked":""}><i></i></label>
         <label><span>🌙 <b>Donkere modus</b></span><input type="checkbox" data-setting="darkMode" onchange="saveProfileSetting(this)" ${state.darkMode!==false?"checked":""}><i></i></label>
+        <label class="profile-reminder-setting"><span>🔔 <b>Dagelijkse herinnering</b><small>${state.reminderTime||"17:00"} · alleen bij open taken</small></span><input type="checkbox" onchange="toggleDailyReminder(this)" ${state.reminderEnabled?"checked":""}><i></i></label>
       </section>
       <button class="profile-reset-progress" type="button" onclick="resetProgress()" aria-label="Reset level en XP">
         <span class="profile-reset-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8V4m0 0h4M4 4l3.1 3.1A7 7 0 1 1 5 13"/></svg></span>
@@ -375,5 +546,13 @@ window.openAchievements=()=>{
   </div>`;
   requestAnimationFrame(()=>{window.scrollTo(0,0);const c=document.querySelector(".achievements-content");if(c)c.scrollTop=0});
 };
+
+scheduleTaskReminder();
+queueReminderBackendSync();
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState!=="visible")return;
+  scheduleTaskReminder();
+  queueReminderBackendSync();
+});
 
 state.pendingLevelUp?openLevelUp():render();
