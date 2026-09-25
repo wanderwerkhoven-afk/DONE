@@ -154,18 +154,6 @@ body{overflow-x:hidden;-webkit-overflow-scrolling:touch}
  .coin-sprite:active{transform:scale(.62)}
 }
 
-/* Reward interaction: one hop while the coin completes its 5-spin ease cycle */
-@keyframes coin-hop{
-  0%{translate:0 0;scale:1}
-  12%{translate:0 -12px;scale:1.05}
-  27%{translate:0 -16px;scale:1.08}
-  48%{translate:0 -9px;scale:1.04}
-  72%{translate:0 -4px;scale:1.02}
-  88%{translate:0 2px;scale:.98}
-  100%{translate:0 0;scale:1}
-}
-.coin-sprite.coin-hop{animation:coin-hop 1.5s cubic-bezier(.22,.7,.2,1) both}
-
 /* Coin landing: fast return, then two diminishing bounces */
 @keyframes coin-hop-refined{
   0%{translate:0 0;scale:1}
@@ -206,79 +194,94 @@ body{overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .size-card.selected{border-color:#d58aff;background:linear-gradient(160deg,#173b6c,#132d63);box-shadow:0 0 0 2px #7658ff,0 0 19px #a35dffb8,inset 0 1px rgba(255,255,255,.12)}
 .submit-task{width:100%;height:63px;border-radius:32px;border:2px solid #d9c3ff;background:linear-gradient(180deg,#a46cff,#6548f5);box-shadow:inset 0 2px 4px #fff6,0 0 18px #7658ff99,0 7px 18px #0019;color:#fff;font-size:18px;font-weight:900;text-shadow:0 2px 3px #3920a0;cursor:pointer}
 .submit-task:active{transform:translateY(1px)}
-@media(max-width:499px){.new-task-screen{height:auto;overflow:hidden}.new-task-hero{height:445px}.new-task-form{padding-left:30px;padding-right:30px}.new-task-header{position:absolute}.size-card{height:134px}}
-@media(max-height:780px) and (max-width:499px){.new-task-hero{height:390px}.quote-bubble{top:132px}.new-task-form{padding-top:20px}.new-task-form fieldset{margin:20px 0}.size-card{height:116px}.submit-task{height:58px}}
+/* Canonical New Task mobile layout — final effective values */
+.new-task-header h1{
+  font-family:Inter,ui-rounded,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:1000;
+  letter-spacing:-1.4px;
+}
+html,body,#app,.phone{touch-action:pan-x pan-y}
+button,.task-input,input,textarea,select{touch-action:manipulation}
 
-
-/* New-task mobile fidelity pass */
 @media(max-width:499px){
-  .new-task-screen{min-height:100dvh;background:#020d20}
+  .new-task-screen{
+    height:100dvh;
+    min-height:100dvh;
+    overflow-y:auto;
+    padding-bottom:0;
+    background:linear-gradient(180deg,#062456 0,#03182f 48%,#020d20 100%);
+  }
   .new-task-header{
-    height:104px;
-    align-items:center;
-    padding:18px 20px 0;
-    background:linear-gradient(180deg,rgba(2,14,36,.78),rgba(2,18,44,.18),transparent);
+    position:absolute;
+    top:0;
+    height:64px;
+    padding:0 18px 10px;
+    align-items:flex-end;
+    background:linear-gradient(180deg,
+      rgba(2,14,36,.52) 0%,
+      rgba(2,16,40,.30) 42%,
+      rgba(2,18,44,.10) 76%,
+      transparent 100%);
   }
-  .new-task-header h1{font-size:22px;letter-spacing:-.3px}
-  .back-btn{left:22px;bottom:auto;top:46px;width:34px;height:34px;font-size:32px}
+  .new-task-header h1{font-size:22px;line-height:1}
+  .new-task-header .back-btn{
+    left:18px;
+    top:auto;
+    bottom:3px;
+    width:38px;
+    height:38px;
+    font-size:31px;
+  }
   .new-task-hero{
-    height:390px;
-    background-size:cover;
-    background-position:center 58%;
+    height:365px;
+    background-size:112% auto;
+    background-position:20% 60%;
+    background-repeat:no-repeat;
   }
-  .new-task-hero:after{height:48px;background:linear-gradient(180deg,transparent,#031a37)}
-  .quote-bubble{
-    top:122px;
-    width:262px;
-    padding:15px 18px 16px;
-    border-radius:17px;
-    font-size:15px;
-    line-height:1.45;
+  .new-task-hero:after{
+    height:92px;
+    background:linear-gradient(180deg,
+      rgba(3,24,47,0) 0%,
+      rgba(3,24,47,.08) 22%,
+      rgba(3,24,47,.28) 48%,
+      rgba(3,24,47,.62) 74%,
+      #03182f 100%);
+  }
+  .new-task-screen .quote-bubble{
+    display:block;
+    top:76px;
+    width:238px;
+    padding:10px 15px 11px;
+    border-radius:15px;
+    background:linear-gradient(145deg,rgba(72,132,224,.78),rgba(55,103,190,.72));
+    border:1px solid rgba(181,214,255,.22);
+    backdrop-filter:blur(2px);
+    -webkit-backdrop-filter:blur(2px);
+    box-shadow:inset 0 1px rgba(255,255,255,.13),0 8px 22px rgba(0,17,55,.18);
+    font-size:13px;
+    line-height:1.38;
+    font-weight:700;
+  }
+  .new-task-screen .quote-bubble:after{
+    right:34px;
+    bottom:-10px;
+    border-width:10px 3px 0 14px;
   }
   .new-task-form{
     min-height:0;
-    margin-top:-1px;
-    padding:20px 24px 26px;
+    margin-top:0;
+    padding:17px 24px 26px;
+    background:linear-gradient(180deg,#03182f,#020d20);
   }
-  .new-task-form label,.new-task-form legend{font-size:15px;margin-bottom:9px}
-  .task-input{
-    height:60px;
-    border-radius:18px;
-    padding:0 17px;
-    font-size:15px;
-  }
-  .new-task-form fieldset{margin:22px 0 24px}
-  .size-grid{gap:9px}
-  .size-card{
-    height:126px;
-    border-radius:17px;
-    gap:5px;
-  }
-  .size-card .size-icon{font-size:31px}
-  .size-card strong{font-size:15px}
-  .size-card b{font-size:13px}
-  .submit-task{height:60px;font-size:17px}
-}
-@media(max-width:380px){
- .new-task-form{padding-left:20px;padding-right:20px}
- .new-task-hero{height:372px}
- .quote-bubble{width:250px}
- .size-card{height:120px}
-}
-
-
-/* New task: reference-proportion override */
-@media(max-width:499px){
-  .new-task-screen{height:100dvh;min-height:100dvh;overflow-y:auto;background:linear-gradient(180deg,#062456 0,#03182f 48%,#020d20 100%)}
-  .new-task-header{height:78px;top:0;align-items:flex-end;padding:0 18px 14px;background:rgba(2,19,48,.42)}
-  .new-task-header h1{font-size:22px;line-height:1}
-  .back-btn{top:auto;bottom:7px;left:18px;width:38px;height:38px;font-size:31px}
-  .new-task-hero{height:365px;background-size:cover;background-position:center 57%}
-  .new-task-hero:after{height:30px;background:linear-gradient(180deg,transparent,#03182f)}
-  .quote-bubble{top:116px;width:260px;padding:14px 17px 15px;border-radius:16px;font-size:14px;line-height:1.42}
-  .new-task-form{margin-top:0;padding:17px 24px 26px;background:linear-gradient(180deg,#03182f,#020d20)}
   .new-task-form label,.new-task-form legend{font-size:14px;margin-bottom:9px}
-  .task-input{height:57px;border-radius:17px;border-width:2px;font-size:14px;padding:0 16px}
+  .task-input{
+    height:57px;
+    border-radius:17px;
+    border-width:2px;
+    padding:0 16px;
+    font-size:16px;
+  }
+  input,textarea,select{font-size:16px}
   .new-task-form fieldset{margin:20px 0 22px}
   .size-grid{gap:8px}
   .size-card{height:122px;border-radius:16px;gap:4px}
@@ -288,98 +291,9 @@ body{overflow-x:hidden;-webkit-overflow-scrolling:touch}
   .submit-task{height:58px;border-radius:30px;font-size:17px}
 }
 @media(max-width:380px){
-  .new-task-hero{height:345px}
-  .quote-bubble{top:108px;width:238px}
   .new-task-form{padding-left:20px;padding-right:20px}
   .size-card{height:116px}
 }
-
-
-/* New task header position + quote removal */
-.new-task-screen .quote-bubble{display:none!important}
-@media(max-width:499px){
- .new-task-header{
-   height:64px;
-   padding:0 18px 10px;
-   align-items:flex-end;
- }
- .new-task-header h1{
-   font-size:22px;
-   line-height:1;
- }
- .new-task-header .back-btn{
-   left:18px;
-   top:auto;
-   bottom:3px;
-   width:38px;
-   height:38px;
- }
-}
-
-
-/* Softer, longer hero fades */
-@media(max-width:499px){
- .new-task-header{
-   background:linear-gradient(180deg,
-     rgba(2,14,36,.52) 0%,
-     rgba(2,16,40,.30) 42%,
-     rgba(2,18,44,.10) 76%,
-     transparent 100%);
- }
- .new-task-hero:after{
-   height:92px;
-   background:linear-gradient(180deg,
-     rgba(3,24,47,0) 0%,
-     rgba(3,24,47,.08) 22%,
-     rgba(3,24,47,.28) 48%,
-     rgba(3,24,47,.62) 74%,
-     #03182f 100%);
- }
-}
-
-
-
-
-/* New-task final overrides */
-.new-task-header h1{
-  font-family:Inter,ui-rounded,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  font-weight:1000;
-  letter-spacing:-1.4px;
-}
-html,body,#app,.phone{touch-action:pan-x pan-y}
-button,.task-input,input,textarea,select{touch-action:manipulation}
-
-.new-task-screen .quote-bubble{
-  display:block!important;
-  top:76px;
-  width:238px;
-  padding:10px 15px 11px;
-  border-radius:15px;
-  background:linear-gradient(145deg,rgba(72,132,224,.78),rgba(55,103,190,.72));
-  border:1px solid rgba(181,214,255,.22);
-  backdrop-filter:blur(2px);
-  -webkit-backdrop-filter:blur(2px);
-  box-shadow:inset 0 1px rgba(255,255,255,.13),0 8px 22px rgba(0,17,55,.18);
-  font-size:13px;
-  line-height:1.38;
-  font-weight:700;
-}
-.new-task-screen .quote-bubble:after{
-  right:34px;
-  bottom:-10px;
-  border-width:10px 3px 0 14px;
-}
-@media(max-width:499px){
-  .new-task-hero{
-    background-size:112% auto;
-    background-position:20% 60%;
-    background-repeat:no-repeat;
-  }
-  .task-input,input,textarea,select{font-size:16px!important}
-}
-
-
-
 
 /* iOS fullscreen hero: artwork continues behind the status bar, with a contrast fade */
 @media(max-width:499px){
@@ -1037,15 +951,9 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .task-log-check{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:#65e5a4;color:#124b37;font-weight:1000}.task-log-item strong,.task-log-item small{display:block}.task-log-item strong{font-size:14px}.task-log-item small{margin-top:4px;color:#9eb2c8;font-size:10px}
 .task-log-empty{text-align:center;padding:80px 24px;color:#b7c8dc}.task-log-empty>span{width:62px;height:62px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:#164367;color:#65e5a4;font-size:30px}.task-log-empty h2{margin:0 0 7px;color:#fff;font-size:19px}.task-log-empty p{margin:0;font-size:12px;line-height:1.5}
 
-/* Bottom nav vector icons */
-.nav .ni{width:27px;height:27px;display:grid;place-items:center}
-.nav .ni svg{width:25px;height:25px;display:block;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.nav button.active .ni svg{stroke-width:2.2;filter:drop-shadow(0 0 5px rgba(255,195,78,.55))}
-@media(max-width:499px){.nav .ni{width:30px;height:30px}.nav .ni svg{width:28px;height:28px}}
-
-/* Game-style nav icons — closer to reference */
-.nav .ni{width:31px;height:31px}
-.nav .ni svg{width:30px;height:30px;overflow:visible;fill:none;stroke:none;filter:drop-shadow(0 2px 1px rgba(0,0,0,.32))}
+/* Bottom navigation icons — canonical game-style version */
+.nav .ni{width:31px;height:31px;display:grid;place-items:center}
+.nav .ni svg{width:30px;height:30px;display:block;overflow:visible;fill:none;stroke:none;filter:drop-shadow(0 2px 1px rgba(0,0,0,.32))}
 .nav .ni .icon-fill{fill:#8ea8d0;stroke:#b8cae8;stroke-width:1}
 .nav .ni .icon-cut{fill:none;stroke:#08223d;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
 .nav .ni .icon-detail{fill:none;stroke:#183957;stroke-width:1.7;stroke-linecap:round}
