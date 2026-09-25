@@ -21,3 +21,21 @@ ON push_subscriptions(enabled, has_open_tasks, reminder_time);
 
 CREATE INDEX IF NOT EXISTS idx_push_updated
 ON push_subscriptions(updated_at);
+
+
+-- ============================================================================
+-- TEMPORARY STATE TRANSFERS
+-- Short-lived handoff used when reinstalling the PWA with another app icon.
+-- Payloads expire automatically after 15 minutes and are deleted after a
+-- successful restore acknowledgement.
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS state_transfers (
+  token TEXT PRIMARY KEY,
+  icon_id TEXT NOT NULL,
+  payload_json TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_state_transfers_expires
+ON state_transfers(expires_at);
