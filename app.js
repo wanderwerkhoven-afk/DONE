@@ -891,8 +891,6 @@ const achievementIcon=(type,locked=false,badgeKey="star")=>{
   </span>`;
 };
 
-const achievementStatusLabel=a=>a.unlocked?"Ontgrendeld":a.locked?"Vergrendeld":"Bezig";
-
 const achievementStatusLabel=a=>a.unlocked?"Ontgrendeld":a.locked?"Niet gevonden":"In progress";
 const achievementRarityLabel=rarity=>({common:"Common",rare:"Rare",epic:"Epic",legendary:"Legendary"})[rarity]||"Common";
 
