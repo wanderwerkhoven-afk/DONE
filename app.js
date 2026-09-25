@@ -1017,9 +1017,9 @@ window.openAchievementDetail=id=>{
                   ?"Nog 1 actie nodig"
                   :`Nog ${remaining} acties nodig`}</p>
           </div>
-          <div class="achievement-detail-tier-preview">
-            <span class="achievement-detail-panel-label">Tier-ready</span>
-            <p><strong>${achievementMaterialLabel(achievement.rarity)}</strong><span>Volgende tier later</span></p>
+          <div class="achievement-detail-tier-preview" data-tier-ready="true">
+            <span class="achievement-detail-panel-label">Badgeklasse</span>
+            <p><strong>${achievementMaterialLabel(achievement.rarity)}</strong><span>Huidige materiaalrang</span></p>
           </div>
         </section>
       </div>
