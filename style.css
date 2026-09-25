@@ -2816,3 +2816,229 @@ input,textarea,[contenteditable="true"]{
 @media(prefers-reduced-motion:reduce){
   .app-icon-install,.app-icon-install-modal,.app-icon-install-step{transition:none}
 }
+
+
+/* ============================================================================
+   THEME SYSTEM — LIGHT / DARK
+   Light mode changes the interface skin only. Cinematic reward and
+   achievement screens intentionally keep their own game-world palette.
+   ========================================================================== */
+:root{
+  --ui-bg:#020b1d;
+  --ui-phone-top:#05245b;
+  --ui-phone-mid:#031934;
+  --ui-phone-bottom:#021226;
+  --ui-surface:#0d2b47;
+  --ui-surface-2:#123452;
+  --ui-surface-3:#173856;
+  --ui-text:#f7fbff;
+  --ui-muted:#9fb4c9;
+  --ui-border:rgba(255,255,255,.08);
+  --ui-nav:#061d35;
+  --ui-accent:#ffd36a;
+  --ui-mint:#45d6cf;
+}
+
+[data-theme="light"]{
+  --ui-bg:#edf1ec;
+  --ui-phone-top:#f7f4e9;
+  --ui-phone-mid:#eef3ef;
+  --ui-phone-bottom:#e8efed;
+  --ui-surface:#ffffff;
+  --ui-surface-2:#f2f6f3;
+  --ui-surface-3:#e6eff0;
+  --ui-text:#17354a;
+  --ui-muted:#6f8291;
+  --ui-border:rgba(38,72,94,.12);
+  --ui-nav:#f8faf7;
+  --ui-accent:#d9a12e;
+  --ui-mint:#36a997;
+}
+
+[data-theme="light"] html,
+[data-theme="light"] body,
+[data-theme="light"] #app{
+  background:var(--ui-bg);
+  color:var(--ui-text);
+}
+
+[data-theme="light"] .phone:not(.completed-screen):not(.level-up-screen):not(.achievements-screen){
+  color:var(--ui-text);
+  background:linear-gradient(180deg,var(--ui-phone-top) 0%,var(--ui-phone-mid) 52%,var(--ui-phone-bottom) 100%);
+}
+
+/* Home keeps the illustrated hero; only the interface below it becomes daylight. */
+[data-theme="light"] .phone:not(.new-task-screen):not(.profile-screen):not(.task-log-screen):not(.completed-screen):not(.level-up-screen):not(.achievements-screen) .content,
+[data-theme="light"] .tasks{
+  color:var(--ui-text);
+}
+[data-theme="light"] .task,
+[data-theme="light"] .tasks-empty-state{
+  color:var(--ui-text);
+  background:linear-gradient(180deg,#ffffff,#f4f7f3);
+  border-color:rgba(47,80,98,.12);
+  box-shadow:0 7px 18px rgba(57,79,88,.08),inset 0 1px rgba(255,255,255,.85);
+}
+[data-theme="light"] .taskmeta,
+[data-theme="light"] .tasks-empty-state p{
+  color:var(--ui-muted);
+}
+
+/* Profile daylight skin */
+[data-theme="light"] .profile-screen{
+  background:linear-gradient(180deg,#f7f4e9 0%,#eef3ef 48%,#e8efed 100%)!important;
+}
+[data-theme="light"] .profile-heading h1,
+[data-theme="light"] .profile-level-info h2,
+[data-theme="light"] .profile-level-info strong,
+[data-theme="light"] .profile-stat b,
+[data-theme="light"] .profile-mini-stats b,
+[data-theme="light"] .profile-quote p{
+  color:#17354a;
+}
+[data-theme="light"] .profile-heading p,
+[data-theme="light"] .profile-stat small,
+[data-theme="light"] .profile-mini-stats small{
+  color:#738695;
+}
+[data-theme="light"] .profile-stat,
+[data-theme="light"] .profile-mini-stats div,
+[data-theme="light"] .profile-quote,
+[data-theme="light"] .profile-settings,
+[data-theme="light"] .profile-app-icon-tile,
+[data-theme="light"] .profile-test-notification,
+[data-theme="light"] .profile-data-tile,
+[data-theme="light"] .profile-reset-progress{
+  color:#17354a;
+  background:linear-gradient(180deg,#ffffff,#f5f8f4);
+  border-color:rgba(47,80,98,.12);
+  box-shadow:0 6px 16px rgba(56,78,87,.07),inset 0 1px rgba(255,255,255,.9);
+}
+[data-theme="light"] .profile-settings label,
+[data-theme="light"] .profile-theme-setting{
+  border-bottom-color:rgba(36,70,92,.09);
+}
+[data-theme="light"] .profile-settings label>span,
+[data-theme="light"] .profile-settings b,
+[data-theme="light"] .profile-app-icon-tile b,
+[data-theme="light"] .profile-test-copy b,
+[data-theme="light"] .profile-data-copy b,
+[data-theme="light"] .profile-reset-progress b{
+  color:#17354a;
+}
+[data-theme="light"] .profile-reward-setting>span small,
+[data-theme="light"] .profile-reminder-setting>span small,
+[data-theme="light"] .profile-app-icon-tile small,
+[data-theme="light"] .profile-test-copy small,
+[data-theme="light"] .profile-data-copy small,
+[data-theme="light"] .profile-reset-progress small{
+  color:#748897;
+}
+[data-theme="light"] .profile-time-input{
+  color:#17354a;
+  background:#eef4f2;
+  border-color:rgba(47,80,98,.14);
+}
+[data-theme="light"] .profile-nav{
+  background:rgba(249,251,248,.96)!important;
+  border-top-color:rgba(39,72,94,.10)!important;
+  box-shadow:0 -8px 24px rgba(48,73,82,.08);
+}
+[data-theme="light"] .profile-nav button{color:#7c8f9d!important}
+[data-theme="light"] .profile-nav button.active{color:#c38b20!important;text-shadow:none}
+
+/* Theme selector */
+.profile-theme-setting{
+  min-height:68px;padding:9px 11px 9px 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.profile-theme-copy{
+  min-width:0;display:flex;align-items:center;gap:9px;
+}
+.profile-theme-copy>span:last-child{display:flex;flex-direction:column;gap:2px}
+.profile-theme-copy b{font-size:14px}
+.profile-theme-copy small{color:#8fa7c1;font-size:9px;line-height:1.2;font-weight:650}
+.profile-theme-symbol{font-size:17px}
+.theme-segment{
+  flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3px;
+  padding:3px;border-radius:12px;
+  background:rgba(3,20,36,.38);border:1px solid rgba(255,255,255,.07);
+}
+.theme-segment button{
+  min-width:67px;height:30px;padding:0 8px;border:0;border-radius:9px;
+  color:#8da5bc;background:transparent;font-size:9px;font-weight:900;cursor:pointer;
+}
+.theme-segment button.active{
+  color:#15344f;background:#ffd36a;
+  box-shadow:0 2px 7px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.5);
+}
+[data-theme="light"] .profile-theme-copy b{color:#17354a}
+[data-theme="light"] .profile-theme-copy small{color:#748897}
+[data-theme="light"] .theme-segment{
+  background:#e8eeeb;border-color:rgba(47,80,98,.10);
+}
+[data-theme="light"] .theme-segment button{color:#708492}
+[data-theme="light"] .theme-segment button.active{
+  color:#fff;background:#d5a13b;
+  box-shadow:0 2px 7px rgba(94,72,29,.14);
+}
+
+/* New-task daylight shell; artwork remains untouched. */
+[data-theme="light"] .new-task-screen{
+  background:linear-gradient(180deg,#f7f4e9,#edf3ef)!important;
+}
+[data-theme="light"] .new-task-header,
+[data-theme="light"] .new-task-screen main,
+[data-theme="light"] .new-task-screen .new-task-content{
+  color:#17354a;
+}
+[data-theme="light"] .new-task-screen input,
+[data-theme="light"] .new-task-screen textarea,
+[data-theme="light"] .new-task-screen select{
+  color:#17354a;
+  background:#fff;
+  border-color:rgba(47,80,98,.15);
+}
+
+/* Task log daylight shell */
+[data-theme="light"] .task-log-screen{
+  background:linear-gradient(180deg,#f7f4e9,#edf3ef)!important;
+}
+[data-theme="light"] .task-log-header h1,
+[data-theme="light"] .task-log-day h2,
+[data-theme="light"] .task-log-item strong{color:#17354a}
+[data-theme="light"] .task-log-header p,
+[data-theme="light"] .task-log-item small{color:#738695}
+[data-theme="light"] .task-log-item{
+  background:#fff;
+  border-color:rgba(47,80,98,.11);
+  box-shadow:0 5px 13px rgba(57,79,88,.06);
+}
+
+/* Modal surfaces follow the selected interface theme. */
+[data-theme="light"] .avatar-picker-sheet,
+[data-theme="light"] .app-icon-picker-sheet,
+[data-theme="light"] .data-popup-modal{
+  color:#17354a;
+  background:linear-gradient(180deg,#fbfcf8,#eef4f1);
+  border-color:rgba(47,80,98,.12);
+}
+[data-theme="light"] .avatar-picker-head p,
+[data-theme="light"] .app-icon-picker-head p,
+[data-theme="light"] .app-icon-picker-note,
+[data-theme="light"] .data-popup-head p{
+  color:#748897;
+}
+[data-theme="light"] .avatar-picker-head>button,
+[data-theme="light"] .app-icon-picker-head>button,
+[data-theme="light"] .data-popup-close{
+  color:#17354a;background:#e5eeec;
+}
+
+/* Keep cinematic/game reward areas dark even when the interface is light. */
+[data-theme="light"] .completed-screen,
+[data-theme="light"] .level-up-screen,
+[data-theme="light"] .achievements-screen{
+  color:#fff;
+}
