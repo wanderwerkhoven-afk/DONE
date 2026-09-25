@@ -250,8 +250,14 @@ body{overflow-x:hidden;-webkit-overflow-scrolling:touch}
   font-weight:1000;
   letter-spacing:-1.4px;
 }
-html,body,#app,.phone{touch-action:pan-x pan-y}
-button,.task-input,input,textarea,select{touch-action:manipulation}
+html,body,#app,.phone{
+  touch-action:pan-x pan-y;
+  -ms-touch-action:pan-x pan-y;
+}
+button,a,label,.task,input,textarea,select{
+  touch-action:manipulation;
+  -ms-touch-action:manipulation;
+}
 
 @media(max-width:499px){
   .new-task-screen{
@@ -915,7 +921,7 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 }
 .profile-reminder-time>span{display:flex;align-items:center;gap:9px}
 .profile-time-input{
-  width:92px;
+  width:104px;
   height:34px;
   padding:0 8px;
   border:1px solid rgba(255,255,255,.14);
@@ -3041,4 +3047,36 @@ input,textarea,[contenteditable="true"]{
 [data-theme="light"] .level-up-screen,
 [data-theme="light"] .achievements-screen{
   color:#fff;
+}
+
+
+/* ============================================================================
+   IOS FOCUS ZOOM GUARD
+   iOS Safari zooms focused form controls below 16px. Keep all editable
+   controls at 16px minimum on mobile so focus never changes page scale.
+   ========================================================================== */
+@media(max-width:499px){
+  input,
+  textarea,
+  select,
+  .task-input,
+  .profile-time-input{
+    font-size:16px!important;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus{
+    font-size:16px!important;
+  }
+}
+
+/* Prevent accidental gesture/double-tap zoom throughout the app shell. */
+html,
+body,
+#app,
+.phone{
+  overscroll-behavior-x:none;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
 }
