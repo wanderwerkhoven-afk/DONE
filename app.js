@@ -171,6 +171,11 @@ const base64UrlToUint8Array=value=>{
   const raw=atob(base64);
   return Uint8Array.from([...raw].map(ch=>ch.charCodeAt(0)));
 };
+const equalBytes=(a,b)=>{
+  const left=a instanceof Uint8Array?a:new Uint8Array(a||[]);
+  const right=b instanceof Uint8Array?b:new Uint8Array(b||[]);
+  return left.length===right.length&&left.every((value,index)=>value===right[index]);
+};
 
 const getOrCreatePushSubscription=async()=>{
   if(!("serviceWorker" in navigator)||!("PushManager" in window))return null;
@@ -182,23 +187,36 @@ const getOrCreatePushSubscription=async()=>{
 
   await navigator.serviceWorker.ready;
 
-  const existing=await registration.pushManager.getSubscription();
-  if(existing)return existing;
-
   const backendUrl=getReminderBackendUrl();
   if(!backendUrl)throw new Error("De push-backend is nog niet gekoppeld.");
 
   const response=await fetch(`${backendUrl}/vapid-public-key`,{
-    headers:{Accept:"application/json"}
+    headers:{Accept:"application/json"},
+    cache:"no-store"
   });
   if(!response.ok)throw new Error("Publieke VAPID-key ophalen mislukt.");
 
   const payload=await response.json();
   if(!payload?.publicKey)throw new Error("Publieke VAPID-key ontbreekt.");
 
+  const applicationServerKey=base64UrlToUint8Array(payload.publicKey);
+  let subscription=await registration.pushManager.getSubscription();
+
+  // Push subscriptions are cryptographically bound to the VAPID public key
+  // used at subscribe time. Recreate stale subscriptions automatically.
+  if(subscription){
+    const currentKey=subscription.options?.applicationServerKey;
+    if(!currentKey||!equalBytes(currentKey,applicationServerKey)){
+      await subscription.unsubscribe().catch(()=>false);
+      subscription=null;
+    }
+  }
+
+  if(subscription)return subscription;
+
   return registration.pushManager.subscribe({
     userVisibleOnly:true,
-    applicationServerKey:base64UrlToUint8Array(payload.publicKey)
+    applicationServerKey
   });
 };
 
@@ -440,7 +458,7 @@ window.testDoneNotification=async button=>{
     try{payload=await response.json()}catch(e){}
 
     if(!response.ok||payload.ok===false){
-      throw new Error(payload.error||"De backend kon de test-push niet versturen.");
+      throw new Error(payload.providerReason?`${payload.error||"Pushprovider weigerde de testmelding"} (${payload.providerReason})`:payload.error||"De backend kon de test-push niet versturen.");
     }
 
     setNotificationTestButtonState(button,"sent","Controleer je notificaties");
