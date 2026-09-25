@@ -2062,30 +2062,47 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 
 .achievement-detail-medal-stage{
   position:relative;
+  width:100%;
   min-height:118px;
-  display:grid;
-  place-items:center;
+  overflow:visible;
 }
 .achievement-detail-halo{
   position:absolute;
+  left:50%;
+  top:50%;
   width:126px;
   height:126px;
   border-radius:50%;
+  transform:translate(-50%,-50%);
   background:
     radial-gradient(circle,rgba(255,226,118,.22) 0 22%,rgba(255,198,52,.07) 43%,transparent 68%);
   box-shadow:0 0 24px rgba(255,204,72,.1);
 }
 .achievement-detail-medal{
-  position:relative;
+  position:absolute;
   z-index:1;
+  left:50%;
+  top:50%;
+  width:110px;
   height:110px;
   display:grid;
   place-items:center;
+  transform:translate(-50%,-50%);
 }
 .achievement-detail-medal .achievement-medal{
   width:110px;
   height:110px;
+  display:grid;
+  place-items:center;
+  margin:0;
   filter:drop-shadow(0 8px 9px rgba(0,0,0,.35));
+}
+.achievement-detail-medal .achievement-medal img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:contain;
+  object-position:center center;
 }
 .achievement-detail-modal.is-locked .achievement-detail-halo{
   background:radial-gradient(circle,rgba(124,153,179,.12),transparent 65%);
@@ -2290,7 +2307,7 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   .achievement-detail-modal{max-height:80vh}
   .achievement-detail-scroll{max-height:calc(80vh - 54px)}
   .achievement-detail-medal-stage{min-height:100px}
-  .achievement-detail-medal{height:94px}
+  .achievement-detail-medal{width:94px;height:94px}
   .achievement-detail-medal .achievement-medal{width:94px;height:94px}
   .achievement-detail-description,
   .achievement-detail-progress-hud,
