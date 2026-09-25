@@ -893,6 +893,7 @@ const achievementIcon=(type,locked=false,badgeKey="star")=>{
 
 const achievementStatusLabel=a=>a.unlocked?"Ontgrendeld":a.locked?"Niet gevonden":"In progress";
 const achievementRarityLabel=rarity=>({common:"Common",rare:"Rare",epic:"Epic",legendary:"Legendary"})[rarity]||"Common";
+const achievementMaterialLabel=rarity=>({common:"Bronze",rare:"Silver",epic:"Gold",legendary:"Holographic"})[rarity]||"Bronze";
 
 const achievementRow=(a,index=0)=>`<button class="achievement-card achievement-${a.status} rarity-${a.rarity||"common"} ${a.isNew?"achievement-new":""}" type="button" style="--achievement-delay:${Math.min(index,8)*45}ms;--achievement-progress:${a.unlocked?100:a.pct}%" data-achievement-id="${a.id}" data-category="${a.category}" onclick="openAchievementDetail('${a.id}')" aria-label="${a.title}, ${achievementStatusLabel(a)}">
   <span class="achievement-card-rarity">${achievementRarityLabel(a.rarity)}</span>
@@ -960,12 +961,12 @@ window.openAchievementDetail=id=>{
   const detail=document.createElement("div");
   detail.className="achievement-detail";
   detail.innerHTML=`<button class="achievement-detail-backdrop" type="button" onclick="closeAchievementDetail()" aria-label="Sluit achievementdetails"></button>
-    <section class="achievement-detail-modal rarity-${achievement.rarity||"common"} ${achievement.locked?"is-locked":achievement.unlocked?"is-unlocked":"is-progress"}" role="dialog" aria-modal="true" aria-labelledby="achievementDetailTitle">
+    <section class="achievement-detail-modal material-${achievement.rarity||"common"} ${achievement.locked?"is-locked":achievement.unlocked?"is-unlocked":"is-progress"}" role="dialog" aria-modal="true" aria-labelledby="achievementDetailTitle">
       <div class="achievement-detail-frame" aria-hidden="true"></div>
       <button class="achievement-detail-close" type="button" onclick="closeAchievementDetail()" aria-label="Sluiten"><span></span><span></span></button>
 
       <header class="achievement-detail-banner">
-        <small>${achievementRarityLabel(achievement.rarity)} badge</small>
+        <small>${achievementMaterialLabel(achievement.rarity)} badge</small>
         <h2 id="achievementDetailTitle">${achievement.title}</h2>
       </header>
 
@@ -978,37 +979,48 @@ window.openAchievementDetail=id=>{
 
         <div class="achievement-detail-tags">
           <span class="achievement-detail-category">${categoryLabel(achievement.category)}</span>
-          <span class="achievement-detail-rarity rarity-${achievement.rarity||"common"}">${achievementRarityLabel(achievement.rarity)}</span>
+          <span class="achievement-detail-material">${achievementMaterialLabel(achievement.rarity)}</span>
           <span class="achievement-detail-status">${achievementStatusLabel(achievement)}</span>
         </div>
 
-        <section class="achievement-detail-panel achievement-detail-description">
+        <section class="achievement-detail-description">
           <span class="achievement-detail-panel-label">Achievement</span>
           <p>${achievement.subtitle}</p>
         </section>
 
-        <section class="achievement-detail-panel achievement-detail-progress">
+        <section class="achievement-detail-progress-hud">
           <div class="achievement-detail-progress-head">
-            <span>Voortgang</span>
+            <div>
+              <span class="achievement-detail-panel-label">Voortgang</span>
+              <strong>${achievement.unlocked?"Completed":achievement.locked?"Locked":"In progress"}</strong>
+            </div>
             <b>${achievement.unlocked?achievement.goal:achievement.value} / ${achievement.goal}</b>
           </div>
           <div class="achievement-progress" style="--achievement-progress:${achievement.unlocked?100:achievement.pct}%" role="progressbar" aria-label="Voortgang ${achievement.title}" aria-valuemin="0" aria-valuemax="${achievement.goal}" aria-valuenow="${achievement.unlocked?achievement.goal:achievement.value}"><i></i></div>
-          <div class="achievement-detail-progress-meta">${achievement.unlocked
-            ?"Doel volledig behaald"
-            :achievement.locked
-              ?"Voltooi eerst de vorige mijlpaal"
-              :`${achievement.pct}% voltooid`}</div>
+          <div class="achievement-detail-progress-meta">
+            ${achievement.unlocked
+              ?'<span class="achievement-complete-mark"><b>✓</b> Doel volledig behaald</span>'
+              :achievement.locked
+                ?'<span>Voltooi eerst de vorige mijlpaal</span>'
+                :`<span>${achievement.pct}% voltooid</span><span>Nog ${remaining} te gaan</span>`}
+          </div>
         </section>
 
-        <section class="achievement-detail-panel achievement-detail-note">
-          <span class="achievement-detail-panel-label">${achievement.unlocked?"Ontgrendeld":"Volgende stap"}</span>
-          <p>${achievement.unlocked
-            ?`Behaald op <strong>${unlockedDate||"eerder"}</strong>`
-            :achievement.locked
-              ?"Deze badge wordt actief zodra de vorige mijlpaal in deze reeks is behaald."
-              :remaining===1
-                ?"Nog <strong>1</strong> te gaan."
-                :`Nog <strong>${remaining}</strong> te gaan.`}</p>
+        <section class="achievement-detail-meta-panel">
+          <div>
+            <span class="achievement-detail-panel-label">${achievement.unlocked?"Ontgrendeld":"Volgende stap"}</span>
+            <p>${achievement.unlocked
+              ?`<strong>${unlockedDate||"eerder"}</strong>`
+              :achievement.locked
+                ?"Vorige mijlpaal behalen"
+                :remaining===1
+                  ?"Nog 1 actie nodig"
+                  :`Nog ${remaining} acties nodig`}</p>
+          </div>
+          <div class="achievement-detail-tier-preview">
+            <span class="achievement-detail-panel-label">Tier-ready</span>
+            <p><strong>${achievementMaterialLabel(achievement.rarity)}</strong><span>Volgende tier later</span></p>
+          </div>
         </section>
       </div>
     </section>`;
