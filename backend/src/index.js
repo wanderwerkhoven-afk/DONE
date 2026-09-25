@@ -111,8 +111,7 @@ const sendPush=async(row,env,{test=false}={})=>{
     },
     options:{
       ttl:test?300:3600,
-      urgency:test?"high":"normal",
-      topic:test?"done-test":"done-open-tasks"
+      urgency:test?"high":"normal"
     }
   };
 
