@@ -65,8 +65,8 @@ const saveState=()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))
 
 // ============================================================================
 // DAILY REMINDERS
-// Losse reminderlaag: permission, lokale planning en optionele push/backend-sync.
-// Deze code wijzigt geen layout en registreert zelf geen service worker.
+// Permission, reminder-state en backend-sync.
+// De lokale timer is alleen fallback wanneer geen pushbackend is geconfigureerd.
 // ============================================================================
 let reminderTimer=null;
 let reminderBackendSyncTimer=null;
@@ -233,6 +233,10 @@ const scheduleTaskReminder=()=>{
   }
 
   if(!state.reminderEnabled||!("Notification" in window)||Notification.permission!=="granted")return;
+
+  // Wanneer de pushbackend is gekoppeld, is de Cloudflare-cron de enige
+  // dagelijkse scheduler. Dit voorkomt dubbele meldingen als de app open staat.
+  if(getReminderBackendUrl())return;
 
   const [hour,minute]=state.reminderTime.split(":").map(Number);
   const now=new Date();
@@ -600,7 +604,9 @@ window.openTaskCompleted=(t,reward={levelsGained:0,xpAwarded:0,coinsAwarded:0})=
   const isLevelUp=Boolean(state.pendingLevelUp)&&Number(reward.levelsGained)>0;
   const nextAction=isLevelUp?"openLevelUp()":"render()";
   const buttonLabel=isLevelUp?"LEVEL UP!":"Nice! ✨";
-  const xpAwarded=Math.max(0,Number(reward.xpAwarded)||Number(t.xp)||0);
+  const xpAwarded=Object.prototype.hasOwnProperty.call(reward,"xpAwarded")
+    ?Math.max(0,Number(reward.xpAwarded)||0)
+    :Math.max(0,Number(t.xp)||0);
   const coinsAwarded=Math.max(0,Number(reward.coinsAwarded)||0);
 
   document.querySelector("#app").innerHTML=`<div class="phone completed-screen">
