@@ -1135,11 +1135,30 @@ window.openDataPopup=()=>{
           <span><b>Back-up maken</b><small>Bewaar al je taken, XP en instellingen</small></span>
           <i>›</i>
         </button>
-        <button type="button" onclick="chooseDoneBackup()">
+        <button type="button" onclick="toggleRestoreBackupOptions()">
           <span class="data-action-icon"><svg viewBox="0 0 24 24"><path d="M12 20V10m0 0 4 4m-4-4-4 4"/><path d="M5 5h14"/></svg></span>
-          <span><b>Back-up herstellen</b><small>Zet een eerder opgeslagen DONE.-bestand terug</small></span>
+          <span><b>Back-up herstellen</b><small>Kies een bestand of plak een gekopieerde back-up</small></span>
           <i>›</i>
         </button>
+      </div>
+      <div class="data-restore-options" hidden>
+        <div class="data-restore-methods">
+          <button type="button" onclick="chooseDoneBackup()">
+            <span class="data-restore-method-icon" aria-hidden="true">↥</span>
+            <span><b>Bestand kiezen</b><small>Selecteer een DONE.-back-upbestand</small></span>
+          </button>
+          <button type="button" onclick="showBackupPasteArea()">
+            <span class="data-restore-method-icon" aria-hidden="true">▣</span>
+            <span><b>Back-up plakken</b><small>Plak gekopieerde JSON uit je klembord</small></span>
+          </button>
+        </div>
+        <div class="data-backup-paste-area" hidden>
+          <textarea class="data-backup-paste" rows="6" placeholder="Plak hier je DONE.-back-up…" aria-label="Geplakte DONE. back-up"></textarea>
+          <div class="data-backup-paste-actions">
+            <button type="button" onclick="pasteBackupFromClipboard()">Plak uit klembord</button>
+            <button type="button" class="primary" onclick="restorePastedDoneBackup()">Herstellen</button>
+          </div>
+        </div>
       </div>
       <div class="data-popup-danger">
         <button type="button" onclick="resetAllDoneData()">
@@ -1203,6 +1222,77 @@ window.exportDoneBackup=async()=>{
   return true;
 };
 
+window.toggleRestoreBackupOptions=()=>{
+  const panel=document.querySelector(".data-restore-options");
+  if(!panel)return;
+  panel.hidden=!panel.hidden;
+};
+
+window.showBackupPasteArea=()=>{
+  const area=document.querySelector(".data-backup-paste-area");
+  if(!area)return;
+  area.hidden=false;
+  setTimeout(()=>area.querySelector("textarea")?.focus(),20);
+};
+
+window.pasteBackupFromClipboard=async()=>{
+  const field=document.querySelector(".data-backup-paste");
+  if(!field)return;
+  try{
+    if(!navigator.clipboard?.readText)throw new Error("Klembord lezen wordt niet ondersteund.");
+    const text=await navigator.clipboard.readText();
+    if(!text.trim())throw new Error("Je klembord is leeg.");
+    field.value=text;
+    setDataPopupStatus("Back-up uit klembord geplakt.","success");
+  }catch(error){
+    setDataPopupStatus("Automatisch plakken lukt niet. Houd het tekstvak ingedrukt en kies Plak.", "error");
+    field.focus();
+  }
+};
+
+const parseDoneBackup=raw=>{
+  const parsed=JSON.parse(String(raw||""));
+  if(
+    !parsed||
+    parsed.format!=="done-backup"||
+    !parsed.state||
+    typeof parsed.state!=="object"||
+    Array.isArray(parsed.state)
+  )throw new Error("Dit is geen geldige DONE.-back-up.");
+
+  const restored={...defaultState,...parsed.state};
+  if(!Array.isArray(restored.tasks)||!Array.isArray(restored.taskHistory)){
+    throw new Error("De back-up bevat ongeldige taakgegevens.");
+  }
+  return restored;
+};
+
+const applyRestoredDoneBackup=restored=>{
+  const confirmed=window.confirm("Back-up herstellen? Je huidige DONE.-gegevens worden vervangen door deze back-up.");
+  if(!confirmed)return false;
+
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(restored));
+  setDataPopupStatus("Back-up hersteld. DONE. wordt opnieuw geladen…","success");
+  setTimeout(()=>window.location.reload(),450);
+  return true;
+};
+
+window.restorePastedDoneBackup=()=>{
+  const field=document.querySelector(".data-backup-paste");
+  if(!field)return;
+  const raw=field.value.trim();
+  if(!raw){
+    setDataPopupStatus("Plak eerst je gekopieerde back-up in het tekstvak.","error");
+    field.focus();
+    return;
+  }
+  try{
+    applyRestoredDoneBackup(parseDoneBackup(raw));
+  }catch(error){
+    setDataPopupStatus(error?.message||"De geplakte back-up kon niet worden hersteld.","error");
+  }
+};
+
 window.chooseDoneBackup=()=>{
   const input=document.querySelector(".data-backup-input");
   if(!input)return;
@@ -1216,26 +1306,7 @@ window.restoreDoneBackup=async input=>{
 
   try{
     const raw=await file.text();
-    const parsed=JSON.parse(raw);
-    if(
-      !parsed||
-      parsed.format!=="done-backup"||
-      !parsed.state||
-      typeof parsed.state!=="object"||
-      Array.isArray(parsed.state)
-    )throw new Error("Dit is geen geldige DONE.-back-up.");
-
-    const restored={...defaultState,...parsed.state};
-    if(!Array.isArray(restored.tasks)||!Array.isArray(restored.taskHistory)){
-      throw new Error("De back-up bevat ongeldige taakgegevens.");
-    }
-
-    const confirmed=window.confirm("Back-up herstellen? Je huidige DONE.-gegevens worden vervangen door deze back-up.");
-    if(!confirmed)return;
-
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(restored));
-    setDataPopupStatus("Back-up hersteld. DONE. wordt opnieuw geladen…","success");
-    setTimeout(()=>window.location.reload(),450);
+    applyRestoredDoneBackup(parseDoneBackup(raw));
   }catch(error){
     setDataPopupStatus(error?.message||"Back-up kon niet worden hersteld.","error");
   }
