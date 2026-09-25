@@ -21,6 +21,10 @@ const fail=(message,status,env)=>json({ok:false,error:message},status,corsHeader
 // ============================================================================
 const TIME_RE=/^([01]\d|2[0-3]):[0-5]\d$/;
 const CLIENT_ID_RE=/^[A-Za-z0-9_-]{12,160}$/;
+const TRANSFER_TTL_MS=15*60*1000;
+const TRANSFER_TOKEN_RE=/^[A-Za-z0-9_-]{32,128}$/;
+const APP_ICON_RE=/^(illustration|simple)-(0[1-9]|1[0-6])$/;
+
 
 const normalizeTime=value=>TIME_RE.test(String(value||""))?String(value):"17:00";
 
@@ -318,6 +322,166 @@ const runReminderCron=async env=>{
 };
 
 // ============================================================================
+// TEMPORARY STATE TRANSFER
+// Moves local DONE. state between PWA installations without putting the JSON
+// itself in the URL. The browser receives only a high-entropy short-lived token.
+// ============================================================================
+const createTransferToken=()=>{
+  const bytes=new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g,"-")
+    .replace(/\//g,"_")
+    .replace(/=+$/,"");
+};
+
+const cleanupExpiredTransfers=async env=>{
+  await env.DB.prepare(
+    "DELETE FROM state_transfers WHERE expires_at<=?"
+  ).bind(new Date().toISOString()).run();
+};
+
+const createStateTransfer=async(request,env)=>{
+  const body=await request.json().catch(()=>null);
+  const {state,icon}=body||{};
+
+  if(!APP_ICON_RE.test(String(icon||""))){
+    return fail("Ongeldig app-icoon",400,env);
+  }
+  if(!state||typeof state!=="object"||Array.isArray(state)){
+    return fail("Ongeldige DONE. state",400,env);
+  }
+
+  const payload=JSON.stringify(state);
+  if(payload.length>500000){
+    return fail("DONE. back-up is te groot voor tijdelijke overdracht",413,env);
+  }
+
+  await cleanupExpiredTransfers(env);
+
+  const now=new Date();
+  const token=createTransferToken();
+  const expiresAt=new Date(now.getTime()+TRANSFER_TTL_MS);
+
+  await env.DB.prepare(`
+    INSERT INTO state_transfers
+      (token,icon_id,payload_json,created_at,expires_at)
+    VALUES (?,?,?,?,?)
+  `).bind(
+    token,
+    String(icon),
+    payload,
+    now.toISOString(),
+    expiresAt.toISOString()
+  ).run();
+
+  return json({
+    ok:true,
+    token,
+    icon:String(icon),
+    expiresAt:expiresAt.toISOString()
+  },200,{
+    ...corsHeaders(env),
+    "cache-control":"no-store"
+  });
+};
+
+const readStateTransfer=async(url,env)=>{
+  const token=String(url.searchParams.get("token")||"");
+  if(!TRANSFER_TOKEN_RE.test(token))return fail("Ongeldige transfertoken",400,env);
+
+  await cleanupExpiredTransfers(env);
+
+  const row=await env.DB.prepare(
+    "SELECT token,icon_id,payload_json,expires_at FROM state_transfers WHERE token=?"
+  ).bind(token).first();
+
+  if(!row)return fail("Transfer niet gevonden of verlopen",404,env);
+
+  let state;
+  try{state=JSON.parse(row.payload_json)}catch{
+    return fail("Transferdata is ongeldig",500,env);
+  }
+
+  return json({
+    ok:true,
+    token:row.token,
+    icon:row.icon_id,
+    expiresAt:row.expires_at,
+    state
+  },200,{
+    ...corsHeaders(env),
+    "cache-control":"no-store"
+  });
+};
+
+const completeStateTransfer=async(request,env)=>{
+  const body=await request.json().catch(()=>null);
+  const token=String(body?.token||"");
+  if(!TRANSFER_TOKEN_RE.test(token))return fail("Ongeldige transfertoken",400,env);
+
+  await env.DB.prepare(
+    "DELETE FROM state_transfers WHERE token=?"
+  ).bind(token).run();
+
+  return json({ok:true},200,corsHeaders(env));
+};
+
+const installManifest=(url,env)=>{
+  const icon=String(url.searchParams.get("icon")||"");
+  const transfer=String(url.searchParams.get("transfer")||"");
+  const rootRaw=String(url.searchParams.get("root")||"");
+
+  if(!APP_ICON_RE.test(icon))return fail("Ongeldig app-icoon",400,env);
+  if(!TRANSFER_TOKEN_RE.test(transfer))return fail("Ongeldige transfertoken",400,env);
+
+  let root;
+  try{root=new URL(rootRaw)}catch{return fail("Ongeldige app-root",400,env)}
+  if(root.protocol!=="https:")return fail("App-root moet HTTPS zijn",400,env);
+
+  const configuredOrigin=String(env.APP_ORIGIN||"").trim();
+  if(configuredOrigin&&configuredOrigin!=="*"){
+    try{
+      if(root.origin!==new URL(configuredOrigin).origin){
+        return fail("App-root origin niet toegestaan",403,env);
+      }
+    }catch{
+      return fail("APP_ORIGIN is ongeldig geconfigureerd",500,env);
+    }
+  }
+
+  const normalizedRoot=new URL(root.href);
+  if(!normalizedRoot.pathname.endsWith("/"))normalizedRoot.pathname+="/";
+
+  const category=icon.startsWith("simple-")?"simple":"illustration-art";
+  const iconUrl=new URL(`assets/images/app-icons/${category}/${icon}.png`,normalizedRoot);
+  const startUrl=new URL(normalizedRoot.href);
+  startUrl.searchParams.set("appIcon",icon);
+  startUrl.searchParams.set("transfer",transfer);
+
+  const manifest={
+    name:"DONE.",
+    short_name:"DONE.",
+    start_url:startUrl.href,
+    scope:normalizedRoot.href,
+    display:"standalone",
+    background_color:"#06152f",
+    theme_color:"#071936",
+    description:"Small steps. A bigger you.",
+    icons:[{src:iconUrl.href,type:"image/png",purpose:"any"}]
+  };
+
+  return new Response(JSON.stringify(manifest),{
+    status:200,
+    headers:{
+      "content-type":"application/manifest+json; charset=utf-8",
+      "access-control-allow-origin":"*",
+      "cache-control":"no-store, max-age=0"
+    }
+  });
+};
+
+// ============================================================================
 // SAFARI BRIDGE
 // Cross-origin trampoline for iOS standalone PWAs. Opening this Worker URL
 // leaves the PWA container; Safari then follows the redirect to the selected
@@ -387,6 +551,22 @@ export default {
 
     if(url.pathname==="/open-safari"&&request.method==="GET"){
       return openSafariBridge(url,env);
+    }
+
+    if(url.pathname==="/transfer"&&request.method==="POST"){
+      return createStateTransfer(request,env);
+    }
+
+    if(url.pathname==="/transfer"&&request.method==="GET"){
+      return readStateTransfer(url,env);
+    }
+
+    if(url.pathname==="/transfer/complete"&&request.method==="POST"){
+      return completeStateTransfer(request,env);
+    }
+
+    if(url.pathname==="/install-manifest"&&request.method==="GET"){
+      return installManifest(url,env);
     }
 
     if(url.pathname==="/subscription"&&request.method==="POST"){
