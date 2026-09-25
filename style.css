@@ -933,7 +933,8 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   display:grid;gap:6px;background:linear-gradient(145deg,rgba(9,34,59,.93),rgba(20,44,63,.94));
   border:1px solid rgba(213,232,255,.25);border-radius:22px;
   box-shadow:0 15px 32px rgba(13,45,91,.32),inset 0 1px rgba(255,255,255,.08);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transform:translateY(46px)
 }
 .level-reward-row{min-height:40px;display:grid;grid-template-columns:50px 1fr;align-items:center}
 .level-reward-row strong{font-size:17px;line-height:1.08;font-weight:950;text-shadow:0 2px 2px rgba(0,0,0,.24)}
@@ -947,9 +948,10 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   border:2px solid rgba(221,199,255,.92);border-radius:31px;
   color:#fff;font:inherit;font-size:21px;font-weight:1000;
   background:linear-gradient(180deg,#8564ff 0%,#5e3cff 63%,#6942f0 100%);
-  box-shadow:0 0 20px rgba(129,86,255,.63),0 10px 20px rgba(56,39,145,.30),inset 0 2px rgba(255,255,255,.35),inset 0 -4px rgba(49,27,154,.28);cursor:pointer
+  box-shadow:0 0 20px rgba(129,86,255,.63),0 10px 20px rgba(56,39,145,.30),inset 0 2px rgba(255,255,255,.35),inset 0 -4px rgba(49,27,154,.28);cursor:pointer;
+  transform:translateY(46px)
 }
-.level-up-continue:active{transform:scale(.98)}
+.level-up-continue:active{transform:translateY(46px) scale(.98)}
 .level-up-sparkles{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
 .level-up-sparkles i{position:absolute;width:6px;height:6px;border-radius:50%;background:#fff6ad;box-shadow:0 0 8px #fff2a1;opacity:0}
 .level-up-sparkles i:nth-child(1){left:13%;top:28%}.level-up-sparkles i:nth-child(2){left:22%;top:38%}.level-up-sparkles i:nth-child(3){left:86%;top:33%}.level-up-sparkles i:nth-child(4){left:73%;top:24%}.level-up-sparkles i:nth-child(5){left:10%;top:54%}.level-up-sparkles i:nth-child(6){left:91%;top:55%}.level-up-sparkles i:nth-child(7){left:34%;top:20%}.level-up-sparkles i:nth-child(8){left:64%;top:43%}.level-up-sparkles i:nth-child(9){left:18%;top:66%}.level-up-sparkles i:nth-child(10){left:80%;top:64%}.level-up-sparkles i:nth-child(11){left:48%;top:28%}.level-up-sparkles i:nth-child(12){left:57%;top:57%}.level-up-sparkles i:nth-child(13){left:31%;top:59%}.level-up-sparkles i:nth-child(14){left:68%;top:61%}
@@ -960,17 +962,20 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .level-up-screen.play .level-up-sparkles i{animation:level-sparkle 1.8s ease-in-out calc(.2s + var(--i)*.1s) infinite}
 @keyframes level-title-in{0%{opacity:0;transform:translateY(-18px) scale(.84)}70%{opacity:1;transform:translateY(2px) scale(1.04)}100%{opacity:1;transform:none}}
 @keyframes level-ribbon-in{0%{opacity:0;transform:scaleX(.7) scaleY(.88)}100%{opacity:1;transform:scale(1)}}
-@keyframes level-card-in{0%{opacity:0;transform:translateY(22px) scale(.92)}100%{opacity:1;transform:none}}
-@keyframes level-button-in{0%{opacity:0;transform:translateY(16px) scale(.92)}100%{opacity:1;transform:none}}
+@keyframes level-card-in{0%{opacity:0;transform:translateY(68px) scale(.92)}100%{opacity:1;transform:translateY(46px) scale(1)}}
+@keyframes level-button-in{0%{opacity:0;transform:translateY(62px) scale(.92)}100%{opacity:1;transform:translateY(46px) scale(1)}}
 @keyframes level-button-glow{0%,100%{box-shadow:0 0 18px rgba(129,86,255,.55),0 10px 20px rgba(56,39,145,.3),inset 0 2px rgba(255,255,255,.35),inset 0 -4px rgba(49,27,154,.28)}50%{box-shadow:0 0 29px rgba(158,114,255,.8),0 10px 22px rgba(56,39,145,.32),inset 0 2px rgba(255,255,255,.42),inset 0 -4px rgba(49,27,154,.28)}}
 @keyframes level-sparkle{0%,100%{opacity:0;transform:scale(.25)}35%{opacity:1;transform:scale(1.2)}60%{opacity:.8;transform:scale(.7)}}
 @media(max-height:760px){
   .level-up-content{padding-top:calc(env(safe-area-inset-top) + 12px);transform:translateY(20px)}
   .level-up-header h1{font-size:40px;margin-bottom:7px}
   .level-ribbon{width:min(292px,82vw)}.level-ribbon-text text{font-size:15px}
-  .level-reward-card{width:min(320px,87vw);padding:10px 15px;gap:3px;margin-bottom:9px}
+  .level-reward-card{width:min(320px,87vw);padding:10px 15px;gap:3px;margin-bottom:9px;transform:translateY(32px)}
   .level-reward-row{min-height:33px}.level-reward-row strong{font-size:14px}
-  .level-up-continue{height:55px;font-size:18px}
+  .level-up-continue{height:55px;font-size:18px;transform:translateY(32px)}
+  .level-up-continue:active{transform:translateY(32px) scale(.98)}
+  @keyframes level-card-in{0%{opacity:0;transform:translateY(52px) scale(.92)}100%{opacity:1;transform:translateY(32px) scale(1)}}
+  @keyframes level-button-in{0%{opacity:0;transform:translateY(48px) scale(.92)}100%{opacity:1;transform:translateY(32px) scale(1)}}
   .level-up-art{background-position:center 44%}
 }
 @media(max-height:670px){
@@ -978,63 +983,16 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   .level-up-header h1{font-size:36px}
   .level-ribbon{width:min(268px,78vw)}.level-ribbon-text text{font-size:14px}
   .level-up-jump{display:none}
-  .level-reward-card{width:min(302px,85vw);padding:8px 11px;grid-template-columns:repeat(3,1fr);gap:4px}
+  .level-reward-card{width:min(302px,85vw);padding:8px 11px;grid-template-columns:repeat(3,1fr);gap:4px;transform:translateY(18px)}
   .level-reward-row{display:flex;flex-direction:column;justify-content:center;text-align:center;gap:2px}
   .level-reward-row strong{font-size:12px}.reward-symbol{height:29px;transform:scale(.72)}
-  .level-up-continue{height:50px}
+  .level-up-continue{height:50px;transform:translateY(18px)}
+  .level-up-continue:active{transform:translateY(18px) scale(.98)}
+  @keyframes level-card-in{0%{opacity:0;transform:translateY(38px) scale(.92)}100%{opacity:1;transform:translateY(18px) scale(1)}}
+  @keyframes level-button-in{0%{opacity:0;transform:translateY(34px) scale(.92)}100%{opacity:1;transform:translateY(18px) scale(1)}}
   .level-up-art{background-position:center 42%}
 }
 @media(prefers-reduced-motion:reduce){.level-up-screen *{animation:none!important}.level-up-sparkles{display:none}}
-
-/* ===== Team GO: Level Up lower rewards refinement ===== */
-/* Lower the reward/CTA group so the hero keeps more visual breathing room. */
-.level-reward-card{
-  transform:translateY(46px);
-}
-.level-up-continue{
-  transform:translateY(46px);
-}
-
-/* Preserve the lower resting position after entrance animations. */
-@keyframes level-card-in{
-  0%{opacity:0;transform:translateY(68px) scale(.92)}
-  100%{opacity:1;transform:translateY(46px) scale(1)}
-}
-@keyframes level-button-in{
-  0%{opacity:0;transform:translateY(62px) scale(.92)}
-  100%{opacity:1;transform:translateY(46px) scale(1)}
-}
-
-/* Keep press feedback at the shifted resting position. */
-.level-up-continue:active{
-  transform:translateY(46px) scale(.98);
-}
-
-@media(max-height:760px){
-  .level-reward-card,.level-up-continue{transform:translateY(32px)}
-  @keyframes level-card-in{
-    0%{opacity:0;transform:translateY(52px) scale(.92)}
-    100%{opacity:1;transform:translateY(32px) scale(1)}
-  }
-  @keyframes level-button-in{
-    0%{opacity:0;transform:translateY(48px) scale(.92)}
-    100%{opacity:1;transform:translateY(32px) scale(1)}
-  }
-  .level-up-continue:active{transform:translateY(32px) scale(.98)}
-}
-
-@media(max-height:670px){
-  .level-reward-card,.level-up-continue{transform:translateY(18px)}
-  @keyframes level-card-in{
-    0%{opacity:0;transform:translateY(38px) scale(.92)}
-    100%{opacity:1;transform:translateY(18px) scale(1)}
-  }
-  @keyframes level-button-in{
-    0%{opacity:0;transform:translateY(34px) scale(.92)}
-    100%{opacity:1;transform:translateY(18px) scale(1)}
-  }
-  .level-up-continue:active{transform:translateY(18px) scale(.98)}
-}
 
 /* Long-press task edit mode */
 .tasks{overflow:visible}
