@@ -2800,16 +2800,16 @@ input,textarea,[contenteditable="true"]{
 .app-icon-install-step h3{margin:1px 0 3px;font-size:12px}
 .app-icon-install-step p{margin:0;color:#94acc1;font-size:9px;line-height:1.4;font-weight:650}
 .app-icon-install-step p strong{color:#dce8f2}
-.icon-install-backup,.icon-install-open{
+.icon-install-open,.icon-install-retry{
   min-height:37px;margin-top:9px;padding:0 13px;border:0;border-radius:12px;
-  color:#fff;background:linear-gradient(180deg,#7861ff,#5b42e8);
-  font:inherit;font-size:10px;font-weight:950;cursor:pointer;
-  box-shadow:0 5px 12px rgba(65,48,177,.25),inset 0 1px rgba(255,255,255,.20);
+  color:#fff;font:inherit;font-size:10px;font-weight:950;cursor:pointer;
+  box-shadow:0 5px 12px rgba(65,48,177,.20),inset 0 1px rgba(255,255,255,.18);
 }
-.icon-install-backup.done{background:linear-gradient(180deg,#41b994,#28866f)}
 .icon-install-open{background:linear-gradient(180deg,#36bca8,#258979)}
 .icon-install-open:disabled{opacity:.38;cursor:not-allowed;box-shadow:none}
-.icon-install-backup-status{display:block;margin-top:5px;color:#8098ae;font-size:8px;font-weight:750}
+.icon-install-retry{background:linear-gradient(180deg,#7861ff,#5b42e8)}
+.icon-install-retry[hidden]{display:none!important}
+.icon-install-transfer-status{display:block;margin-top:7px;color:#8098ae;font-size:8px;font-weight:800}
 .app-icon-install-footnote{margin:11px 0 0;text-align:center;color:#7891a8;font-size:8px;font-weight:650}
 @media(max-height:720px){
   .app-icon-install-modal{padding-top:17px}
