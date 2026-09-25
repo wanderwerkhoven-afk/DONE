@@ -43,7 +43,7 @@ const homeHeroPeriod=date=>{
 const homeHeroUrl=date=>HOME_HERO_BY_PERIOD[homeHeroPeriod(date)];
 let homeHeroTimer=null;
 const applyHomeHeroForCurrentTime=()=>{
-  const hero=document.querySelector(".home-screen .hero.hero-image");
+  const hero=document.querySelector(".hero.hero-image");
   if(!hero)return;
   const period=homeHeroPeriod();
   if(hero.dataset.heroPeriod===period)return;
@@ -52,7 +52,7 @@ const applyHomeHeroForCurrentTime=()=>{
 };
 const scheduleHomeHeroRefresh=()=>{
   if(homeHeroTimer){clearTimeout(homeHeroTimer);homeHeroTimer=null}
-  const hero=document.querySelector(".home-screen .hero.hero-image");
+  const hero=document.querySelector(".hero.hero-image");
   if(!hero)return;
   applyHomeHeroForCurrentTime();
   const now=new Date();
