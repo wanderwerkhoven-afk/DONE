@@ -2972,12 +2972,19 @@ input,textarea,[contenteditable="true"]{
   background:rgba(3,20,36,.38);border:1px solid rgba(255,255,255,.07);
 }
 .theme-segment button{
-  min-width:67px;height:30px;padding:0 8px;border:0;border-radius:9px;
-  color:#8da5bc;background:transparent;font-size:9px;font-weight:900;cursor:pointer;
+  width:42px;height:34px;padding:0;border:0;border-radius:10px;
+  display:grid;place-items:center;
+  color:#8da5bc;background:transparent;cursor:pointer;
+  transition:background .16s ease,box-shadow .16s ease,transform .14s ease;
 }
+.theme-segment button span{
+  display:block;font-size:18px;line-height:1;
+  filter:saturate(.92);
+}
+.theme-segment button:active{transform:scale(.94)}
 .theme-segment button.active{
-  color:#15344f;background:#ffd36a;
-  box-shadow:0 2px 7px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.5);
+  background:linear-gradient(180deg,#ffe58c,#ffc85b);
+  box-shadow:0 3px 9px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.55),0 0 12px rgba(255,205,91,.22);
 }
 [data-theme="light"] .profile-theme-copy b{color:#17354a}
 [data-theme="light"] .profile-theme-copy small{color:#748897}
@@ -2986,8 +2993,8 @@ input,textarea,[contenteditable="true"]{
 }
 [data-theme="light"] .theme-segment button{color:#708492}
 [data-theme="light"] .theme-segment button.active{
-  color:#fff;background:#d5a13b;
-  box-shadow:0 2px 7px rgba(94,72,29,.14);
+  background:linear-gradient(180deg,#fff0ac,#e5ae42);
+  box-shadow:0 3px 9px rgba(94,72,29,.14),inset 0 1px rgba(255,255,255,.7),0 0 10px rgba(218,166,66,.16);
 }
 
 /* New-task daylight shell; artwork remains untouched. */
