@@ -318,6 +318,48 @@ const runReminderCron=async env=>{
 };
 
 // ============================================================================
+// SAFARI BRIDGE
+// Cross-origin trampoline for iOS standalone PWAs. Opening this Worker URL
+// leaves the PWA container; Safari then follows the redirect to the selected
+// icon-specific install page.
+// ============================================================================
+const openSafariBridge=(url,env)=>{
+  const raw=url.searchParams.get("target");
+  if(!raw)return fail("Ontbrekende target",400,env);
+
+  let target;
+  try{target=new URL(raw)}catch{return fail("Ongeldige target",400,env)}
+
+  if(target.protocol!=="https:"){
+    return fail("Alleen HTTPS targets zijn toegestaan",400,env);
+  }
+
+  if(!/\/install\/illustration-(0[1-9]|1[0-6])\.html$/.test(target.pathname)){
+    return fail("Ongeldige installatieroute",400,env);
+  }
+
+  const configuredOrigin=String(env.APP_ORIGIN||"").trim();
+  if(configuredOrigin&&configuredOrigin!=="*"){
+    try{
+      if(target.origin!==new URL(configuredOrigin).origin){
+        return fail("Target origin niet toegestaan",403,env);
+      }
+    }catch{
+      return fail("APP_ORIGIN is ongeldig geconfigureerd",500,env);
+    }
+  }
+
+  return new Response(null,{
+    status:302,
+    headers:{
+      location:target.href,
+      "cache-control":"no-store, max-age=0",
+      "referrer-policy":"no-referrer"
+    }
+  });
+};
+
+// ============================================================================
 // HTTP ROUTER
 // ============================================================================
 export default {
@@ -341,6 +383,10 @@ export default {
     if(url.pathname==="/vapid-public-key"&&request.method==="GET"){
       if(!env.VAPID_PUBLIC_KEY)return fail("VAPID public key ontbreekt",503,env);
       return json({publicKey:env.VAPID_PUBLIC_KEY},200,cors);
+    }
+
+    if(url.pathname==="/open-safari"&&request.method==="GET"){
+      return openSafariBridge(url,env);
     }
 
     if(url.pathname==="/subscription"&&request.method==="POST"){
