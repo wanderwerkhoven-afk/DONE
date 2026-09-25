@@ -10,10 +10,11 @@ const DEFAULT_REMINDER_TIME="17:00";
 // SVG-iconen die door de onderste navigatie op meerdere schermen worden gebruikt.
 // ============================================================================
 const navIcon=name=>({today:`<svg viewBox="0 0 32 32" aria-hidden="true"><rect class="icon-fill" x="5" y="7" width="22" height="20" rx="6"/><path class="icon-cut" d="M10 5v5M22 5v5M9 14h14"/><path class="icon-detail" d="M11 18.5c1.3 2.5 3 3.7 5 3.7s3.7-1.2 5-3.7"/></svg>`,world:`<svg viewBox="0 0 32 32" aria-hidden="true"><circle class="icon-fill" cx="16" cy="16" r="11"/><path class="icon-cut" d="M7.2 13.2c3.2-.2 5.2.6 6.2 2.4.8 1.4.2 2.6-.3 3.8-.6 1.4-.4 2.7.9 4M17.5 5.4c-.4 2.4.5 4 2.7 4.8 2.2.8 3.4 2.3 3.5 4.4.1 1.5 1 2.4 2.5 2.7M16.5 11.3c1.1 1.1 1.2 2.1.3 3-.9.9-2 1-3.2.2"/></svg>`,achievements:`<svg viewBox="0 0 32 32" aria-hidden="true"><path class="icon-fill" d="M10 6h12v7c0 4-2.4 6.5-6 6.5S10 17 10 13z"/><path class="icon-fill" d="M10 9H5v2.5c0 4 2.4 6 6.3 6M22 9h5v2.5c0 4-2.4 6-6.3 6M14 19h4v5h4v3H10v-3h4z"/><circle class="icon-cut" cx="16" cy="12" r="2.2"/></svg>`,profile:`<svg viewBox="0 0 32 32" aria-hidden="true"><circle class="icon-fill" cx="16" cy="10" r="6"/><path class="icon-fill" d="M6 27c.6-6.2 3.9-9.3 10-9.3S25.4 20.8 26 27z"/></svg>`})[name];
-const defaultState={level:1,xp:0,maxXp:100,streak:0,coins:0,profileAvatar:1,reminderEnabled:false,reminderTime:DEFAULT_REMINDER_TIME,reminderLastSent:null,tasks:[{title:"Verslag afmaken",meta:"Grote taak",xp:50,icon:"🧠"},{title:"Mail beantwoorden",meta:"Kleine taak",xp:10,icon:"✉️"},{title:"Was ophangen",meta:"",xp:10,icon:"🧹",done:true},{title:"20 min sporten",meta:"Normale taak",xp:25,icon:"🏋️"}]};
+const defaultState={level:1,xp:0,maxXp:100,streak:0,coins:0,profileAvatar:1,rewardScreensEnabled:true,reminderEnabled:false,reminderTime:DEFAULT_REMINDER_TIME,reminderLastSent:null,tasks:[{title:"Verslag afmaken",meta:"Grote taak",xp:50,icon:"🧠"},{title:"Mail beantwoorden",meta:"Kleine taak",xp:10,icon:"✉️"},{title:"Was ophangen",meta:"",xp:10,icon:"🧹",done:true},{title:"20 min sporten",meta:"Normale taak",xp:25,icon:"🏋️"}]};
 const xpForLevel=level=>100+(Math.max(1,level)-1)*50;
 const savedState=(()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"null")}catch(e){return null}})();
 const state={...defaultState,...(savedState||{})};
+state.rewardScreensEnabled=state.rewardScreensEnabled!==false;
 state.reminderTime=/^([01]\d|2[0-3]):[0-5]\d$/.test(String(state.reminderTime||""))
   ?String(state.reminderTime)
   :DEFAULT_REMINDER_TIME;
@@ -569,6 +570,17 @@ window.toggleTask=i=>{
     }
 
     syncAchievementUnlocks();
+    if(!state.rewardScreensEnabled){
+      if(reward.levelsGained>0){
+        state.lastSeenLevel=Math.max(Number(state.lastSeenLevel)||1,Number(reward.newLevel)||state.level);
+        state.pendingLevelUp=null;
+      }
+      saveState();
+      queueReminderBackendSync();
+      render();
+      return;
+    }
+
     saveState();
     queueReminderBackendSync();
     openTaskCompleted(t,reward);
@@ -714,6 +726,7 @@ window.openProfile=()=>{
         <label><span>🔊 <b>Geluid</b></span><input type="checkbox" data-setting="sound" onchange="saveProfileSetting(this)" ${state.sound!==false?"checked":""}><i></i></label>
         <label><span>⚙️ <b>Haptische feedback</b></span><input type="checkbox" data-setting="haptics" onchange="saveProfileSetting(this)" ${state.haptics!==false?"checked":""}><i></i></label>
         <label><span>🌙 <b>Donkere modus</b></span><input type="checkbox" data-setting="darkMode" onchange="saveProfileSetting(this)" ${state.darkMode!==false?"checked":""}><i></i></label>
+        <label class="profile-reward-setting"><span>✨ <b>Beloningsschermen</b><small>Taak voltooid + Level Up</small></span><input type="checkbox" onchange="toggleRewardScreens(this)" ${state.rewardScreensEnabled?"checked":""}><i></i></label>
         <label class="profile-reminder-setting"><span>🔔 <b>Dagelijkse herinnering</b><small data-reminder-time-label>${state.reminderTime} · alleen bij open taken</small></span><input type="checkbox" onchange="toggleDailyReminder(this)" ${state.reminderEnabled?"checked":""}><i></i></label>
         <label class="profile-reminder-time"><span>🕒 <b>Tijdstip</b></span><input class="profile-time-input" type="time" value="${state.reminderTime}" step="60" onchange="updateReminderTime(this)" aria-label="Tijdstip dagelijkse herinnering"></label>
       </section>
@@ -764,6 +777,14 @@ window.resetProgress=()=>{
 };
 
 window.saveProfileSetting=el=>{state[el.dataset.setting]=el.checked;saveState()};
+window.toggleRewardScreens=el=>{
+  state.rewardScreensEnabled=Boolean(el.checked);
+  if(!state.rewardScreensEnabled&&state.pendingLevelUp){
+    state.lastSeenLevel=Math.max(Number(state.lastSeenLevel)||1,Number(state.pendingLevelUp.newLevel)||state.level);
+    state.pendingLevelUp=null;
+  }
+  saveState();
+};
 
 // ============================================================================
 // TASK LOG
@@ -1140,4 +1161,9 @@ document.addEventListener("visibilitychange",()=>{
   queueReminderBackendSync();
 });
 
-state.pendingLevelUp?openLevelUp():render();
+if(!state.rewardScreensEnabled&&state.pendingLevelUp){
+  state.lastSeenLevel=Math.max(Number(state.lastSeenLevel)||1,Number(state.pendingLevelUp.newLevel)||state.level);
+  state.pendingLevelUp=null;
+  saveState();
+}
+state.rewardScreensEnabled&&state.pendingLevelUp?openLevelUp():render();
