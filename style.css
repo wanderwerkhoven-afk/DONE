@@ -24,45 +24,6 @@
   .task-wrap.task-editing .task{animation:none;box-shadow:inset 0 1px #ffffff16,0 7px 18px rgba(0,0,0,.46),0 0 0 2px rgba(255,122,135,.42)}
 }
 .check{width:29px;height:29px;border-radius:50%;border:2px solid #f4fbff;display:grid;place-items:center;font-weight:1000}.taskicon{font-size:24px}.tasktitle{font-weight:800;font-size:14px}.taskmeta{font-size:11px;color:#b8cae0;margin-top:2px}.reward{font-size:13px;font-weight:900;color:#ffd85d}.task.done{opacity:.64}.task.done .check{border-color:#baffbd;background:#7ef2a4;color:#164e36;box-shadow:0 0 15px #7dffa0}.task.done .tasktitle{text-decoration:line-through;color:#9ba9bf}.add{position:absolute;z-index:8;right:21px;bottom:68px;width:58px;height:58px;border-radius:50%;border:3px solid #fff3cf;background:radial-gradient(circle at 35% 25%,#fff7d5,#ffd87b);color:#f38a16;font-size:38px;line-height:45px;box-shadow:0 0 20px #ffd87caa,0 7px 17px #0019}.nav{position:absolute;z-index:7;bottom:0;left:0;right:0;height:77px;background:#03182fee;border-top:1px solid #164065;display:grid;grid-template-columns:repeat(4,1fr);padding:9px 5px 8px}.nav button{border:0;background:none;color:#8098bb;font-size:10px;display:grid;place-items:center;gap:3px}.nav .ni{font-size:22px;line-height:1}.nav .active{color:#ffda72;text-shadow:0 0 11px #ffc84e}.nav .active .ni{filter:drop-shadow(0 0 5px #ffc34e)}@media(min-width:500px){body{padding:20px}.phone{min-height:850px;border-radius:44px;box-shadow:0 0 0 6px #222a3a,0 25px 70px #000}.nav{border-radius:0 0 44px 44px}}
-/* iPhone home-fit refinement */
-@media(max-width:499px){
-  .phone{height:100dvh;min-height:0;overflow:hidden;padding-bottom:72px}
-  .hero{height:292px}
-  .brand{top:27px;left:24px}
-  .logo{font-size:42px}
-  .tag{font-size:12px;margin-top:7px}
-  .level{top:24px;right:20px;width:138px;padding:8px 10px 9px 46px}
-  .level .fire{width:30px;height:30px;left:9px;top:8px}
-  .art{inset:92px 0 0}
-  .island{width:190px;height:78px;right:24px;top:69px}
-  .water{right:76px;top:95px;width:31px;height:113px}
-  .house{right:73px;top:53px;width:81px;height:64px}
-  .house:before{width:62px;height:62px;left:10px;top:-29px}
-  .ledge{width:166px;height:45px;bottom:17px}
-  .avatar{left:49px;bottom:36px;transform:scale(.88);transform-origin:bottom left}
-  .content{margin-top:-11px;padding:16px 22px 12px;border-radius:27px 27px 0 0}
-  .greet h1{font-size:23px}
-  .greet p{font-size:13px}
-  .progressrow{margin:13px 0}
-  .progress{height:15px}
-  .stats{gap:10px;margin-bottom:11px}
-  .stat{height:58px;border-radius:16px}
-  .stat .ico{font-size:30px}
-  .stat strong{font-size:20px}
-  .stat small{font-size:10px}
-  .tasks{gap:7px}
-  .task{height:56px;border-radius:14px;padding:0 12px;grid-template-columns:30px 32px 1fr auto;gap:7px}
-  .check{width:27px;height:27px}
-  .taskicon{font-size:21px}
-  .tasktitle{font-size:13px}
-  .taskmeta{font-size:10px}
-  .reward{font-size:12px}
-  .add{position:fixed;left:50%;transform:translateX(148px);right:auto;bottom:63px;width:54px;height:54px;font-size:35px}
-  .nav{position:fixed;left:50%;right:auto;transform:translateX(-50%);width:min(100%,430px);height:70px;padding-top:7px;padding-bottom:max(6px,env(safe-area-inset-bottom))}
-}
-@media(max-height:760px) and (max-width:499px){
- .hero{height:270px}.content{padding-top:13px}.task{height:52px}.stat{height:54px}.progressrow{margin:10px 0}
-}
 /* Production coin sprite: 16 x 64px frames in one horizontal strip */
 .coin-sprite{display:block;flex:0 0 42px;width:42px;height:42px;background-image:url("assets/images/sprites/coin-spin-sprite.png");background-repeat:no-repeat;background-size:672px 42px;background-position:0 0;border:0;padding:0;cursor:pointer;animation:none;filter:drop-shadow(0 3px 5px #0005)}
 @keyframes coin-spin{to{background-position:-672px 0}}\n.coin-sprite.spinning{animation:coin-spin .8s steps(16) 1}\n.coin-sprite:active{transform:scale(.94)}
@@ -78,32 +39,101 @@
 .hero-image .brand,.hero-image .level{z-index:3}
 .coin-stat{cursor:pointer}
 .coin-sprite{appearance:none;-webkit-appearance:none;background-color:transparent!important;border-radius:50%;overflow:hidden}
-@media(max-width:499px){
- .phone{height:auto;min-height:100dvh;overflow:visible;padding-bottom:92px}
- .hero{height:330px}
- .hero.hero-image{background-position:center 60%}
- .content{margin-top:-20px;z-index:2}
- .tasks{padding-bottom:18px}
- .nav{background:#03182ff2;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
- .add{bottom:76px}
-}
 
-/* FAB dock alignment: float fully above the fixed bottom navigation */
+/* Canonical mobile Home layout — final values only */
 @media(max-width:499px){
- .add{
-   position:fixed;
-   z-index:20;
-   left:auto;
-   right:max(20px,calc((100vw - 430px)/2 + 20px));
-   bottom:calc(70px + env(safe-area-inset-bottom) + 14px);
-   transform:none;
-   margin:0;
- }
-}
+  .phone{
+    height:auto;
+    min-height:100dvh;
+    overflow:visible;
+    overflow-x:hidden;
+    padding-top:0;
+    padding-bottom:92px;
+  }
+  .hero{height:330px}
+  .hero.hero-image{
+    height:calc(330px + env(safe-area-inset-top));
+    background-position:center 60%;
+  }
+  .hero.hero-image::before{
+    content:"";
+    position:absolute;
+    z-index:2;
+    top:0;left:0;right:0;
+    height:calc(env(safe-area-inset-top) + 58px);
+    pointer-events:none;
+    background:linear-gradient(180deg,rgba(2,11,29,.72) 0%,rgba(2,11,29,.40) 45%,rgba(2,11,29,0) 100%);
+  }
+  .hero-image .brand,.hero-image .level{top:calc(env(safe-area-inset-top) + 27px)}
+  .brand{left:24px}
+  .logo{font-size:42px}
+  .tag{font-size:12px;margin-top:7px}
+  .level{right:20px;width:138px;padding:8px 10px 9px 46px}
+  .level .fire{width:30px;height:30px;left:9px;top:8px}
+  .art{inset:92px 0 0}
+  .island{width:190px;height:78px;right:24px;top:69px}
+  .water{right:76px;top:95px;width:31px;height:113px}
+  .house{right:73px;top:53px;width:81px;height:64px}
+  .house:before{width:62px;height:62px;left:10px;top:-29px}
+  .ledge{width:166px;height:45px;bottom:17px}
+  .avatar{left:49px;bottom:36px;transform:scale(.88);transform-origin:bottom left}
+  .content{
+    margin-top:-20px;
+    padding:16px 22px 12px;
+    border-radius:27px 27px 0 0;
+    z-index:2;
+  }
+  .greet h1{font-size:23px}
+  .greet p{font-size:13px}
+  .progressrow{margin:13px 0}
+  .progress{height:15px}
+  .stats{gap:10px;margin-bottom:11px}
+  .stat{height:58px;border-radius:16px}
+  .stat .ico{font-size:30px}
+  .stat strong{font-size:20px}
+  .stat small{font-size:10px}
+  .tasks{gap:7px;padding-bottom:18px}
+  .task{height:56px;border-radius:14px;padding:0 12px;grid-template-columns:30px 32px 1fr auto;gap:7px}
+  .check{width:27px;height:27px}
+  .taskicon{font-size:21px}
+  .tasktitle{font-size:13px}
+  .taskmeta{font-size:10px}
+  .reward{font-size:12px}
 
-/* Fine-tune FAB vertical position */
-@media(max-width:499px){
- .add{bottom:calc(70px + env(safe-area-inset-bottom) + 4px)}
+  .nav{
+    position:fixed;
+    left:50%;
+    right:auto;
+    bottom:0;
+    transform:translateX(-50%);
+    width:min(100%,430px);
+    height:78px;
+    padding:8px 5px max(7px,env(safe-area-inset-bottom));
+    background:#03182ff2;
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+  }
+  .nav .ni{font-size:27px}
+  .nav button{font-size:10px;gap:3px}
+
+  .add{
+    position:fixed;
+    z-index:20;
+    left:auto;
+    right:max(20px,calc((100vw - 430px)/2 + 20px));
+    bottom:calc(78px + env(safe-area-inset-bottom) + 4px);
+    width:54px;
+    height:54px;
+    font-size:35px;
+    transform:none;
+    margin:0;
+  }
+}
+@media(max-height:760px) and (max-width:499px){
+  .content{padding-top:13px}
+  .task{height:52px}
+  .stat{height:54px}
+  .progressrow{margin:10px 0}
 }
 
 /* Native-like scrolling: keep scrolling, hide browser scrollbars */
@@ -913,18 +943,6 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 }
 @media(prefers-reduced-motion:reduce){
   .completed-screen.play .completed-btn{animation:none!important;opacity:1;transform:translateX(-50%) scale(1)}
-}
-
-/* Bottom navigation — slightly larger touch area and icons */
-@media(max-width:499px){
-  .nav{
-    height:78px;
-    padding-top:8px;
-    padding-bottom:max(7px,env(safe-area-inset-bottom));
-  }
-  .nav .ni{font-size:27px}
-  .nav button{font-size:10px;gap:3px}
-  .add{bottom:calc(78px + env(safe-area-inset-bottom) + 4px)}
 }
 
 /* Completion screen is a fixed, non-scrollable reward state */
