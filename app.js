@@ -416,7 +416,45 @@ window.toggleDailyReminder=async el=>{
   }
 };
 
+const restoreProfileAfterNativePicker=scrollTop=>{
+  const finish=()=>{
+    if(!document.querySelector(".profile-screen"))return;
+    openProfile();
+    requestAnimationFrame(()=>{
+      window.scrollTo(0,scrollTop);
+      requestAnimationFrame(()=>window.scrollTo(0,scrollTop));
+    });
+  };
+
+  // iOS updates visualViewport asynchronously after its native time picker
+  // closes. Re-render only after that viewport has settled.
+  if(window.visualViewport){
+    let done=false;
+    let settleTimer=null;
+    const cleanup=()=>{
+      if(done)return;
+      done=true;
+      window.visualViewport.removeEventListener("resize",onViewportChange);
+      window.visualViewport.removeEventListener("scroll",onViewportChange);
+      clearTimeout(settleTimer);
+      finish();
+    };
+    const onViewportChange=()=>{
+      clearTimeout(settleTimer);
+      settleTimer=setTimeout(cleanup,90);
+    };
+    window.visualViewport.addEventListener("resize",onViewportChange);
+    window.visualViewport.addEventListener("scroll",onViewportChange);
+    settleTimer=setTimeout(cleanup,320);
+    setTimeout(cleanup,650);
+    return;
+  }
+
+  setTimeout(finish,180);
+};
+
 window.updateReminderTime=async el=>{
+  const scrollTop=window.scrollY||document.documentElement.scrollTop||0;
   const value=/^([01]\d|2[0-3]):[0-5]\d$/.test(el.value)?el.value:DEFAULT_REMINDER_TIME;
   state.reminderTime=value;
   saveState();
@@ -424,6 +462,11 @@ window.updateReminderTime=async el=>{
 
   const detail=document.querySelector("[data-reminder-time-label]");
   if(detail)detail.textContent=`${state.reminderTime} · alleen bij open taken`;
+
+  // Close the native iOS control immediately so it can restore its viewport
+  // while the backend sync continues independently.
+  el.blur();
+  restoreProfileAfterNativePicker(scrollTop);
 
   await syncReminderBackendState(true);
 };
