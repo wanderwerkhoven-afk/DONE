@@ -810,6 +810,11 @@ window.openProfile=()=>{
         <span class="profile-test-copy"><b data-test-title>Test notificatie</b><small data-test-detail>Stuur nu een proefmelding naar dit apparaat</small></span>
         <span class="profile-test-arrow" aria-hidden="true">›</span>
       </button>
+      <button class="profile-data-tile" type="button" onclick="openDataPopup()" aria-label="Back-up en gegevensbeheer">
+        <span class="profile-data-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 19h14"/></svg></span>
+        <span class="profile-data-copy"><b>Gegevens</b><small>Back-up, herstellen en resetten</small></span>
+        <span class="profile-data-arrow" aria-hidden="true">›</span>
+      </button>
       <button class="profile-reset-progress" type="button" onclick="resetProgress()" aria-label="Reset level en XP">
         <span class="profile-reset-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8V4m0 0h4M4 4l3.1 3.1A7 7 0 1 1 5 13"/></svg></span>
         <span><b>Refresh voortgang</b><small>Zet level en XP terug naar het begin</small></span>
@@ -834,6 +839,156 @@ window.openAvatarPicker=()=>{
 };
 window.closeAvatarPicker=()=>{const picker=document.querySelector(".avatar-picker");if(!picker)return;picker.classList.remove("show");setTimeout(()=>picker.remove(),180)};
 window.selectProfileAvatar=n=>{state.profileAvatar=n;saveState();closeAvatarPicker();setTimeout(()=>openProfile(),120)};
+
+// ============================================================================
+// PROFILE DATA / BACKUP
+// Eén profieltegel opent een popup voor export, import en volledige reset.
+// ============================================================================
+const BACKUP_VERSION=1;
+
+window.openDataPopup=()=>{
+  document.querySelector(".data-popup")?.remove();
+  const popup=document.createElement("div");
+  popup.className="data-popup";
+  popup.innerHTML=`<button class="data-popup-backdrop" type="button" onclick="closeDataPopup()" aria-label="Sluiten"></button>
+    <section class="data-popup-modal" role="dialog" aria-modal="true" aria-labelledby="dataPopupTitle">
+      <button class="data-popup-close" type="button" onclick="closeDataPopup()" aria-label="Sluiten">×</button>
+      <div class="data-popup-emblem" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3v10m0 0 3.5-3.5M12 13 8.5 9.5"/><path d="M5 17v2h14v-2"/></svg>
+      </div>
+      <header class="data-popup-head">
+        <h2 id="dataPopupTitle">Jouw DONE. gegevens</h2>
+        <p>Bewaar je voortgang voordat je de app opnieuw installeert of van apparaat wisselt.</p>
+      </header>
+      <div class="data-popup-actions">
+        <button type="button" onclick="exportDoneBackup()">
+          <span class="data-action-icon"><svg viewBox="0 0 24 24"><path d="M12 4v10m0 0 4-4m-4 4-4-4"/><path d="M5 19h14"/></svg></span>
+          <span><b>Back-up maken</b><small>Bewaar al je taken, XP en instellingen</small></span>
+          <i>›</i>
+        </button>
+        <button type="button" onclick="chooseDoneBackup()">
+          <span class="data-action-icon"><svg viewBox="0 0 24 24"><path d="M12 20V10m0 0 4 4m-4-4-4 4"/><path d="M5 5h14"/></svg></span>
+          <span><b>Back-up herstellen</b><small>Zet een eerder opgeslagen DONE.-bestand terug</small></span>
+          <i>›</i>
+        </button>
+      </div>
+      <div class="data-popup-danger">
+        <button type="button" onclick="resetAllDoneData()">
+          <span class="data-action-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13"/><path d="M10 11v5m4-5v5"/></svg></span>
+          <span><b>Alle gegevens wissen</b><small>Verwijder taken, XP, achievements en instellingen</small></span>
+        </button>
+      </div>
+      <input class="data-backup-input" type="file" accept="application/json,.json" onchange="restoreDoneBackup(this)" aria-hidden="true" tabindex="-1">
+      <p class="data-popup-status" role="status" aria-live="polite"></p>
+    </section>`;
+  document.querySelector(".profile-screen")?.appendChild(popup);
+  requestAnimationFrame(()=>popup.classList.add("show"));
+};
+
+window.closeDataPopup=()=>{
+  const popup=document.querySelector(".data-popup");
+  if(!popup)return;
+  popup.classList.remove("show");
+  setTimeout(()=>popup.remove(),180);
+};
+
+const setDataPopupStatus=(message,type="")=>{
+  const el=document.querySelector(".data-popup-status");
+  if(!el)return;
+  el.textContent=message||"";
+  el.dataset.type=type;
+};
+
+window.exportDoneBackup=async()=>{
+  const backup={
+    app:"DONE.",
+    format:"done-backup",
+    version:BACKUP_VERSION,
+    exportedAt:new Date().toISOString(),
+    state:JSON.parse(JSON.stringify(state))
+  };
+  const content=JSON.stringify(backup,null,2);
+  const date=localDateKey();
+  const fileName=`DONE-backup-${date}.json`;
+  const file=new File([content],fileName,{type:"application/json"});
+
+  try{
+    if(navigator.share&&navigator.canShare?.({files:[file]})){
+      await navigator.share({files:[file],title:"DONE. back-up"});
+      setDataPopupStatus("Back-up klaar om te bewaren.","success");
+      return;
+    }
+  }catch(error){
+    if(error?.name==="AbortError")return;
+  }
+
+  const url=URL.createObjectURL(file);
+  const link=document.createElement("a");
+  link.href=url;
+  link.download=fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  setDataPopupStatus("Back-up gedownload.","success");
+};
+
+window.chooseDoneBackup=()=>{
+  const input=document.querySelector(".data-backup-input");
+  if(!input)return;
+  input.value="";
+  input.click();
+};
+
+window.restoreDoneBackup=async input=>{
+  const file=input?.files?.[0];
+  if(!file)return;
+
+  try{
+    const raw=await file.text();
+    const parsed=JSON.parse(raw);
+    if(
+      !parsed||
+      parsed.format!=="done-backup"||
+      !parsed.state||
+      typeof parsed.state!=="object"||
+      Array.isArray(parsed.state)
+    )throw new Error("Dit is geen geldige DONE.-back-up.");
+
+    const restored={...defaultState,...parsed.state};
+    if(!Array.isArray(restored.tasks)||!Array.isArray(restored.taskHistory)){
+      throw new Error("De back-up bevat ongeldige taakgegevens.");
+    }
+
+    const confirmed=window.confirm("Back-up herstellen? Je huidige DONE.-gegevens worden vervangen door deze back-up.");
+    if(!confirmed)return;
+
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(restored));
+    setDataPopupStatus("Back-up hersteld. DONE. wordt opnieuw geladen…","success");
+    setTimeout(()=>window.location.reload(),450);
+  }catch(error){
+    setDataPopupStatus(error?.message||"Back-up kon niet worden hersteld.","error");
+  }
+};
+
+window.resetAllDoneData=async()=>{
+  const confirmed=window.confirm("Alle DONE.-gegevens wissen? Dit verwijdert je taken, XP, coins, achievements, geschiedenis en instellingen. Dit kan niet ongedaan worden gemaakt.");
+  if(!confirmed)return;
+
+  try{
+    state.reminderEnabled=false;
+    await syncReminderBackendState(true);
+    const subscription=await getActivePushSubscription();
+    await subscription?.unsubscribe().catch(()=>false);
+  }catch(error){
+    console.warn("Pushgegevens konden niet volledig worden opgeruimd",error);
+  }
+
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(REMINDER_CLIENT_ID_KEY);
+  setDataPopupStatus("Alle gegevens zijn gewist. DONE. wordt opnieuw geladen…","success");
+  setTimeout(()=>window.location.reload(),450);
+};
 
 // ============================================================================
 // PROFILE ACTIONS
