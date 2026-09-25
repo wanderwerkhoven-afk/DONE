@@ -295,20 +295,8 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   .size-card{height:116px}
 }
 
-/* iOS fullscreen hero: artwork continues behind the status bar, with a contrast fade */
+/* New Task iOS safe-area artwork */
 @media(max-width:499px){
-  .phone{padding-top:0}
-  .hero.hero-image{height:calc(330px + env(safe-area-inset-top));background-position:center 60%}
-  .hero.hero-image::before{
-    content:"";
-    position:absolute;
-    z-index:2;
-    top:0;left:0;right:0;
-    height:calc(env(safe-area-inset-top) + 58px);
-    pointer-events:none;
-    background:linear-gradient(180deg,rgba(2,11,29,.72) 0%,rgba(2,11,29,.40) 45%,rgba(2,11,29,0) 100%);
-  }
-  .hero-image .brand,.hero-image .level{top:calc(env(safe-area-inset-top) + 27px)}
   .new-task-header{top:0;padding-top:env(safe-area-inset-top);height:calc(64px + env(safe-area-inset-top))}
   .new-task-hero{height:calc(365px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
   .new-task-hero::before{
@@ -319,9 +307,21 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 }
 
 /* Task completed celebration */
-.completed-screen{height:100dvh;min-height:100dvh;padding:0;overflow:hidden;background:#03132f}
-.completed-scene{position:absolute;inset:0;background-image:linear-gradient(180deg,rgba(2,13,38,.12),rgba(2,13,38,.03) 56%,rgba(2,10,27,.42)),url("assets/images/home/hero-task-completed.png");background-size:cover;background-position:center center;overflow:hidden}
-.completed-scene:after{content:"";position:absolute;inset:auto 0 0;height:28%;background:linear-gradient(180deg,transparent,rgba(1,8,22,.28));pointer-events:none}
+.completed-screen{height:100dvh;min-height:100dvh;max-height:100dvh;padding:0;overflow:hidden;overscroll-behavior:none;touch-action:none;background:#03132f}
+.completed-scene{
+  position:absolute;inset:0;overflow:hidden;
+  background-image:
+    radial-gradient(circle at 50% 74%,rgba(255,170,40,.12),transparent 27%),
+    linear-gradient(180deg,rgba(0,8,30,.26),rgba(0,10,35,.08) 48%,rgba(0,7,25,.48)),
+    url("assets/images/home/hero-task-completed.png");
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
+}
+.completed-scene:after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse at center,transparent 42%,rgba(0,7,28,.12) 70%,rgba(0,5,22,.42) 100%);
+}
 .completed-copy{position:absolute;z-index:10;top:calc(env(safe-area-inset-top) + 54px);left:20px;right:20px;text-align:center;text-shadow:0 3px 12px #001a}
 .completed-copy h1{margin:0;font-size:31px;line-height:1;font-weight:1000;letter-spacing:-1.5px}
 .completed-copy p{margin:9px 0 0;font-size:17px;font-weight:800}
@@ -330,7 +330,6 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .celebration-rays{position:absolute;z-index:2;top:22%;left:50%;width:380px;height:380px;transform:translate(-50%,-50%) scale(.45);opacity:0;background:repeating-conic-gradient(from 0deg,rgba(75,255,178,.26) 0 7deg,transparent 7deg 16deg);border-radius:50%;mask-image:radial-gradient(circle,#000 0 18%,rgba(0,0,0,.85) 30%,transparent 70%);-webkit-mask-image:radial-gradient(circle,#000 0 18%,rgba(0,0,0,.85) 30%,transparent 70%)}
 .xp-pop{position:absolute;z-index:9;top:35%;left:0;right:0;text-align:center;font-size:40px;font-weight:1000;letter-spacing:-1px;color:#ffd75a;text-shadow:0 3px 0 #a05a11,0 0 16px #ffc72e;opacity:0;transform:translateY(20px) scale(.65)}
 .completion-quote{position:absolute;z-index:9;top:42%;left:50%;width:252px;transform:translateX(-50%) translateY(12px);padding:14px 18px;border-radius:17px;text-align:center;font-size:15px;font-weight:750;line-height:1.35;background:linear-gradient(145deg,rgba(76,105,185,.86),rgba(52,71,151,.82));border:1px solid rgba(194,211,255,.25);box-shadow:0 8px 24px #0017,inset 0 1px #fff2;opacity:0}
-.victory-sprite{position:absolute;z-index:6;left:50%;bottom:9%;width:min(72vw,310px);aspect-ratio:1/1;transform:translateX(-50%);background-image:url("sprite idle task accomplished.png");background-repeat:no-repeat;background-size:400% 400%;background-position:0 0;filter:drop-shadow(0 12px 12px #0018);opacity:0}
 .confetti{position:absolute;z-index:8;inset:0;pointer-events:none;overflow:hidden}
 .confetti i{position:absolute;left:50%;top:24%;width:8px;height:17px;border-radius:2px;background:hsl(calc(var(--i)*47deg),90%,68%);opacity:0;transform:translate(-50%,-50%) rotate(calc(var(--i)*23deg))}
 .completed-btn{position:absolute;z-index:20;left:50%;bottom:calc(env(safe-area-inset-bottom) + 25px);transform:translateX(-50%);width:215px;height:60px;border-radius:32px;border:2px solid #e2d7ff;background:linear-gradient(180deg,#a479ff,#6650f5);box-shadow:inset 0 2px 4px #fff6,0 0 20px #8067ff99,0 8px 20px #0019;color:#fff;font-size:18px;font-weight:900;text-shadow:0 2px 3px #3920a0;opacity:0}
@@ -339,7 +338,6 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .completed-screen.play .celebration-rays{animation:rays-in 1s ease-out .1s forwards,rays-spin 13s linear 1.1s infinite}
 .completed-screen.play .xp-pop{animation:xp-in .55s cubic-bezier(.2,1.4,.3,1) .55s forwards}
 .completed-screen.play .completion-quote{animation:soft-in .5s ease .82s forwards}
-.completed-screen.play .victory-sprite{opacity:1;animation:victory-frames 1.15s steps(1,end) .48s forwards,victory-idle 1.8s ease-in-out 1.65s infinite}
 .completed-screen.play .completed-btn{animation:soft-in .5s ease 1.15s forwards}
 .completed-screen.play .confetti i{animation:confetti-burst 1.25s cubic-bezier(.12,.65,.28,1) calc(.25s + var(--i)*.018s) forwards}
 
@@ -372,102 +370,10 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   8%{opacity:1}
   100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 8.5)*20px),calc(-50% + 280px + (var(--i)%4)*28px)) rotate(calc(var(--i)*95deg))}
 }
-@media(prefers-reduced-motion:reduce){.completed-screen.play .completion-check,.completed-screen.play .xp-pop,.completed-screen.play .completion-quote,.completed-screen.play .victory-sprite,.completed-screen.play .completed-btn{animation:none;opacity:1}.completed-screen.play .completion-check{transform:translate(-50%,-50%)}.completed-screen.play .xp-pop{transform:none}.completed-screen.play .completion-quote,.completed-screen.play .completed-btn{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.completed-screen.play .completion-check,.completed-screen.play .xp-pop,.completed-screen.play .completion-quote,.completed-screen.play .completed-btn{animation:none;opacity:1}.completed-screen.play .completion-check{transform:translate(-50%,-50%)}.completed-screen.play .xp-pop{transform:none}.completed-screen.play .completion-quote,.completed-screen.play .completed-btn{transform:translateX(-50%)}}
 
-
-/* Completion full-scene frame sequence: 1 -> 2 -> 3 -> 4 */
-.completed-scene{background:#03132f}
-.completed-bg-sequence,.completed-bg-frame{position:absolute;inset:0}
-.completed-bg-sequence{z-index:1;overflow:hidden}
-.completed-bg-frame{background-size:cover;background-position:center center;background-repeat:no-repeat;opacity:0;will-change:opacity}
-.completed-bg-frame.f1{background-image:url("assets/images/1.png")}
-.completed-bg-frame.f2{background-image:url("assets/images/2.png")}
-.completed-bg-frame.f3{background-image:url("assets/images/3.png")}
-.completed-bg-frame.f4{background-image:url("assets/images/4.png")}
-.completed-screen.play .completed-bg-frame.f1{animation:completion-frame-1 2.8s linear forwards}
-.completed-screen.play .completed-bg-frame.f2{animation:completion-frame-2 2.8s linear forwards}
-.completed-screen.play .completed-bg-frame.f3{animation:completion-frame-3 2.8s linear forwards}
-.completed-screen.play .completed-bg-frame.f4{animation:completion-frame-4 2.8s linear forwards}
-@keyframes completion-frame-1{0%,17%{opacity:1}25%,100%{opacity:0}}
-@keyframes completion-frame-2{0%,15%{opacity:0}24%,42%{opacity:1}50%,100%{opacity:0}}
-@keyframes completion-frame-3{0%,40%{opacity:0}49%,67%{opacity:1}76%,100%{opacity:0}}
-@keyframes completion-frame-4{0%,65%{opacity:0}75%,100%{opacity:1}}
-/* Old separate character sprite is intentionally disabled; character is baked into the 4 full frames. */
-.victory-sprite{display:none!important}
-.completed-copy,.celebration-rays,.completion-check,.xp-pop,.completion-quote,.confetti,.completed-btn{position:absolute}
-
-/* Completion timing + fixed-center glow override */
-.completed-screen.play .completed-bg-frame.f1{animation:completion-frame-fast-1 .72s linear forwards}
-.completed-screen.play .completed-bg-frame.f2{animation:completion-frame-fast-2 .72s linear forwards}
-.completed-screen.play .completed-bg-frame.f3{animation:completion-frame-fast-3 .72s linear forwards}
-.completed-screen.play .completed-bg-frame.f4{animation:completion-frame-fast-4 .72s linear forwards}
-@keyframes completion-frame-fast-1{0%,18%{opacity:1}31%,100%{opacity:0}}
-@keyframes completion-frame-fast-2{0%,16%{opacity:0}29%,43%{opacity:1}56%,100%{opacity:0}}
-@keyframes completion-frame-fast-3{0%,41%{opacity:0}54%,68%{opacity:1}81%,100%{opacity:0}}
-@keyframes completion-frame-fast-4{0%,66%{opacity:0}79%,100%{opacity:1}}
-.completed-screen.play .celebration-rays{animation:rays-fixed-in .45s ease-out .08s forwards,rays-fixed-spin 10s linear .53s infinite}
-@keyframes rays-fixed-in{from{opacity:0;transform:translate(-50%,-50%) scale(.45) rotate(0)}to{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}}
-@keyframes rays-fixed-spin{from{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}to{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(360deg)}}
-
-/* Faster 4-frame completion animation */
-.completed-screen.play .completed-bg-frame.f1{animation-duration:.40s}
-.completed-screen.play .completed-bg-frame.f2{animation-duration:.40s}
-.completed-screen.play .completed-bg-frame.f3{animation-duration:.40s}
-.completed-screen.play .completed-bg-frame.f4{animation-duration:.40s}
-
-/* Hard-cut completion frames: no opacity crossfade / ghosting */
-.completed-screen.play .completed-bg-frame.f1{animation:completion-hard-1 .32s steps(1,end) forwards}
-.completed-screen.play .completed-bg-frame.f2{animation:completion-hard-2 .32s steps(1,end) forwards}
-.completed-screen.play .completed-bg-frame.f3{animation:completion-hard-3 .32s steps(1,end) forwards}
-.completed-screen.play .completed-bg-frame.f4{animation:completion-hard-4 .32s steps(1,end) forwards}
-@keyframes completion-hard-1{0%,24.99%{opacity:1}25%,100%{opacity:0}}
-@keyframes completion-hard-2{0%,24.99%{opacity:0}25%,49.99%{opacity:1}50%,100%{opacity:0}}
-@keyframes completion-hard-3{0%,49.99%{opacity:0}50%,74.99%{opacity:1}75%,100%{opacity:0}}
-@keyframes completion-hard-4{0%,74.99%{opacity:0}75%,100%{opacity:1}}
-
-/* 8-frame hard-cut completion sequence, ~55ms per frame */
-.completed-bg-frame.f5{background-image:url("assets/images/5.png")}
-.completed-bg-frame.f6{background-image:url("assets/images/6.png")}
-.completed-bg-frame.f7{background-image:url("assets/images/7.png")}
-.completed-bg-frame.f8{background-image:url("assets/images/8.png")}
-.completed-screen.play .completed-bg-frame.f1{animation:completion8-1 .44s steps(1,end) forwards}
-.completed-screen.play .completed-bg-frame.f2{animation:completion8-2 .44s steps(1,end) forwards}
-.completed-screen.play .completed-bg-frame.f3{animation:completion8-3 .44s steps(1,end) forwards}
-.completed-screen.play .completed-bg-frame.f4{animation:completion8-4 .44s steps(1,end) forwards}
-.completed-screen.play .completed-bg-frame.f5{animation:completion8-5 .44s steps(1,end) forwards}
-.completed-screen.play .completed-bg-frame.f6{animation:completion8-6 .44s steps(1,end) forwards}
-.completed-screen.play .completed-bg-frame.f7{animation:completion8-7 .44s steps(1,end) forwards}
-.completed-screen.play .completed-bg-frame.f8{animation:completion8-8 .44s steps(1,end) forwards}
-@keyframes completion8-1{0%,12.49%{opacity:1}12.5%,100%{opacity:0}}
-@keyframes completion8-2{0%,12.49%{opacity:0}12.5%,24.99%{opacity:1}25%,100%{opacity:0}}
-@keyframes completion8-3{0%,24.99%{opacity:0}25%,37.49%{opacity:1}37.5%,100%{opacity:0}}
-@keyframes completion8-4{0%,37.49%{opacity:0}37.5%,49.99%{opacity:1}50%,100%{opacity:0}}
-@keyframes completion8-5{0%,49.99%{opacity:0}50%,62.49%{opacity:1}62.5%,100%{opacity:0}}
-@keyframes completion8-6{0%,62.49%{opacity:0}62.5%,74.99%{opacity:1}75%,100%{opacity:0}}
-@keyframes completion8-7{0%,74.99%{opacity:0}75%,87.49%{opacity:1}87.5%,100%{opacity:0}}
-@keyframes completion8-8{0%,87.49%{opacity:0}87.5%,100%{opacity:1}}
-
-/* Restore original completion hero from home folder */
-.completed-scene{
-  background-image:linear-gradient(180deg,rgba(2,13,38,.12),rgba(2,13,38,.03) 56%,rgba(2,10,27,.42)),url("assets/images/home/hero-task-completed.png")!important;
-  background-size:cover!important;
-  background-position:center center!important;
-  background-repeat:no-repeat!important;
-}
-.completed-bg-sequence,.completed-bg-frame{display:none!important}
 
 /* Completion screen visual pass: closer to reward reference */
-.completed-scene{
-  background-image:
-    radial-gradient(circle at 50% 74%,rgba(255,170,40,.12),transparent 27%),
-    linear-gradient(180deg,rgba(0,8,30,.26),rgba(0,10,35,.08) 48%,rgba(0,7,25,.48)),
-    url("assets/images/home/hero-task-completed.png")!important;
-}
-.completed-scene:after{
-  height:100%!important;
-  background:radial-gradient(ellipse at center,transparent 42%,rgba(0,7,28,.12) 70%,rgba(0,5,22,.42) 100%)!important;
-  z-index:1;
-}
 .completed-copy{top:calc(env(safe-area-inset-top) + 42px);z-index:12}
 .completed-copy h1{font-size:28px;text-shadow:0 2px 0 #8f481b,0 0 10px rgba(255,171,77,.38)}
 .completed-copy p{margin-top:7px;font-size:15px}
@@ -857,19 +763,6 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 }
 @media(prefers-reduced-motion:reduce){
   .completed-screen.play .completed-btn{animation:none!important;opacity:1;transform:translateX(-50%) scale(1)}
-}
-
-/* Completion screen is a fixed, non-scrollable reward state */
-.completed-screen{
-  height:100dvh!important;
-  max-height:100dvh!important;
-  overflow:hidden!important;
-  overscroll-behavior:none;
-  touch-action:none;
-}
-.completed-screen .completed-scene{
-  height:100%!important;
-  overflow:hidden!important;
 }
 
 /* Account shortcut + settings */
