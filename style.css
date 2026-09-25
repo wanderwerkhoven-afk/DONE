@@ -2473,3 +2473,20 @@ input,textarea,[contenteditable="true"]{
   .tasks-empty-icon svg{width:36px;height:36px}
   .tasks-empty-state p{margin-bottom:12px}
 }
+
+
+/* ===== Reward screen profile setting ===== */
+.profile-reward-setting>span{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  column-gap:6px;
+}
+.profile-reward-setting>span small{
+  flex-basis:100%;
+  margin:3px 0 0 27px;
+  color:#8fa7c1;
+  font-size:10px;
+  line-height:1.25;
+  font-weight:650;
+}
