@@ -1,4 +1,12 @@
+// ============================================================================
+// APP STATE & LOCAL STORAGE
+// Centrale state, level/XP-berekening en persistente opslag in localStorage.
+// ============================================================================
 const STORAGE_KEY="done-state-v1";
+// ============================================================================
+// SHARED NAVIGATION ICONS
+// SVG-iconen die door de onderste navigatie op meerdere schermen worden gebruikt.
+// ============================================================================
 const navIcon=name=>({today:`<svg viewBox="0 0 32 32" aria-hidden="true"><rect class="icon-fill" x="5" y="7" width="22" height="20" rx="6"/><path class="icon-cut" d="M10 5v5M22 5v5M9 14h14"/><path class="icon-detail" d="M11 18.5c1.3 2.5 3 3.7 5 3.7s3.7-1.2 5-3.7"/></svg>`,world:`<svg viewBox="0 0 32 32" aria-hidden="true"><circle class="icon-fill" cx="16" cy="16" r="11"/><path class="icon-cut" d="M7.2 13.2c3.2-.2 5.2.6 6.2 2.4.8 1.4.2 2.6-.3 3.8-.6 1.4-.4 2.7.9 4M17.5 5.4c-.4 2.4.5 4 2.7 4.8 2.2.8 3.4 2.3 3.5 4.4.1 1.5 1 2.4 2.5 2.7M16.5 11.3c1.1 1.1 1.2 2.1.3 3-.9.9-2 1-3.2.2"/></svg>`,achievements:`<svg viewBox="0 0 32 32" aria-hidden="true"><path class="icon-fill" d="M10 6h12v7c0 4-2.4 6.5-6 6.5S10 17 10 13z"/><path class="icon-fill" d="M10 9H5v2.5c0 4 2.4 6 6.3 6M22 9h5v2.5c0 4-2.4 6-6.3 6M14 19h4v5h4v3H10v-3h4z"/><circle class="icon-cut" cx="16" cy="12" r="2.2"/></svg>`,profile:`<svg viewBox="0 0 32 32" aria-hidden="true"><circle class="icon-fill" cx="16" cy="10" r="6"/><path class="icon-fill" d="M6 27c.6-6.2 3.9-9.3 10-9.3S25.4 20.8 26 27z"/></svg>`})[name];
 const defaultState={level:1,xp:0,maxXp:100,streak:0,coins:0,profileAvatar:1,tasks:[{title:"Verslag afmaken",meta:"Grote taak",xp:50,icon:"🧠"},{title:"Mail beantwoorden",meta:"Kleine taak",xp:10,icon:"✉️"},{title:"Was ophangen",meta:"",xp:10,icon:"🧹",done:true},{title:"20 min sporten",meta:"Normale taak",xp:25,icon:"🏋️"}]};
 const xpForLevel=level=>100+(Math.max(1,level)-1)*50;
@@ -13,6 +21,10 @@ const localDateKey=d=>{const x=d?new Date(d):new Date();return [x.getFullYear(),
 const coinReward=xp=>xp>=50?10:xp>=25?5:2;
 state.taskHistory=Array.isArray(state.taskHistory)?state.taskHistory:[];
 state.tasks=state.tasks.map(t=>({...t,createdAt:t.createdAt||new Date().toISOString(),rewardClaimed:Boolean(t.rewardClaimed),completedAt:t.done?(t.completedAt||new Date().toISOString()):t.completedAt}));
+// ============================================================================
+// TASK HISTORY / DAILY ARCHIVING
+// Verplaatst afgeronde taken van eerdere dagen naar het permanente takenlogboek.
+// ============================================================================
 const archiveOldCompletedTasks=()=>{
   const today=localDateKey(),keep=[];
   state.tasks.forEach(t=>{
@@ -25,8 +37,16 @@ const archiveOldCompletedTasks=()=>{
 const saveState=()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}};
 archiveOldCompletedTasks();
 saveState();
+// ============================================================================
+// HOME SCREEN
+// Bouwt het hoofdscherm: hero, voortgang, stats, takenlijst, FAB en bottom-nav.
+// ============================================================================
 function render(){cancelTaskLongPress?.();activeTaskEditIndex=null;archiveOldCompletedTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image"><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>Goedemiddag! 👋</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${taskPct}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.length?visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<div class="task-wrap" data-task-index="${i}"><button class="task ${t.done?"done":""}" onclick="handleTaskClick(event,${i})" onpointerdown="startTaskLongPress(event,${i},this)" onpointerup="endTaskLongPress(event)" onpointercancel="cancelTaskLongPress()" onpointerleave="cancelTaskLongPress()" onpointermove="trackTaskLongPress(event)" oncontextmenu="return false"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${t.title}</div>${t.meta?`<div class="taskmeta">${t.meta}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button><button class="task-delete-btn" type="button" aria-label="Verwijder taak ${t.title.replace(/"/g,"&quot;")}" onclick="deleteTask(event,${i})"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button></div>`}).join(""):`<section class="tasks-empty-state" aria-label="Geen taken"><div class="tasks-empty-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"/><path d="m21 33 7 7 15-17"/></svg></div><h2>Alles afgevinkt</h2><p>Je hebt voor vandaag geen openstaande taken.</p><button type="button" onclick="openNewTask()">Nieuwe taak toevoegen</button></section>`}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`}
 
+// ============================================================================
+// PROGRESSION: XP, LEVELS & STREAK
+// Verwerkt XP, levelgrenzen en de dagelijkse streak.
+// ============================================================================
 const addXp=amount=>{state.xp+=amount;let levelsGained=0;while(state.xp>=state.maxXp){state.xp-=state.maxXp;state.level++;levelsGained++;state.maxXp=xpForLevel(state.level)}saveState();return levelsGained};
 const updateStreak=()=>{
   const today=localDateKey(),last=state.lastActiveDate;
@@ -35,6 +55,10 @@ const updateStreak=()=>{
   state.streak=last===localDateKey(y)?Math.max(1,Number(state.streak)||0)+1:1;
   state.lastActiveDate=today;
 };
+// ============================================================================
+// TASK INTERACTION: LONG PRESS / DELETE MODE
+// Lang indrukken activeert de verwijdermodus zonder normale task-click te triggeren.
+// ============================================================================
 let taskLongPressTimer=null;
 let taskLongPressStartPoint=null;
 let taskLongPressTriggered=false;
@@ -104,6 +128,10 @@ window.deleteTask=(event,index)=>{
   render();
 };
 
+// ============================================================================
+// TASK COMPLETION & REWARDS
+// Vinkt taken af, kent XP/coins toe en start eventueel de Level Up-flow.
+// ============================================================================
 window.toggleTask=i=>{
   const t=state.tasks[i];
   if(!t.done){
@@ -129,15 +157,31 @@ window.toggleTask=i=>{
   t.done=false;t.completedAt=null;saveState();render();
 };
 
+// ============================================================================
+// COIN INTERACTION
+// Visuele muntanimatie op het Home-scherm.
+// ============================================================================
 window.spinCoin=el=>{if(el.dataset.spinning==="1")return;el.dataset.spinning="1";const frames=16,rotations=5,totalFrames=frames*rotations,duration=1500;let last=-1;el.classList.remove("coin-hop");void el.offsetWidth;el.classList.add("coin-hop");const started=performance.now();const animate=now=>{const t=Math.min((now-started)/duration,1),progress=(1-Math.cos(Math.PI*t))/2,step=Math.min(Math.floor(progress*totalFrames),totalFrames-1);if(step!==last){el.style.backgroundPosition=(-((step%frames)*64))+"px 0";last=step}if(t<1){requestAnimationFrame(animate);return}el.style.backgroundPosition="0 0";el.classList.remove("coin-hop");el.dataset.spinning="0"};requestAnimationFrame(animate)};
 
+// ============================================================================
+// NEW TASK SCREEN
+// Openen, taakgrootte kiezen en nieuwe taak opslaan.
+// ============================================================================
 window.openNewTask=()=>{document.querySelector("#app").innerHTML=`<div class="phone new-task-screen"><header class="new-task-header"><button class="back-btn" onclick="render()" aria-label="Terug">←</button><h1>Nieuwe taak</h1></header><section class="new-task-hero"><div class="quote-bubble">Elke grote reis<br>begint met een kleine stap.</div></section><main class="new-task-form"><label for="taskName">Wat wil je doen?</label><input id="taskName" class="task-input" placeholder="Bijv. Verslag afmaken..." maxlength="80"><fieldset><legend>Hoe groot is deze taak?</legend><div class="size-grid"><button class="size-card" data-size="small" onclick="selectTaskSize(this)"><span class="size-icon">🌱</span><strong>Klein</strong><b>+10 XP</b></button><button class="size-card selected" data-size="normal" onclick="selectTaskSize(this)"><span class="size-icon">🔥</span><strong>Normaal</strong><b>+25 XP</b></button><button class="size-card" data-size="large" onclick="selectTaskSize(this)"><span class="size-icon">⛰️</span><strong>Groot</strong><b>+50 XP</b></button></div></fieldset><button class="submit-task" onclick="saveNewTask()">Taak toevoegen</button></main></div>`};
 window.selectTaskSize=el=>{document.querySelectorAll(".size-card").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")};
 window.saveNewTask=()=>{const input=document.querySelector("#taskName"),size=document.querySelector(".size-card.selected")?.dataset.size||"normal";if(!input.value.trim()){input.focus();return}const values={small:["Kleine taak",10,"🌱"],normal:["Normale taak",25,"🔥"],large:["Grote taak",50,"⛰️"]}[size];state.tasks.unshift({id:`task-${Date.now()}`,title:input.value.trim(),meta:values[0],xp:values[1],icon:values[2],done:false,rewardClaimed:false,createdAt:new Date().toISOString()});saveState();render()};
 
+// ============================================================================
+// TASK COMPLETED SCREEN
+// Volledig reward-scherm na het afronden van een taak.
+// ============================================================================
 window.openTaskCompleted=(t,reward={coins:0,levelsGained:0})=>{window.scrollTo(0,0);document.querySelector("#app").scrollTop=0;const nextAction=reward.levelsGained>0?"openLevelUp()":"render()";document.querySelector("#app").innerHTML=`<div class="phone completed-screen"><section class="completed-scene"><div class="completed-copy"><h1 class="arched-title" aria-label="Taak voltooid!"><span style="--n:0">T</span><span style="--n:1">a</span><span style="--n:2">a</span><span style="--n:3">k</span><span class="gap" style="--n:4">&nbsp;</span><span style="--n:5">v</span><span style="--n:6">o</span><span style="--n:7">l</span><span style="--n:8">t</span><span style="--n:9">o</span><span style="--n:10">o</span><span style="--n:11">i</span><span style="--n:12">d</span><span style="--n:13">!</span></h1><p>Goed bezig!</p></div><div class="celebration-rays"></div><div class="completion-check"><span>✓</span></div><div class="xp-pop">+${t.xp} XP${reward.coins?`<small>+${reward.coins} coins</small>`:""}${reward.levelsGained?`<em>Level ${state.level}!</em>`:""}</div><div class="completion-quote">“Consistentie bouwt<br>een betere jij.”</div><div class="landing-glow" aria-hidden="true"></div><div class="completion-character" aria-hidden="true"></div><div class="confetti" aria-hidden="true">${Array.from({length:32},(_,i)=>`<i class="${i<16?"pop-left":"pop-right"}" style="--i:${i%16}"></i>`).join("")}</div></section><button class="completed-btn" onclick="${nextAction}">Nice! ✨</button></div>`;requestAnimationFrame(()=>{window.scrollTo(0,0);const app=document.querySelector("#app");if(app)app.scrollTop=0;const screen=document.querySelector(".completed-screen");if(screen){screen.scrollTop=0;screen.classList.add("play")}})};
 
 
+// ============================================================================
+// LEVEL UP SCREEN
+// Tweede reward-stap wanneer een taak één of meerdere levels oplevert.
+// ============================================================================
 window.openLevelUp=()=>{
   const event=state.pendingLevelUp;
   if(!event){render();return}
@@ -171,6 +215,10 @@ window.openLevelUp=()=>{
 };
 window.continueLevelUp=()=>{if(state.pendingLevelUp){state.lastSeenLevel=Math.max(Number(state.lastSeenLevel)||1,Number(state.pendingLevelUp.newLevel)||state.level);state.pendingLevelUp=null;saveState()}render()};
 
+// ============================================================================
+// PROFILE / SETTINGS
+// Profieloverzicht, statistieken en gebruikersinstellingen.
+// ============================================================================
 window.openSettings=()=>openProfile();
 window.openProfile=()=>{
   const completed=state.taskHistory.length+state.tasks.filter(t=>t.done).length;
@@ -208,6 +256,10 @@ window.openProfile=()=>{
   </div>`;
 };
 
+// ============================================================================
+// PROFILE AVATAR PICKER
+// Popup voor het selecteren en bewaren van een profielafbeelding.
+// ============================================================================
 window.openAvatarPicker=()=>{
   document.querySelector(".avatar-picker")?.remove();
   const selected=Number(state.profileAvatar)||1;
@@ -220,6 +272,10 @@ window.openAvatarPicker=()=>{
 window.closeAvatarPicker=()=>{const picker=document.querySelector(".avatar-picker");if(!picker)return;picker.classList.remove("show");setTimeout(()=>picker.remove(),180)};
 window.selectProfileAvatar=n=>{state.profileAvatar=n;saveState();closeAvatarPicker();setTimeout(()=>openProfile(),120)};
 
+// ============================================================================
+// PROFILE ACTIONS
+// Resetbare voortgang en eenvoudige profielinstellingen.
+// ============================================================================
 window.resetProgress=()=>{
   const confirmed=window.confirm("Weet je zeker dat je je level en XP wilt resetten? Je taken blijven behouden.");
   if(!confirmed)return;
@@ -234,6 +290,10 @@ window.resetProgress=()=>{
 
 window.saveProfileSetting=el=>{state[el.dataset.setting]=el.checked;saveState()};
 
+// ============================================================================
+// TASK LOG
+// Groepeert afgeronde taken per datum en toont het historische overzicht.
+// ============================================================================
 window.openTaskLog=()=>{
   archiveOldCompletedTasks();saveState();
   const all=[...state.taskHistory,...state.tasks.filter(t=>t.done&&t.completedAt)].sort((a,b)=>new Date(b.completedAt)-new Date(a.completedAt));
@@ -243,6 +303,10 @@ window.openTaskLog=()=>{
 };
 
 
+// ============================================================================
+// ACHIEVEMENTS: SHARED HELPERS
+// Iconen, voortgang en opbouw van individuele achievement-kaarten.
+// ============================================================================
 const achievementIcon=(type,locked=false)=>{
   if(locked)return '<span class="achievement-medal locked-medal"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 22v-5a9 9 0 0 1 18 0v5"/><rect x="10" y="21" width="28" height="23" rx="8"/><path d="M24 29v7"/></svg></span>';
   const icons={
@@ -266,6 +330,10 @@ window.filterAchievements=(category,button)=>{
   document.querySelectorAll(".achievement-filter").forEach(b=>b.classList.toggle("active",b===button));
   document.querySelectorAll(".achievement-card").forEach(card=>{card.hidden=category!=="all"&&card.dataset.category!==category});
 };
+// ============================================================================
+// ACHIEVEMENTS SCREEN
+// Definieert achievements, status/voortgang en rendert de achievement-pagina.
+// ============================================================================
 window.openAchievements=()=>{
   archiveOldCompletedTasks();saveState();
   const completed=state.taskHistory.length+state.tasks.filter(t=>t.done).length;
