@@ -844,6 +844,21 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .profile-quote{margin:16px 0;padding:16px 18px;border-radius:17px;background:#173856;display:flex;align-items:center;gap:14px}.profile-quote span{font-size:31px}.profile-quote p{margin:0;font-size:15px;font-weight:750;line-height:1.35}
 .profile-settings{overflow:hidden;border-radius:17px;background:#0d2b47}.profile-settings label{height:52px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08);box-sizing:border-box}.profile-settings label:last-child{border-bottom:0}.profile-settings label>span{display:flex;align-items:center;gap:9px;font-size:14px}.profile-settings input{position:absolute;opacity:0;pointer-events:none}.profile-settings label>i{position:relative;width:39px;height:23px;border-radius:15px;background:#49627a;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);transition:.2s}.profile-settings label>i:after{content:"";position:absolute;width:17px;height:17px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s}.profile-settings input:checked+i{background:#45d6cf;box-shadow:0 0 8px rgba(69,214,207,.45)}.profile-settings input:checked+i:after{transform:translateX(16px)}
 
+/* ============================================================================
+   PROFILE — DAILY REMINDER SETTING
+   Secondary reminder detail stays inside the existing settings-row layout.
+   ========================================================================== */
+.profile-reminder-setting>span{display:flex;align-items:center;flex-wrap:wrap;column-gap:6px}
+.profile-reminder-setting>span small{
+  flex-basis:100%;
+  margin-left:27px;
+  margin-top:-5px;
+  color:#8fa8c1;
+  font-size:9px;
+  line-height:1.1;
+  font-weight:650;
+}
+
 .profile-reset-progress{
   width:100%;min-height:58px;margin-top:12px;padding:10px 14px;border:1px solid rgba(255,126,126,.24);
   border-radius:17px;background:linear-gradient(180deg,#123452,#0d2944);color:#fff;
