@@ -893,7 +893,7 @@ const achievementIcon=(type,locked=false,badgeKey="star")=>{
 
 const achievementStatusLabel=a=>a.unlocked?"Ontgrendeld":a.locked?"Vergrendeld":"Bezig";
 
-const achievementRow=(a,index=0)=>`<button class="achievement-card achievement-${a.status} ${a.isNew?"achievement-new":""}" type="button" style="--achievement-index:${index};--achievement-progress:${a.unlocked?100:a.pct}%" data-achievement-id="${a.id}" data-category="${a.category}" onclick="openAchievementDetail('${a.id}')" aria-label="${a.title}, ${achievementStatusLabel(a)}">
+const achievementRow=(a,index=0)=>`<button class="achievement-card achievement-${a.status} ${a.isNew?"achievement-new":""}" type="button" style="--achievement-delay:${Math.min(index,8)*45}ms;--achievement-progress:${a.unlocked?100:a.pct}%" data-achievement-id="${a.id}" data-category="${a.category}" onclick="openAchievementDetail('${a.id}')" aria-label="${a.title}, ${achievementStatusLabel(a)}">
   <span class="achievement-medal-stage">${achievementIcon(a.icon,a.locked,a.badgeKey)}</span>
   <span class="achievement-copy">
     <span class="achievement-title-line"><strong>${a.title}</strong>${a.isNew?'<em class="achievement-new-badge">Nieuw</em>':""}</span>
@@ -1011,7 +1011,7 @@ window.openAchievements=()=>{
     .sort((a,b)=>new Date(b.unlockedAt||0)-new Date(a.unlockedAt||0))
     .slice(0,4);
 
-  const showcaseUnlocked=recent.map((item,index)=>`<button class="achievement-showcase-item unlocked ${item.isNew?"new":""}" type="button" style="--showcase-index:${index}" data-achievement-id="${item.id}" onclick="openAchievementDetail('${item.id}')" aria-label="Bekijk ${item.title}">
+  const showcaseUnlocked=recent.map((item,index)=>`<button class="achievement-showcase-item unlocked ${item.isNew?"new":""}" type="button" style="--showcase-delay:${index*70}ms" data-achievement-id="${item.id}" onclick="openAchievementDetail('${item.id}')" aria-label="Bekijk ${item.title}">
     <span class="achievement-showcase-medal">${achievementIcon(item.icon,false,item.badgeKey)}</span>
     <span>${item.title}</span>
   </button>`);
@@ -1019,7 +1019,7 @@ window.openAchievements=()=>{
   const showcaseLocked=achievements
     .filter(item=>!item.unlocked)
     .slice(0,Math.max(0,4-showcaseUnlocked.length))
-    .map((item,index)=>`<div class="achievement-showcase-item locked" style="--showcase-index:${showcaseUnlocked.length+index}" aria-label="Nog te ontgrendelen">
+    .map((item,index)=>`<div class="achievement-showcase-item locked" style="--showcase-delay:${(showcaseUnlocked.length+index)*70}ms" aria-label="Nog te ontgrendelen">
       <span class="achievement-showcase-medal">${achievementIcon(item.icon,true,item.badgeKey)}</span>
       <span>Nog te verdienen</span>
     </div>`);
