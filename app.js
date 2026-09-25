@@ -784,29 +784,29 @@ window.openTaskLog=()=>{
 // Definitieve badge-art kan later via badgeKey naar assets/images/achievements/.
 // ============================================================================
 const ACHIEVEMENT_DEFINITIONS=[
-  {id:"tasks-1",title:"Eerste stap",subtitle:"Voltooi je eerste taak",category:"tasks",icon:"star",badgeKey:"sprout",stat:"completedTasks",goal:1},
-  {id:"tasks-10",title:"Op stoom",subtitle:"Voltooi 10 taken",category:"tasks",icon:"badge",badgeKey:"number-ten",stat:"completedTasks",goal:10,requires:"tasks-1"},
-  {id:"tasks-25",title:"Doener",subtitle:"Voltooi 25 taken",category:"tasks",icon:"badge",badgeKey:"check",stat:"completedTasks",goal:25,requires:"tasks-10"},
-  {id:"tasks-50",title:"Taakheld",subtitle:"Voltooi 50 taken",category:"tasks",icon:"badge",badgeKey:"trophy",stat:"completedTasks",goal:50,requires:"tasks-25"},
-  {id:"tasks-100",title:"Niet te stoppen",subtitle:"Voltooi 100 taken",category:"tasks",icon:"badge",badgeKey:"crown",stat:"completedTasks",goal:100,requires:"tasks-50"},
-  {id:"early-bird-5",title:"Vroege vogel",subtitle:"Rond op 5 dagen vóór 10:00 een taak af",category:"tasks",icon:"clock",badgeKey:"bird",stat:"earlyBirdDays",goal:5},
+  {id:"tasks-1",rarity:"common",title:"Eerste stap",subtitle:"Voltooi je eerste taak",category:"tasks",icon:"star",badgeKey:"sprout",stat:"completedTasks",goal:1},
+  {id:"tasks-10",rarity:"common",title:"Op stoom",subtitle:"Voltooi 10 taken",category:"tasks",icon:"badge",badgeKey:"number-ten",stat:"completedTasks",goal:10,requires:"tasks-1"},
+  {id:"tasks-25",rarity:"rare",title:"Doener",subtitle:"Voltooi 25 taken",category:"tasks",icon:"badge",badgeKey:"check",stat:"completedTasks",goal:25,requires:"tasks-10"},
+  {id:"tasks-50",rarity:"epic",title:"Taakheld",subtitle:"Voltooi 50 taken",category:"tasks",icon:"badge",badgeKey:"trophy",stat:"completedTasks",goal:50,requires:"tasks-25"},
+  {id:"tasks-100",rarity:"legendary",title:"Niet te stoppen",subtitle:"Voltooi 100 taken",category:"tasks",icon:"badge",badgeKey:"crown",stat:"completedTasks",goal:100,requires:"tasks-50"},
+  {id:"early-bird-5",rarity:"rare",title:"Vroege vogel",subtitle:"Rond op 5 dagen vóór 10:00 een taak af",category:"tasks",icon:"clock",badgeKey:"bird",stat:"earlyBirdDays",goal:5},
 
-  {id:"streak-3",title:"Vonkje",subtitle:"Houd een streak van 3 dagen",category:"streak",icon:"flame",badgeKey:"flame",stat:"streak",goal:3},
-  {id:"streak-7",title:"Productieve week",subtitle:"Houd een streak van 7 dagen",category:"streak",icon:"week",badgeKey:"calendar",stat:"streak",goal:7,requires:"streak-3"},
-  {id:"streak-14",title:"Ritme gevonden",subtitle:"Houd een streak van 14 dagen",category:"streak",icon:"flame",badgeKey:"lightning",stat:"streak",goal:14,requires:"streak-7"},
-  {id:"streak-30",title:"Maandmeester",subtitle:"Houd een streak van 30 dagen",category:"streak",icon:"flame",badgeKey:"diamond",stat:"streak",goal:30,requires:"streak-14"},
+  {id:"streak-3",rarity:"common",title:"Vonkje",subtitle:"Houd een streak van 3 dagen",category:"streak",icon:"flame",badgeKey:"flame",stat:"streak",goal:3},
+  {id:"streak-7",rarity:"rare",title:"Productieve week",subtitle:"Houd een streak van 7 dagen",category:"streak",icon:"week",badgeKey:"calendar",stat:"streak",goal:7,requires:"streak-3"},
+  {id:"streak-14",rarity:"epic",title:"Ritme gevonden",subtitle:"Houd een streak van 14 dagen",category:"streak",icon:"flame",badgeKey:"lightning",stat:"streak",goal:14,requires:"streak-7"},
+  {id:"streak-30",rarity:"legendary",title:"Maandmeester",subtitle:"Houd een streak van 30 dagen",category:"streak",icon:"flame",badgeKey:"diamond",stat:"streak",goal:30,requires:"streak-14"},
 
-  {id:"level-2",title:"Op weg",subtitle:"Bereik level 2",category:"growth",icon:"level",badgeKey:"star",stat:"level",goal:2},
-  {id:"level-5",title:"Groeispurt",subtitle:"Bereik level 5",category:"growth",icon:"level",badgeKey:"ribbon-medal",stat:"level",goal:5,requires:"level-2"},
-  {id:"level-10",title:"Ervaren avonturier",subtitle:"Bereik level 10",category:"growth",icon:"level",badgeKey:"mountaintop",stat:"level",goal:10,requires:"level-5"},
-  {id:"focus-1",title:"Focus gestart",subtitle:"Registreer je eerste focusdag",category:"growth",icon:"focus",badgeKey:"clock",stat:"focusDays",goal:1},
-  {id:"focus-10",title:"Focusritme",subtitle:"Bereik 10 focusdagen",category:"growth",icon:"focus",badgeKey:"moon",stat:"focusDays",goal:10,requires:"focus-1"},
-  {id:"coins-100",title:"Spaarpot",subtitle:"Verzamel 100 coins",category:"growth",icon:"coin",badgeKey:"treasure-chest",stat:"coins",goal:100},
+  {id:"level-2",rarity:"common",title:"Op weg",subtitle:"Bereik level 2",category:"growth",icon:"level",badgeKey:"star",stat:"level",goal:2},
+  {id:"level-5",rarity:"rare",title:"Groeispurt",subtitle:"Bereik level 5",category:"growth",icon:"level",badgeKey:"ribbon-medal",stat:"level",goal:5,requires:"level-2"},
+  {id:"level-10",rarity:"legendary",title:"Ervaren avonturier",subtitle:"Bereik level 10",category:"growth",icon:"level",badgeKey:"mountaintop",stat:"level",goal:10,requires:"level-5"},
+  {id:"focus-1",rarity:"common",title:"Focus gestart",subtitle:"Registreer je eerste focusdag",category:"growth",icon:"focus",badgeKey:"clock",stat:"focusDays",goal:1},
+  {id:"focus-10",rarity:"epic",title:"Focusritme",subtitle:"Bereik 10 focusdagen",category:"growth",icon:"focus",badgeKey:"moon",stat:"focusDays",goal:10,requires:"focus-1"},
+  {id:"coins-100",rarity:"rare",title:"Spaarpot",subtitle:"Verzamel 100 coins",category:"growth",icon:"coin",badgeKey:"treasure-chest",stat:"coins",goal:100},
 
-  {id:"world-1",title:"Eerste vondst",subtitle:"Ontgrendel je eerste werelditem",category:"world",icon:"world",badgeKey:"globe",stat:"worldItems",goal:1},
-  {id:"world-5",title:"Wereldmaker",subtitle:"Ontgrendel 5 werelditems",category:"world",icon:"world",badgeKey:"compass",stat:"worldItems",goal:5,requires:"world-1"},
-  {id:"world-10",title:"Wereldbouwer",subtitle:"Ontgrendel 10 werelditems",category:"world",icon:"world",badgeKey:"castle",stat:"worldItems",goal:10,requires:"world-5"},
-  {id:"world-20",title:"Eigen universum",subtitle:"Ontgrendel 20 werelditems",category:"world",icon:"world",badgeKey:"crown",stat:"worldItems",goal:20,requires:"world-10"}
+  {id:"world-1",rarity:"common",title:"Eerste vondst",subtitle:"Ontgrendel je eerste werelditem",category:"world",icon:"world",badgeKey:"globe",stat:"worldItems",goal:1},
+  {id:"world-5",rarity:"rare",title:"Wereldmaker",subtitle:"Ontgrendel 5 werelditems",category:"world",icon:"world",badgeKey:"compass",stat:"worldItems",goal:5,requires:"world-1"},
+  {id:"world-10",rarity:"epic",title:"Wereldbouwer",subtitle:"Ontgrendel 10 werelditems",category:"world",icon:"world",badgeKey:"castle",stat:"worldItems",goal:10,requires:"world-5"},
+  {id:"world-20",rarity:"legendary",title:"Eigen universum",subtitle:"Ontgrendel 20 werelditems",category:"world",icon:"world",badgeKey:"crown",stat:"worldItems",goal:20,requires:"world-10"}
 ];
 
 const achievementStats=()=>({
@@ -893,17 +893,24 @@ const achievementIcon=(type,locked=false,badgeKey="star")=>{
 
 const achievementStatusLabel=a=>a.unlocked?"Ontgrendeld":a.locked?"Vergrendeld":"Bezig";
 
-const achievementRow=(a,index=0)=>`<button class="achievement-card achievement-${a.status} ${a.isNew?"achievement-new":""}" type="button" style="--achievement-delay:${Math.min(index,8)*45}ms;--achievement-progress:${a.unlocked?100:a.pct}%" data-achievement-id="${a.id}" data-category="${a.category}" onclick="openAchievementDetail('${a.id}')" aria-label="${a.title}, ${achievementStatusLabel(a)}">
-  <span class="achievement-medal-stage">${achievementIcon(a.icon,a.locked,a.badgeKey)}</span>
-  <span class="achievement-copy">
-    <span class="achievement-title-line"><strong>${a.title}</strong>${a.isNew?'<em class="achievement-new-badge">Nieuw</em>':""}</span>
-    <small>${a.subtitle}</small>
-    <span class="achievement-progress-copy">${a.unlocked?"Doel behaald":a.locked?"Voltooi eerst de vorige mijlpaal":`${a.value} / ${a.goal} · ${a.pct}%`}</span>
-    <span class="achievement-progress" role="progressbar" aria-label="Voortgang ${a.title}" aria-valuemin="0" aria-valuemax="${a.goal}" aria-valuenow="${a.unlocked?a.goal:a.value}"><i></i></span>
+const achievementStatusLabel=a=>a.unlocked?"Ontgrendeld":a.locked?"Niet gevonden":"In progress";
+const achievementRarityLabel=rarity=>({common:"Common",rare:"Rare",epic:"Epic",legendary:"Legendary"})[rarity]||"Common";
+
+const achievementRow=(a,index=0)=>`<button class="achievement-card achievement-${a.status} rarity-${a.rarity||"common"} ${a.isNew?"achievement-new":""}" type="button" style="--achievement-delay:${Math.min(index,8)*45}ms;--achievement-progress:${a.unlocked?100:a.pct}%" data-achievement-id="${a.id}" data-category="${a.category}" onclick="openAchievementDetail('${a.id}')" aria-label="${a.title}, ${achievementStatusLabel(a)}">
+  <span class="achievement-card-rarity">${achievementRarityLabel(a.rarity)}</span>
+  <span class="achievement-card-art">
+    <span class="achievement-card-glow" aria-hidden="true"></span>
+    ${achievementIcon(a.icon,a.locked,a.badgeKey)}
+    ${a.locked?'<span class="achievement-chain" aria-hidden="true"><i></i><i></i></span>':""}
+    ${a.isNew?'<em class="achievement-new-sticker">Nieuw!</em>':""}
   </span>
-  <span class="achievement-card-status">
-    ${a.unlocked?'<span class="achievement-check">✓</span>':`<b class="achievement-count">${a.value} / ${a.goal}</b>`}
-    <small>${achievementStatusLabel(a)}</small>
+  <span class="achievement-card-name">${a.title}</span>
+  <span class="achievement-card-footer">
+    ${a.unlocked
+      ?'<span class="achievement-found">Gevonden <b>✓</b></span>'
+      :a.locked
+        ?'<span class="achievement-not-found"><b aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="5" y="11" width="14" height="10" rx="3"/><path d="M12 15v2"/></svg></b> Niet gevonden</span>'
+        :`<span class="achievement-card-progress-text">${a.value}/${a.goal}</span><span class="achievement-card-progress" role="progressbar" aria-label="Voortgang ${a.title}" aria-valuemin="0" aria-valuemax="${a.goal}" aria-valuenow="${a.value}"><i></i></span>`}
   </span>
 </button>`;
 
@@ -959,7 +966,7 @@ window.openAchievementDetail=id=>{
       <div class="achievement-detail-handle" aria-hidden="true"></div>
       <button class="achievement-detail-close" type="button" onclick="closeAchievementDetail()" aria-label="Sluiten">×</button>
       <div class="achievement-detail-medal">${achievementIcon(achievement.icon,achievement.locked,achievement.badgeKey)}</div>
-      <span class="achievement-detail-category">${categoryLabel(achievement.category)}</span>
+      <div class="achievement-detail-tags"><span class="achievement-detail-category">${categoryLabel(achievement.category)}</span><span class="achievement-detail-rarity rarity-${achievement.rarity||"common"}">${achievementRarityLabel(achievement.rarity)}</span></div>
       <h2 id="achievementDetailTitle">${achievement.title}</h2>
       <p>${achievement.subtitle}</p>
       <div class="achievement-detail-progress">
@@ -1056,7 +1063,7 @@ window.openAchievements=()=>{
         <div class="achievement-showcase-row">${showcase}</div>
       </section>
 
-      <div class="achievement-section-head achievement-challenges-head"><h2>Uitdagingen</h2><small>Blijf bouwen</small></div>
+      <div class="achievement-section-head achievement-challenges-head"><h2>Badge collectie</h2><small>${unlockedCount} van ${total} gevonden</small></div>
       <div class="achievement-filters" aria-label="Filter achievements">${filterButtons}</div>
       <section class="achievement-list">${achievements.map(achievementRow).join("")}</section>
     </main>
