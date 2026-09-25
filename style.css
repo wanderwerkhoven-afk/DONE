@@ -858,6 +858,27 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   line-height:1.1;
   font-weight:650;
 }
+.profile-reminder-time>span{display:flex;align-items:center;gap:9px}
+.profile-time-input{
+  width:92px;
+  height:34px;
+  padding:0 8px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:11px;
+  background:#173d5c;
+  color:#fff;
+  font:inherit;
+  font-size:13px;
+  font-weight:800;
+  text-align:center;
+  outline:none;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.profile-time-input:focus{
+  border-color:#45d6cf;
+  box-shadow:0 0 0 2px rgba(69,214,207,.16);
+}
 
 .profile-reset-progress{
   width:100%;min-height:58px;margin-top:12px;padding:10px 14px;border:1px solid rgba(255,126,126,.24);
