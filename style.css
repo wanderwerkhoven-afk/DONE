@@ -59,7 +59,6 @@
    Sprite-sheet definition used by the interactive coin statistic.
    ========================================================================== */
 .coin-sprite{display:block;flex:0 0 42px;width:42px;height:42px;background-image:url("assets/images/sprites/coin-spin-sprite.png");background-repeat:no-repeat;background-size:672px 42px;background-position:0 0;border:0;padding:0;cursor:pointer;animation:none;filter:drop-shadow(0 3px 5px #0005)}
-@keyframes coin-spin{to{background-position:-672px 0}}\n.coin-sprite.spinning{animation:coin-spin .8s steps(16) 1}\n.coin-sprite:active{transform:scale(.94)}
 @media(prefers-reduced-motion:reduce){.coin-sprite{animation:none}}
 
 /* ============================================================================
