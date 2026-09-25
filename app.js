@@ -4,6 +4,7 @@
 // ============================================================================
 const STORAGE_KEY="done-state-v1";
 const REMINDER_CLIENT_ID_KEY="done-reminder-client-id";
+const PENDING_TRANSFER_KEY="done-pending-transfer-v1";
 const DEFAULT_REMINDER_TIME="17:00";
 // ============================================================================
 // SHARED NAVIGATION ICONS
@@ -185,6 +186,58 @@ const getReminderClientId=()=>{
 };
 
 const getReminderBackendUrl=()=>String(window.DONE_CONFIG?.backendUrl||"").replace(/\/$/,"");
+
+const restorePendingStateTransfer=async()=>{
+  const url=new URL(window.location.href);
+  const tokenFromUrl=url.searchParams.get("transfer");
+  const token=tokenFromUrl||localStorage.getItem(PENDING_TRANSFER_KEY)||"";
+  if(!/^[A-Za-z0-9_-]{32,128}$/.test(token))return false;
+
+  try{
+    localStorage.setItem(PENDING_TRANSFER_KEY,token);
+    const backendUrl=getReminderBackendUrl();
+    if(!backendUrl)throw new Error("DONE.-backend ontbreekt.");
+
+    const response=await fetch(`${backendUrl}/transfer?token=${encodeURIComponent(token)}`,{
+      headers:{Accept:"application/json"},
+      cache:"no-store"
+    });
+    const payload=await response.json().catch(()=>null);
+    if(!response.ok||!payload?.state){
+      throw new Error(payload?.error||"Tijdelijke gegevensoverdracht niet gevonden.");
+    }
+
+    const restored={...defaultState,...payload.state};
+    if(!Array.isArray(restored.tasks)||!Array.isArray(restored.taskHistory)){
+      throw new Error("Overgedragen DONE.-gegevens zijn ongeldig.");
+    }
+
+    if(validAppIcon(payload.icon)){
+      restored.appIcon=payload.icon;
+      restored.appIconCategory=appIconCategoryFromId(payload.icon);
+    }
+
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(restored));
+
+    await fetch(`${backendUrl}/transfer/complete`,{
+      method:"POST",
+      headers:{"content-type":"application/json"},
+      body:JSON.stringify({token}),
+      keepalive:true
+    }).catch(()=>null);
+
+    localStorage.removeItem(PENDING_TRANSFER_KEY);
+
+    const cleanUrl=new URL(window.location.href);
+    cleanUrl.searchParams.delete("transfer");
+    cleanUrl.searchParams.delete("appIcon");
+    window.location.replace(cleanUrl.pathname+(cleanUrl.search||"")+cleanUrl.hash);
+    return true;
+  }catch(error){
+    console.warn("Automatische DONE.-overdracht mislukt",error);
+    return false;
+  }
+};
 
 // ============================================================================
 // PUSH SERVICE WORKER & SUBSCRIPTION
@@ -998,9 +1051,11 @@ window.selectAppIcon=id=>{
   setTimeout(()=>openAppIconInstallWizard(id),130);
 };
 
-const appIconInstallUrl=id=>{
+const appIconInstallUrl=(id,transferToken="")=>{
   const base=new URL(".",window.location.href);
-  return new URL(`install/${id}.html`,base).href;
+  const url=new URL(`install/${id}.html`,base);
+  if(transferToken)url.searchParams.set("transfer",transferToken);
+  return url.href;
 };
 
 window.openAppIconInstallWizard=id=>{
@@ -1008,7 +1063,7 @@ window.openAppIconInstallWizard=id=>{
   const icon=validAppIcon(id)?id:state.appIcon;
   const wizard=document.createElement("div");
   wizard.className="app-icon-install";
-  wizard.dataset.backupReady="false";
+  wizard.dataset.transferReady="false";
   wizard.innerHTML=`<button class="app-icon-install-backdrop" type="button" onclick="closeAppIconInstallWizard()" aria-label="Sluiten"></button>
     <section class="app-icon-install-modal" role="dialog" aria-modal="true" aria-labelledby="iconInstallTitle">
       <button class="app-icon-install-close" type="button" onclick="closeAppIconInstallWizard()" aria-label="Sluiten">×</button>
@@ -1016,44 +1071,49 @@ window.openAppIconInstallWizard=id=>{
       <header>
         <span>Nieuw app-icoon gekozen</span>
         <h2 id="iconInstallTitle">Zet dit icoon op je iPhone</h2>
-        <p>iOS kan een bestaand PWA-icoon niet live vervangen. Deze korte stappen zorgen dat je data behouden blijft en Safari exact dit icoon gebruikt.</p>
+        <p>DONE. neemt je gegevens automatisch mee naar de nieuwe installatie. Je hoeft geen back-upbestand te downloaden of te plakken.</p>
       </header>
 
       <div class="app-icon-install-steps">
         <article class="app-icon-install-step is-active" data-install-step="1">
           <b>1</b>
-          <div><h3>Maak eerst een back-up</h3><p>Dit bewaart je taken, XP, coins, achievements en instellingen.</p>
-            <button class="icon-install-backup" type="button" onclick="backupForIconInstall(this)">Back-up maken</button>
-            <small class="icon-install-backup-status">Verplicht voordat je verdergaat</small>
+          <div>
+            <h3>Gegevens veilig klaarzetten</h3>
+            <p>DONE. maakt tijdelijk een versleuteld-onvoorspelbare overdrachtcode voor je lokale voortgang.</p>
+            <small class="icon-install-transfer-status">Gegevens worden voorbereid…</small>
+            <button class="icon-install-retry" type="button" onclick="prepareIconTransfer('${icon}')" hidden>Opnieuw proberen</button>
           </div>
         </article>
 
         <article class="app-icon-install-step" data-install-step="2">
           <b>2</b>
-          <div><h3>Verwijder de oude homescreen-versie</h3><p>Houd DONE. op je beginscherm ingedrukt en kies de optie om de webapp van je beginscherm te verwijderen.</p></div>
+          <div><h3>Verwijder de oude homescreen-versie</h3><p>Houd DONE. op je beginscherm ingedrukt en verwijder alleen de huidige webapp van je beginscherm.</p></div>
         </article>
 
         <article class="app-icon-install-step" data-install-step="3">
           <b>3</b>
-          <div><h3>Open de gekozen versie in Safari</h3><p>De installpagina heeft dit icoon al vast in de favicon, Apple touch icon én het PWA-manifest staan.</p>
+          <div><h3>Open de gekozen versie in Safari</h3><p>Safari krijgt alleen een tijdelijke transfercode mee — niet je taken of volledige JSON.</p>
             <button class="icon-install-open" type="button" onclick="openChosenIconInstallPage('${icon}')" disabled>Open DONE. in Safari</button>
           </div>
         </article>
 
         <article class="app-icon-install-step" data-install-step="4">
           <b>4</b>
-          <div><h3>Zet opnieuw op beginscherm</h3><p>Tik in Safari op <strong>Delen</strong> → <strong>Zet op beginscherm</strong>. Daarna start DONE. weer normaal vanaf de hoofdpagina.</p></div>
+          <div><h3>Zet opnieuw op beginscherm</h3><p>Tik in Safari op <strong>Delen</strong> → <strong>Zet op beginscherm</strong> → <strong>Voeg toe</strong>.</p></div>
         </article>
 
         <article class="app-icon-install-step" data-install-step="5">
           <b>5</b>
-          <div><h3>Zet je gegevens terug</h3><p>Open daarna Profiel → Gegevens → Back-up herstellen en kies het zojuist opgeslagen DONE.-bestand.</p></div>
+          <div><h3>Open DONE.</h3><p>Bij de eerste start worden je taken, XP, coins, achievements en instellingen automatisch teruggezet.</p></div>
         </article>
       </div>
-      <p class="app-icon-install-footnote">Je gekozen icoon blijft ook in je back-up opgeslagen.</p>
+      <p class="app-icon-install-footnote">De tijdelijke overdracht verloopt na 15 minuten en wordt na succesvol herstellen verwijderd.</p>
     </section>`;
   document.querySelector(".profile-screen")?.appendChild(wizard);
-  requestAnimationFrame(()=>wizard.classList.add("show"));
+  requestAnimationFrame(()=>{
+    wizard.classList.add("show");
+    prepareIconTransfer(icon);
+  });
 };
 
 window.closeAppIconInstallWizard=()=>{
@@ -1063,34 +1123,54 @@ window.closeAppIconInstallWizard=()=>{
   setTimeout(()=>{wizard.remove();openProfile()},180);
 };
 
-window.backupForIconInstall=async button=>{
-  if(button?.disabled)return;
-  button.disabled=true;
-  button.textContent="Back-up maken…";
-  const ok=await exportDoneBackup();
+window.prepareIconTransfer=async icon=>{
   const wizard=document.querySelector(".app-icon-install");
-  if(ok&&wizard){
-    wizard.dataset.backupReady="true";
-    button.textContent="✓ Back-up gemaakt";
-    button.classList.add("done");
-    const status=wizard.querySelector(".icon-install-backup-status");
-    if(status)status.textContent="Veilig opgeslagen";
+  if(!wizard||!validAppIcon(icon))return;
+
+  const status=wizard.querySelector(".icon-install-transfer-status");
+  const retry=wizard.querySelector(".icon-install-retry");
+  const open=wizard.querySelector(".icon-install-open");
+  wizard.dataset.transferReady="false";
+  wizard.dataset.transferToken="";
+  if(open)open.disabled=true;
+  if(retry)retry.hidden=true;
+  if(status)status.textContent="Gegevens worden voorbereid…";
+
+  try{
+    const backendUrl=getReminderBackendUrl();
+    if(!backendUrl)throw new Error("De DONE.-backend is niet beschikbaar.");
+
+    const response=await fetch(`${backendUrl}/transfer`,{
+      method:"POST",
+      headers:{"content-type":"application/json","accept":"application/json"},
+      cache:"no-store",
+      body:JSON.stringify({
+        icon,
+        state:JSON.parse(JSON.stringify(state))
+      })
+    });
+    const payload=await response.json().catch(()=>null);
+    if(!response.ok||!payload?.token){
+      throw new Error(payload?.error||"Gegevens konden niet worden klaargezet.");
+    }
+
+    wizard.dataset.transferReady="true";
+    wizard.dataset.transferToken=payload.token;
+    if(status)status.textContent="✓ Gegevens staan veilig klaar";
     wizard.querySelector('[data-install-step="1"]')?.classList.add("is-done");
     wizard.querySelector('[data-install-step="2"]')?.classList.add("is-active");
     wizard.querySelector('[data-install-step="3"]')?.classList.add("is-active");
-    const open=wizard.querySelector(".icon-install-open");
     if(open)open.disabled=false;
-  }else{
-    button.disabled=false;
-    button.textContent="Back-up maken";
+  }catch(error){
+    console.warn("State transfer voorbereiden mislukt",error);
+    if(status)status.textContent=error?.message||"Automatische overdracht mislukt.";
+    if(retry)retry.hidden=false;
   }
 };
 
-const openInstallPageInSafari=id=>{
-  const target=appIconInstallUrl(id);
+const openInstallPageInSafari=(id,transferToken)=>{
+  const target=appIconInstallUrl(id,transferToken);
 
-  // iOS 17+ supports Safari's dedicated URL scheme. In standalone PWA mode
-  // this leaves the installed web-app container and opens the URL in Safari.
   const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||
     (navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 
@@ -1105,8 +1185,10 @@ const openInstallPageInSafari=id=>{
 
 window.openChosenIconInstallPage=id=>{
   const wizard=document.querySelector(".app-icon-install");
-  if(!wizard||wizard.dataset.backupReady!=="true")return;
-  openInstallPageInSafari(id);
+  if(!wizard||wizard.dataset.transferReady!=="true")return;
+  const token=wizard.dataset.transferToken||"";
+  if(!token)return;
+  openInstallPageInSafari(id,token);
 };
 
 // ============================================================================
@@ -1720,30 +1802,36 @@ window.openAchievements=()=>{
   });
 };
 
-syncAchievementUnlocks();
-saveState();
+const startDoneApp=async()=>{
+  if(await restorePendingStateTransfer())return;
 
-registerDoneServiceWorker().then(()=>{
-  if(state.reminderEnabled&&"Notification" in window&&Notification.permission==="granted"){
-    getOrCreatePushSubscription()
-      .then(()=>syncReminderBackendState())
-      .catch(error=>console.warn("Push subscription herstellen mislukt",error));
-  }
-});
+  syncAchievementUnlocks();
+  saveState();
 
-scheduleTaskReminder();
-queueReminderBackendSync();
-document.addEventListener("visibilitychange",()=>{
-  if(document.visibilityState!=="visible")return;
+  registerDoneServiceWorker().then(()=>{
+    if(state.reminderEnabled&&"Notification" in window&&Notification.permission==="granted"){
+      getOrCreatePushSubscription()
+        .then(()=>syncReminderBackendState())
+        .catch(error=>console.warn("Push subscription herstellen mislukt",error));
+    }
+  });
+
   scheduleTaskReminder();
   queueReminderBackendSync();
-  applyHomeHeroForCurrentTime();
-  scheduleHomeHeroRefresh();
-});
+  document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState!=="visible")return;
+    scheduleTaskReminder();
+    queueReminderBackendSync();
+    applyHomeHeroForCurrentTime();
+    scheduleHomeHeroRefresh();
+  });
 
-if(!state.rewardScreensEnabled&&state.pendingLevelUp){
-  state.lastSeenLevel=Math.max(Number(state.lastSeenLevel)||1,Number(state.pendingLevelUp.newLevel)||state.level);
-  state.pendingLevelUp=null;
-  saveState();
-}
-state.rewardScreensEnabled&&state.pendingLevelUp?openLevelUp():render();
+  if(!state.rewardScreensEnabled&&state.pendingLevelUp){
+    state.lastSeenLevel=Math.max(Number(state.lastSeenLevel)||1,Number(state.pendingLevelUp.newLevel)||state.level);
+    state.pendingLevelUp=null;
+    saveState();
+  }
+  state.rewardScreensEnabled&&state.pendingLevelUp?openLevelUp():render();
+};
+
+startDoneApp();
