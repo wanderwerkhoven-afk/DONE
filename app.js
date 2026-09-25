@@ -25,6 +25,52 @@ state.maxXp=xpForLevel(state.level);
 while(state.xp>=state.maxXp){state.xp-=state.maxXp;state.level++;state.maxXp=xpForLevel(state.level)}
 const localDateKey=d=>{const x=d?new Date(d):new Date();return [x.getFullYear(),String(x.getMonth()+1).padStart(2,"0"),String(x.getDate()).padStart(2,"0")].join("-")};
 const coinReward=xp=>xp>=50?10:xp>=25?5:2;
+const HOME_HERO_BY_PERIOD={
+  morning:"assets/images/home/hero-home-morning.png",
+  daytime:"assets/images/home/hero-home-daytime.png",
+  sundown:"assets/images/home/hero-home-sundown.png",
+  evening:"assets/images/home/hero-home-evening.png",
+  night:"assets/images/home/hero-home-night.png"
+};
+const homeHeroPeriod=date=>{
+  const hour=(date||new Date()).getHours();
+  if(hour>=6&&hour<10)return "morning";
+  if(hour>=10&&hour<19)return "daytime";
+  if(hour>=19&&hour<21)return "sundown";
+  if(hour>=21&&hour<23)return "evening";
+  return "night";
+};
+const homeHeroUrl=date=>HOME_HERO_BY_PERIOD[homeHeroPeriod(date)];
+let homeHeroTimer=null;
+const applyHomeHeroForCurrentTime=()=>{
+  const hero=document.querySelector(".home-screen .hero.hero-image");
+  if(!hero)return;
+  const period=homeHeroPeriod();
+  if(hero.dataset.heroPeriod===period)return;
+  hero.dataset.heroPeriod=period;
+  hero.style.setProperty("--home-hero-image",`url("${HOME_HERO_BY_PERIOD[period]}")`);
+};
+const scheduleHomeHeroRefresh=()=>{
+  if(homeHeroTimer){clearTimeout(homeHeroTimer);homeHeroTimer=null}
+  const hero=document.querySelector(".home-screen .hero.hero-image");
+  if(!hero)return;
+  applyHomeHeroForCurrentTime();
+  const now=new Date();
+  const next=new Date(now);
+  const hour=now.getHours();
+  const nextHour=hour<6?6:hour<10?10:hour<19?19:hour<21?21:hour<23?23:30;
+  if(nextHour===30){
+    next.setDate(next.getDate()+1);
+    next.setHours(6,0,1,0);
+  }else{
+    next.setHours(nextHour,0,1,0);
+  }
+  homeHeroTimer=setTimeout(()=>{
+    applyHomeHeroForCurrentTime();
+    scheduleHomeHeroRefresh();
+  },Math.min(next-now,2147483647));
+};
+
 state.taskHistory=Array.isArray(state.taskHistory)?state.taskHistory:[];
 state.achievementState=state.achievementState&&typeof state.achievementState==="object"&&!Array.isArray(state.achievementState)
   ?state.achievementState
@@ -407,7 +453,7 @@ saveState();
 // HOME SCREEN
 // Bouwt het hoofdscherm: hero, voortgang, stats, takenlijst, FAB en bottom-nav.
 // ============================================================================
-function render(){cancelTaskLongPress?.();activeTaskEditIndex=null;archiveOldCompletedTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image"><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>Goedemiddag! 👋</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${taskPct}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.length?visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<div class="task-wrap" data-task-index="${i}"><button class="task ${t.done?"done":""}" onclick="handleTaskClick(event,${i})" onpointerdown="startTaskLongPress(event,${i},this)" onpointerup="endTaskLongPress(event)" onpointercancel="cancelTaskLongPress()" onpointerleave="cancelTaskLongPress()" onpointermove="trackTaskLongPress(event)" oncontextmenu="return false"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${t.title}</div>${t.meta?`<div class="taskmeta">${t.meta}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button><button class="task-delete-btn" type="button" aria-label="Verwijder taak ${t.title.replace(/"/g,"&quot;")}" onclick="deleteTask(event,${i})"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button></div>`}).join(""):`<section class="tasks-empty-state" aria-label="Geen taken"><div class="tasks-empty-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"/><path d="m21 33 7 7 15-17"/></svg></div><h2>Alles afgevinkt</h2><p>Je hebt voor vandaag geen openstaande taken.</p><button type="button" onclick="openNewTask()">Nieuwe taak toevoegen</button></section>`}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`}
+function render(){cancelTaskLongPress?.();activeTaskEditIndex=null;archiveOldCompletedTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image" data-hero-period="${homeHeroPeriod()}" style="--home-hero-image:url('${homeHeroUrl()}')"><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>Goedemiddag! 👋</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${taskPct}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.length?visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<div class="task-wrap" data-task-index="${i}"><button class="task ${t.done?"done":""}" onclick="handleTaskClick(event,${i})" onpointerdown="startTaskLongPress(event,${i},this)" onpointerup="endTaskLongPress(event)" onpointercancel="cancelTaskLongPress()" onpointerleave="cancelTaskLongPress()" onpointermove="trackTaskLongPress(event)" oncontextmenu="return false"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${t.title}</div>${t.meta?`<div class="taskmeta">${t.meta}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button><button class="task-delete-btn" type="button" aria-label="Verwijder taak ${t.title.replace(/"/g,"&quot;")}" onclick="deleteTask(event,${i})"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button></div>`}).join(""):`<section class="tasks-empty-state" aria-label="Geen taken"><div class="tasks-empty-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"/><path d="m21 33 7 7 15-17"/></svg></div><h2>Alles afgevinkt</h2><p>Je hebt voor vandaag geen openstaande taken.</p><button type="button" onclick="openNewTask()">Nieuwe taak toevoegen</button></section>`}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`;scheduleHomeHeroRefresh()}
 
 // ============================================================================
 // PROGRESSION: XP, LEVELS & STREAK
@@ -1159,6 +1205,8 @@ document.addEventListener("visibilitychange",()=>{
   if(document.visibilityState!=="visible")return;
   scheduleTaskReminder();
   queueReminderBackendSync();
+  applyHomeHeroForCurrentTime();
+  scheduleHomeHeroRefresh();
 });
 
 if(!state.rewardScreensEnabled&&state.pendingLevelUp){
