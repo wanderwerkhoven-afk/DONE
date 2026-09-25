@@ -160,9 +160,7 @@ const scheduleTaskReminder=()=>{
 
   if(!state.reminderEnabled||!("Notification" in window)||Notification.permission!=="granted")return;
 
-  const [rawHour,rawMinute]=state.reminderTime.split(":").map(Number);
-  const hour=Number.isFinite(rawHour)?rawHour:17;
-  const minute=Number.isFinite(rawMinute)?rawMinute:0;
+  const [hour,minute]=state.reminderTime.split(":").map(Number);
   const now=new Date();
   const next=new Date(now);
   next.setHours(hour,minute,0,0);
@@ -204,22 +202,21 @@ window.toggleDailyReminder=async el=>{
   }
 
   state.reminderEnabled=true;
-  if(!state.reminderTime)state.reminderTime=DEFAULT_REMINDER_TIME;
   saveState();
   scheduleTaskReminder();
   await syncReminderBackendState(true);
 };
 
-window.updateReminderTime=el=>{
+window.updateReminderTime=async el=>{
   const value=/^([01]\d|2[0-3]):[0-5]\d$/.test(el.value)?el.value:DEFAULT_REMINDER_TIME;
   state.reminderTime=value;
-  state.reminderLastSent=null;
   saveState();
   scheduleTaskReminder();
-  queueReminderBackendSync();
 
   const detail=document.querySelector("[data-reminder-time-label]");
-  if(detail)detail.textContent=`${value} · alleen bij open taken`;
+  if(detail)detail.textContent=`${state.reminderTime} · alleen bij open taken`;
+
+  await syncReminderBackendState(true);
 };
 archiveOldCompletedTasks();
 saveState();
@@ -432,8 +429,8 @@ window.openProfile=()=>{
         <label><span>🔊 <b>Geluid</b></span><input type="checkbox" data-setting="sound" onchange="saveProfileSetting(this)" ${state.sound!==false?"checked":""}><i></i></label>
         <label><span>⚙️ <b>Haptische feedback</b></span><input type="checkbox" data-setting="haptics" onchange="saveProfileSetting(this)" ${state.haptics!==false?"checked":""}><i></i></label>
         <label><span>🌙 <b>Donkere modus</b></span><input type="checkbox" data-setting="darkMode" onchange="saveProfileSetting(this)" ${state.darkMode!==false?"checked":""}><i></i></label>
-        <label class="profile-reminder-setting"><span>🔔 <b>Dagelijkse herinnering</b><small data-reminder-time-label>${state.reminderTime||"17:00"} · alleen bij open taken</small></span><input type="checkbox" onchange="toggleDailyReminder(this)" ${state.reminderEnabled?"checked":""}><i></i></label>
-        <label class="profile-reminder-time"><span>🕒 <b>Tijdstip</b></span><input class="profile-time-input" type="time" value="${state.reminderTime||"17:00"}" step="60" onchange="updateReminderTime(this)" aria-label="Tijdstip dagelijkse herinnering"></label>
+        <label class="profile-reminder-setting"><span>🔔 <b>Dagelijkse herinnering</b><small data-reminder-time-label>${state.reminderTime} · alleen bij open taken</small></span><input type="checkbox" onchange="toggleDailyReminder(this)" ${state.reminderEnabled?"checked":""}><i></i></label>
+        <label class="profile-reminder-time"><span>🕒 <b>Tijdstip</b></span><input class="profile-time-input" type="time" value="${state.reminderTime}" step="60" onchange="updateReminderTime(this)" aria-label="Tijdstip dagelijkse herinnering"></label>
       </section>
       <button class="profile-reset-progress" type="button" onclick="resetProgress()" aria-label="Reset level en XP">
         <span class="profile-reset-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8V4m0 0h4M4 4l3.1 3.1A7 7 0 1 1 5 13"/></svg></span>
