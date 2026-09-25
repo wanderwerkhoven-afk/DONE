@@ -997,12 +997,28 @@ window.backupForIconInstall=async button=>{
   }
 };
 
+const appIconSafariBridgeUrl=id=>{
+  const backendUrl=getReminderBackendUrl();
+  const target=appIconInstallUrl(id);
+  return backendUrl?`${backendUrl}/open-safari?target=${encodeURIComponent(target)}`:target;
+};
+
 window.openChosenIconInstallPage=id=>{
   const wizard=document.querySelector(".app-icon-install");
   if(!wizard||wizard.dataset.backupReady!=="true")return;
-  const url=appIconInstallUrl(id);
-  const opened=window.open(url,"_blank","noopener");
-  if(!opened)window.location.href=url;
+  const url=appIconSafariBridgeUrl(id);
+
+  // A same-origin URL stays inside an installed iOS PWA. The bridge lives on
+  // our Worker origin, so iOS hands the navigation to Safari first; the Worker
+  // then redirects Safari back to the icon-specific install page.
+  const anchor=document.createElement("a");
+  anchor.href=url;
+  anchor.target="_blank";
+  anchor.rel="noopener external";
+  anchor.style.display="none";
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
 };
 
 // ============================================================================
