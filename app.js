@@ -894,8 +894,8 @@ window.openProfile=()=>{
         <div class="profile-theme-setting">
           <span class="profile-theme-copy"><span class="profile-theme-symbol" aria-hidden="true">${state.theme==="light"?"☀️":"🌙"}</span><span><b>Weergave</b><small>Kies de sfeer van je interface</small></span></span>
           <div class="theme-segment" role="group" aria-label="Weergave">
-            <button type="button" class="${state.theme==="light"?"active":""}" onclick="setTheme('light')" aria-pressed="${state.theme==="light"}">☀️ Licht</button>
-            <button type="button" class="${state.theme==="dark"?"active":""}" onclick="setTheme('dark')" aria-pressed="${state.theme==="dark"}">🌙 Donker</button>
+            <button type="button" class="theme-icon-button ${state.theme==="light"?"active":""}" onclick="setTheme('light')" aria-label="Lichte modus" aria-pressed="${state.theme==="light"}"><span aria-hidden="true">☀️</span></button>
+            <button type="button" class="theme-icon-button ${state.theme==="dark"?"active":""}" onclick="setTheme('dark')" aria-label="Donkere modus" aria-pressed="${state.theme==="dark"}"><span aria-hidden="true">🌙</span></button>
           </div>
         </div>
         <label class="profile-reward-setting"><span>✨ <b>Beloningsschermen</b><small>Taak voltooid + Level Up</small></span><input type="checkbox" onchange="toggleRewardScreens(this)" ${state.rewardScreensEnabled?"checked":""}><i></i></label>
