@@ -1079,7 +1079,7 @@ window.openAppIconInstallWizard=id=>{
           <b>1</b>
           <div>
             <h3>Gegevens veilig klaarzetten</h3>
-            <p>DONE. maakt tijdelijk een versleuteld-onvoorspelbare overdrachtcode voor je lokale voortgang.</p>
+            <p>DONE. maakt tijdelijk een willekeurige overdrachtcode voor je lokale voortgang.</p>
             <small class="icon-install-transfer-status">Gegevens worden voorbereid…</small>
             <button class="icon-install-retry" type="button" onclick="prepareIconTransfer('${icon}')" hidden>Opnieuw proberen</button>
           </div>
