@@ -1,3 +1,20 @@
+/* ============================================================================
+   DONE. — STYLESHEET MAP
+   ============================================================================
+   01. Base app shell & shared Home primitives
+   02. Home mobile layout
+   03. Coins, streaks & small interactions
+   04. New Task
+   05. Task Completed reward screen
+   06. Profile & settings
+   07. Avatar picker
+   08. Task log
+   09. Bottom navigation icons
+   10. Level Up
+   11. Global interaction utilities
+   12. Empty states
+   ========================================================================== */
+
 :root{font-family:Inter,ui-rounded,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff;background:#020b1d}*{box-sizing:border-box}html,body,#app{margin:0;min-height:100%;background:#020b1d}body{min-height:100vh}button{font:inherit}.phone{width:min(100%,430px);min-height:100dvh;margin:auto;position:relative;overflow:hidden;background:linear-gradient(180deg,#05245b 0,#04214f 33%,#031934 58%,#021226 100%);padding-bottom:86px}.hero{height:350px;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 55%,#2377dc 0,#0b55ad 38%,#062b6c 74%,#031c4a 100%)}.stars{position:absolute;inset:0;background-image:radial-gradient(#fff8 1px,transparent 1px);background-size:57px 51px;opacity:.35}.brand{position:absolute;z-index:3;top:30px;left:27px}.logo{font-weight:1000;font-size:47px;line-height:.9;letter-spacing:-3px;text-shadow:0 4px 8px #001a}.tag{font-size:13px;margin-top:9px;color:#eef6ff}.level{position:absolute;z-index:4;right:22px;top:25px;width:145px;padding:9px 12px 10px 49px;border-radius:23px;background:#082650dd;border:2px solid #315d94;box-shadow:0 7px 20px #001a}.level .fire{position:absolute;left:10px;top:9px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#ffd968}.level b{font-size:14px}.xpbar{height:7px;border-radius:8px;background:#173a6d;margin:5px 0 3px;overflow:hidden}.xpbar i{display:block;width:57%;height:100%;background:#66e8f1;border-radius:inherit}.level small{font-size:10px;font-weight:800}.art{position:absolute;inset:100px 0 0;overflow:hidden}.cloud{position:absolute;width:120px;height:44px;border-radius:50px;background:#759cff55;filter:blur(.2px)}.cloud:before,.cloud:after{content:"";position:absolute;border-radius:50%;background:inherit}.cloud:before{width:65px;height:65px;left:22px;top:-28px}.cloud:after{width:72px;height:58px;right:5px;top:-19px}.cl{left:-35px;top:40px}.cr{right:-35px;top:54px}.island{position:absolute;right:28px;top:80px;width:215px;height:88px;border-radius:50% 50% 44% 44%;background:linear-gradient(#70b95b 0 23%,#493e55 24%,#20365c 100%);clip-path:polygon(0 0,100% 0,88% 52%,69% 100%,45% 79%,22% 100%,8% 52%)}.water{position:absolute;right:86px;top:109px;width:38px;height:150px;background:linear-gradient(90deg,#55d7ff,#e1fbff,#2d9cff);border-radius:4px 4px 45% 45%;box-shadow:0 0 18px #5be1ff99}.house{position:absolute;right:82px;top:62px;width:93px;height:74px;background:#f4b255;border-radius:8px 8px 3px 3px;box-shadow:0 0 25px #ffbc56aa}.house:before{content:"";position:absolute;width:72px;height:72px;background:#783f4d;transform:rotate(45deg);left:10px;top:-34px;border-radius:6px}.house:after{content:"";position:absolute;width:23px;height:34px;background:#5b332e;left:35px;bottom:0;box-shadow:29px -17px 0 -5px #ffe875}.ledge{position:absolute;left:-10px;bottom:21px;width:190px;height:52px;border-radius:50%;background:linear-gradient(#65a84f 0 45%,#253a57 46%);transform:rotate(-3deg)}.avatar{position:absolute;left:57px;bottom:45px;width:75px;height:82px}.head{position:absolute;width:48px;height:48px;border-radius:50%;background:#f1b48f;left:18px;top:0;box-shadow:-12px -8px 0 3px #55302f}.body{position:absolute;width:51px;height:45px;background:#33465c;border-radius:24px 24px 14px 14px;left:10px;top:39px}.pack{position:absolute;width:29px;height:43px;border-radius:12px;background:#49332e;left:0;top:34px}.content{position:relative;margin-top:-12px;border-radius:29px 29px 0 0;background:linear-gradient(180deg,#03254b 0,#031b38 100%);padding:19px 24px 16px;box-shadow:0 -12px 30px #001b36aa}.greet h1{font-size:26px;margin:0 0 4px;letter-spacing:-.5px}.greet p{margin:0;color:#c6d8ef;font-size:14px}.progressrow{display:grid;grid-template-columns:1fr 38px;gap:11px;align-items:center;margin:18px 0}.progress{height:17px;padding:3px;background:#173962;border:1px solid #31547c;border-radius:20px;box-shadow:inset 0 2px 5px #0018}.progress i{display:block;height:100%;width:57%;border-radius:inherit;background:linear-gradient(90deg,#58ead5,#a3fff0);box-shadow:0 0 12px #67ffe1}.fraction{font-size:11px;line-height:1.05;font-weight:900}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px}.stat{height:67px;border-radius:18px;background:linear-gradient(145deg,#0c3159,#092849);box-shadow:inset 0 1px #ffffff0c,0 6px 15px #0017;display:flex;align-items:center;justify-content:center;gap:11px}.stat .ico{font-size:35px}.stat strong{font-size:22px;display:block;line-height:1}.stat small{font-size:11px;color:#c6d7ec}.tasks{display:grid;gap:8px}.task{height:62px;border:0;border-radius:15px;padding:0 13px;background:linear-gradient(100deg,#0d3157,#0a2849);box-shadow:inset 0 1px #ffffff10,0 5px 12px #0017;color:#fff;display:grid;grid-template-columns:33px 36px 1fr auto;gap:8px;align-items:center;text-align:left}
 .task-wrap{position:relative;display:block;isolation:isolate}
 .task-wrap .task{width:100%;position:relative;z-index:2;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;transform-origin:50% 50%}
@@ -25,11 +42,18 @@
 }
 .check{width:29px;height:29px;border-radius:50%;border:2px solid #f4fbff;display:grid;place-items:center;font-weight:1000}.taskicon{font-size:24px}.tasktitle{font-weight:800;font-size:14px}.taskmeta{font-size:11px;color:#b8cae0;margin-top:2px}.reward{font-size:13px;font-weight:900;color:#ffd85d}.task.done{opacity:.64}.task.done .check{border-color:#baffbd;background:#7ef2a4;color:#164e36;box-shadow:0 0 15px #7dffa0}.task.done .tasktitle{text-decoration:line-through;color:#9ba9bf}.add{position:absolute;z-index:8;right:21px;bottom:68px;width:58px;height:58px;border-radius:50%;border:3px solid #fff3cf;background:radial-gradient(circle at 35% 25%,#fff7d5,#ffd87b);color:#f38a16;font-size:38px;line-height:45px;box-shadow:0 0 20px #ffd87caa,0 7px 17px #0019}.nav{position:absolute;z-index:7;bottom:0;left:0;right:0;height:77px;background:#03182fee;border-top:1px solid #164065;display:grid;grid-template-columns:repeat(4,1fr);padding:9px 5px 8px}.nav button{border:0;background:none;color:#8098bb;font-size:10px;display:grid;place-items:center;gap:3px}.nav .ni{font-size:22px;line-height:1}.nav .active{color:#ffda72;text-shadow:0 0 11px #ffc84e}.nav .active .ni{filter:drop-shadow(0 0 5px #ffc34e)}@media(min-width:500px){body{padding:20px}.phone{min-height:850px;border-radius:44px;box-shadow:0 0 0 6px #222a3a,0 25px 70px #000}.nav{border-radius:0 0 44px 44px}}
 /* Production coin sprite: 16 x 64px frames in one horizontal strip */
+/* ============================================================================
+   HOME — COIN SPRITE
+   Sprite-sheet definition used by the interactive coin statistic.
+   ========================================================================== */
 .coin-sprite{display:block;flex:0 0 42px;width:42px;height:42px;background-image:url("assets/images/sprites/coin-spin-sprite.png");background-repeat:no-repeat;background-size:672px 42px;background-position:0 0;border:0;padding:0;cursor:pointer;animation:none;filter:drop-shadow(0 3px 5px #0005)}
 @keyframes coin-spin{to{background-position:-672px 0}}\n.coin-sprite.spinning{animation:coin-spin .8s steps(16) 1}\n.coin-sprite:active{transform:scale(.94)}
 @media(prefers-reduced-motion:reduce){.coin-sprite{animation:none}}
 
-/* Home visual integration */
+/* ============================================================================
+   HOME — HERO, MOBILE LAYOUT, BOTTOM NAV & FAB
+   Final visual/layout rules for the main screen.
+   ========================================================================== */
 .hero.hero-image{
   background-image:linear-gradient(180deg,rgba(1,18,48,.12),rgba(1,18,48,.04) 64%,rgba(2,28,58,.55)),url("assets/images/home/hero-home.png");
   background-size:cover;
@@ -136,7 +160,10 @@
   .progressrow{margin:10px 0}
 }
 
-/* Native-like scrolling: keep scrolling, hide browser scrollbars */
+/* ============================================================================
+   GLOBAL SCROLLBAR BEHAVIOR
+   Keeps native scrolling while hiding browser scrollbar chrome.
+   ========================================================================== */
 html,body,#app,.phone{scrollbar-width:none;-ms-overflow-style:none}
 html::-webkit-scrollbar,body::-webkit-scrollbar,#app::-webkit-scrollbar,.phone::-webkit-scrollbar{display:none;width:0;height:0}
 html{overflow-x:hidden}
@@ -169,11 +196,17 @@ body{overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .coin-sprite.coin-hop{animation:coin-hop-refined 1.5s cubic-bezier(.2,.72,.22,1) both}
 
 
-/* Static streak fire */
+/* ============================================================================
+   HOME — STREAK INDICATOR
+   Static fire treatment for the current day streak.
+   ========================================================================== */
 .streak-fire{display:grid;place-items:center;width:46px;height:46px;flex:0 0 46px;font-size:36px;line-height:1;filter:drop-shadow(0 2px 5px rgba(255,143,31,.25))}
 
 
-/* New task screen */
+/* ============================================================================
+   NEW TASK — BASE STYLES
+   Shared structure for header, hero, form, task sizes and submit action.
+   ========================================================================== */
 .new-task-screen{min-height:100dvh;padding-bottom:0;background:linear-gradient(180deg,#062456 0,#031a37 53%,#020d20 100%)}
 .new-task-header{height:126px;display:flex;align-items:flex-end;justify-content:center;padding:0 22px 18px;position:absolute;z-index:6;left:0;right:0;top:0;background:linear-gradient(180deg,rgba(2,15,39,.72),rgba(2,23,58,.18),transparent)}
 .new-task-header h1{font-size:24px;line-height:1;margin:0;font-weight:900;text-shadow:0 2px 6px #001}
@@ -194,7 +227,10 @@ body{overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .size-card.selected{border-color:#d58aff;background:linear-gradient(160deg,#173b6c,#132d63);box-shadow:0 0 0 2px #7658ff,0 0 19px #a35dffb8,inset 0 1px rgba(255,255,255,.12)}
 .submit-task{width:100%;height:63px;border-radius:32px;border:2px solid #d9c3ff;background:linear-gradient(180deg,#a46cff,#6548f5);box-shadow:inset 0 2px 4px #fff6,0 0 18px #7658ff99,0 7px 18px #0019;color:#fff;font-size:18px;font-weight:900;text-shadow:0 2px 3px #3920a0;cursor:pointer}
 .submit-task:active{transform:translateY(1px)}
-/* Canonical New Task mobile layout — final effective values */
+/* ============================================================================
+   NEW TASK — MOBILE LAYOUT
+   Canonical mobile values. Avoid adding later overrides for these selectors.
+   ========================================================================== */
 .new-task-header h1{
   font-family:Inter,ui-rounded,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   font-weight:1000;
@@ -295,7 +331,10 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   .size-card{height:116px}
 }
 
-/* New Task iOS safe-area artwork */
+/* ============================================================================
+   NEW TASK — iOS SAFE AREA
+   Extends artwork behind the top safe-area while controls stay readable.
+   ========================================================================== */
 @media(max-width:499px){
   .new-task-header{top:0;padding-top:env(safe-area-inset-top);height:calc(64px + env(safe-area-inset-top))}
   .new-task-hero{height:calc(365px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
@@ -306,7 +345,10 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   }
 }
 
-/* Task completed celebration */
+/* ============================================================================
+   TASK COMPLETED — BASE REWARD SCREEN
+   Full-screen reward composition shown immediately after task completion.
+   ========================================================================== */
 .completed-screen{height:100dvh;min-height:100dvh;max-height:100dvh;padding:0;overflow:hidden;overscroll-behavior:none;touch-action:none;background:#03132f}
 .completed-scene{
   position:absolute;inset:0;overflow:hidden;
@@ -354,7 +396,10 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){.completed-screen.play .completion-check,.completed-screen.play .xp-pop,.completed-screen.play .completion-quote,.completed-screen.play .completed-btn{animation:none;opacity:1}.completed-screen.play .completion-check{transform:translate(-50%,-50%)}.completed-screen.play .xp-pop{transform:none}.completed-screen.play .completion-quote,.completed-screen.play .completed-btn{transform:translateX(-50%)}}
 
 
-/* Completion screen visual pass: closer to reward reference */
+/* ============================================================================
+   TASK COMPLETED — FINAL VISUAL COMPOSITION
+   Final positions, scale, confetti, character, glow and CTA styling.
+   ========================================================================== */
 .completed-copy{top:calc(env(safe-area-inset-top) + 42px);z-index:12}
 .completed-copy h1{font-size:28px;text-shadow:0 2px 0 #8f481b,0 0 10px rgba(255,171,77,.38)}
 .completed-copy p{margin-top:7px;font-size:15px}
@@ -746,9 +791,16 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   .completed-screen.play .completed-btn{animation:none!important;opacity:1;transform:translateX(-50%) scale(1)}
 }
 
-/* Account shortcut + settings */
+/* ============================================================================
+   PROFILE — ACCOUNT SHORTCUT & SETTINGS
+   Entry point and profile/settings screen styling.
+   ========================================================================== */
 .account-icon{grid-row:1/4;align-self:center;width:42px;height:42px;border:0;border-radius:50%;padding:0;background:#ffd75a;color:#132b62;display:grid;place-items:center;font-size:21px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.16);transition:transform .16s ease}
 .account-icon:active{transform:scale(.92)}
+/* ============================================================================
+   SETTINGS SCREEN
+   Standalone settings-style shell used by profile-related settings views.
+   ========================================================================== */
 .settings-screen{min-height:100dvh;background:#f5f7fc;color:#12244a}
 .settings-header{height:112px;padding:calc(env(safe-area-inset-top) + 18px) 20px 18px;display:flex;align-items:flex-end;gap:14px;background:#062b5c;color:#fff}
 .settings-header .back-btn{position:static;flex:0 0 auto}
@@ -762,7 +814,10 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .settings-row{width:100%;height:54px;border:0;border-bottom:1px solid #edf0f6;background:#fff;padding:0 16px;display:flex;align-items:center;justify-content:space-between;color:#18294d;font:inherit;font-weight:700;text-align:left}
 .settings-row:first-of-type{border-radius:16px 16px 0 0}.settings-row:last-child{border-bottom:0;border-radius:0 0 16px 16px}.settings-row b{font-size:24px;color:#9ba5b7;font-weight:500}
 
-/* Full profile screen */
+/* ============================================================================
+   PROFILE — MAIN SCREEN
+   Profile overview, progression, stats, quote and settings list.
+   ========================================================================== */
 .profile-screen{height:100dvh;overflow:hidden;background:linear-gradient(180deg,#062a4d 0%,#031b34 100%);color:#fff}
 .profile-content{height:calc(100dvh - 78px);overflow-y:auto;padding:calc(env(safe-area-inset-top) + 26px) 18px 26px;box-sizing:border-box}
 .profile-heading h1{margin:0;font-size:30px;font-weight:1000;letter-spacing:-1px}.profile-heading p{margin:4px 0 22px;color:#bdcce0;font-weight:650}
@@ -795,7 +850,10 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .profile-nav{background:#061d35!important;border-top:1px solid rgba(255,255,255,.07)!important}.profile-nav button{color:#91a8c4!important}.profile-nav button.active{color:#ffd273!important;text-shadow:0 0 10px rgba(255,185,65,.45)}
 @media(max-height:760px){.profile-content{padding-top:calc(env(safe-area-inset-top) + 18px)}.profile-heading p{margin-bottom:14px}.profile-avatar{width:98px;height:98px}.profile-level{grid-template-columns:108px 1fr}.profile-quote{margin:12px 0;padding:12px 16px}.profile-settings label{height:48px}}
 
-/* Profile avatar picker */
+/* ============================================================================
+   PROFILE — AVATAR PICKER
+   Modal sheet and selectable avatar grid.
+   ========================================================================== */
 .profile-avatar{padding:0;overflow:hidden;cursor:pointer;position:relative}
 .profile-avatar img{width:100%;height:100%;display:block;object-fit:cover;border-radius:50%}
 .profile-avatar:after{content:none}
@@ -813,9 +871,16 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .avatar-option.selected{border-color:#ffd45b;box-shadow:0 0 0 2px rgba(255,212,91,.22),0 6px 18px rgba(0,0,0,.25)}.avatar-option.selected span{display:grid}
 @media(max-height:760px){.avatar-picker-sheet{padding-top:17px}.avatar-picker-head{margin-bottom:12px}.avatar-grid{gap:8px}.avatar-option{border-radius:15px}}
 
-/* Task completion rewards + history */
+/* ============================================================================
+   TASK LOG — HISTORY & REWARD DETAILS
+   Historical completed-task list and reward metadata.
+   ========================================================================== */
 .xp-pop small,.xp-pop em{display:block}.xp-pop small{margin-top:5px;font-size:16px;color:#ffd86a}.xp-pop em{margin-top:4px;font-size:18px;color:#86ffe0;font-style:normal}
 .task-log-link{width:100%;height:43px;margin-top:11px;border:1px solid rgba(126,169,210,.22);border-radius:13px;background:#0b2b4b;color:#bcd0e5;display:flex;align-items:center;justify-content:space-between;padding:0 15px;font-weight:800;font-size:12px;cursor:pointer}.task-log-link span{font-size:23px;color:#ffd66b}
+/* ============================================================================
+   TASK LOG — SCREEN LAYOUT
+   Fixed-height shell with independently scrollable completed-task history.
+   ========================================================================== */
 .task-log-screen{height:100dvh;overflow:hidden;background:linear-gradient(180deg,#062a4d,#03182f);color:#fff;padding-bottom:0}
 .task-log-header{min-height:116px;padding:calc(env(safe-area-inset-top) + 20px) 20px 17px;display:flex;align-items:flex-end;gap:14px;background:#082f57;border-bottom:1px solid rgba(255,255,255,.06)}
 .task-log-header .back-btn{position:static;flex:0 0 auto}.task-log-header h1{margin:0;font-size:27px;letter-spacing:-.7px}.task-log-header p{margin:3px 0 0;color:#b9cade;font-size:12px}
@@ -825,7 +890,10 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .task-log-check{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:#65e5a4;color:#124b37;font-weight:1000}.task-log-item strong,.task-log-item small{display:block}.task-log-item strong{font-size:14px}.task-log-item small{margin-top:4px;color:#9eb2c8;font-size:10px}
 .task-log-empty{text-align:center;padding:80px 24px;color:#b7c8dc}.task-log-empty>span{width:62px;height:62px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:#164367;color:#65e5a4;font-size:30px}.task-log-empty h2{margin:0 0 7px;color:#fff;font-size:19px}.task-log-empty p{margin:0;font-size:12px;line-height:1.5}
 
-/* Bottom navigation icons — canonical game-style version */
+/* ============================================================================
+   SHARED BOTTOM NAV — ICONS
+   Canonical SVG icon styling for Home, Achievements and Profile navigation.
+   ========================================================================== */
 .nav .ni{width:31px;height:31px;display:grid;place-items:center}
 .nav .ni svg{width:30px;height:30px;display:block;overflow:visible;fill:none;stroke:none;filter:drop-shadow(0 2px 1px rgba(0,0,0,.32))}
 .nav .ni .icon-fill{fill:#8ea8d0;stroke:#b8cae8;stroke-width:1}
@@ -838,7 +906,10 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .nav button.active .ni .icon-detail{stroke:#a8650c}
 @media(max-width:499px){.nav .ni{width:32px;height:32px}.nav .ni svg{width:31px;height:31px}}
 
-/* ===== Team GO: Level Up screen ===== */
+/* ============================================================================
+   LEVEL UP — FULLSCREEN REWARD SCREEN
+   Artwork, ribbon, reward card, CTA and responsive animation behavior.
+   ========================================================================== */
 .level-up-screen{
   position:relative;width:100%;height:100dvh;max-height:100dvh;overflow:hidden;
   overscroll-behavior:none;touch-action:none;color:#fff;isolation:isolate;background:#195aa7
@@ -975,12 +1046,18 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 }
 @media(prefers-reduced-motion:reduce){.level-up-screen *{animation:none!important}.level-up-sparkles{display:none}}
 
-/* Long-press task edit mode */
+/* ============================================================================
+   TASK EDIT MODE — LONG PRESS SUPPORT
+   Small layout helpers for delete/edit mode on Home tasks.
+   ========================================================================== */
 .tasks{overflow:visible}
 .task-wrap{width:100%}
 
 
-/* ===== Global app text selection behavior ===== */
+/* ============================================================================
+   GLOBAL INTERACTION — TEXT SELECTION
+   Prevents accidental text selection in app UI while keeping inputs editable.
+   ========================================================================== */
 /* App UI text should behave like a native app: no accidental text selection. */
 html,body,#app,.phone,
 button,label,nav,section,article,header,footer,main,
@@ -1002,7 +1079,10 @@ input,textarea,[contenteditable="true"]{
 }
 
 
-/* ===== Tasks empty state ===== */
+/* ============================================================================
+   HOME — EMPTY TASK STATE
+   Shown when there are no remaining visible tasks for today.
+   ========================================================================== */
 .tasks-empty-state{
   min-height:190px;
   border:1px solid rgba(139,177,216,.18);
