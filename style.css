@@ -1422,6 +1422,13 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
   place-items:center;
   filter:drop-shadow(0 4px 4px rgba(0,0,0,.24));
 }
+.achievement-medal img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:contain;
+  pointer-events:none;
+}
 .achievement-medal svg{width:54px;height:54px;overflow:visible}
 .medal-gold svg circle:first-child{fill:#f7a900;stroke:#ffdf55;stroke-width:2}
 .medal-gold svg circle:nth-child(2){fill:#f8bb22;stroke:#ffe372;stroke-width:2}
@@ -1450,12 +1457,10 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
 .locked-medal{
   width:54px;
   height:54px;
-  border-radius:50%;
-  background:#173957;
-  box-shadow:inset 0 0 0 2px #244b70;
-  filter:none;
+  opacity:.68;
+  filter:grayscale(.72) saturate(.7) drop-shadow(0 3px 4px rgba(0,0,0,.22));
 }
-.locked-medal svg{width:34px;height:34px;fill:#617fa6;stroke:#9bb0cc;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.locked-medal img{width:100%;height:100%;object-fit:contain}
 
 .achievement-copy{min-width:0;padding-right:1px}
 .achievement-title-line{display:flex;align-items:center;gap:6px;min-width:0}
