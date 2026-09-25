@@ -74,6 +74,23 @@ const toSubscription=row=>({
   keys:{p256dh:row.p256dh,auth:row.auth}
 });
 
+const readProviderError=async response=>{
+  const providerStatus=response.status;
+  const apnsId=response.headers.get("apns-id")||null;
+  let providerReason=null;
+  let providerBody="";
+  try{
+    providerBody=(await response.clone().text()).slice(0,500);
+    if(providerBody){
+      try{
+        const parsed=JSON.parse(providerBody);
+        providerReason=parsed?.reason||parsed?.error||null;
+      }catch{}
+    }
+  }catch{}
+  return {providerStatus,providerReason,providerBody,apnsId};
+};
+
 const sendPush=async(row,env,{test=false}={})=>{
   requireVapid(env);
 
@@ -236,8 +253,13 @@ const testPush=async(request,env)=>{
       return fail("Push subscription is verlopen",410,env);
     }
 
-    console.error("Test push failed",clientId,response.status);
-    return fail("Pushprovider weigerde de testmelding",502,env);
+    const details=await readProviderError(response);
+    console.error("Test push failed",clientId,details);
+    return json({
+      ok:false,
+      error:"Pushprovider weigerde de testmelding",
+      ...details
+    },502,corsHeaders(env));
   }catch(error){
     console.error("Test push error",clientId,error);
     return fail("Push kon niet worden verstuurd",500,env);
@@ -289,7 +311,7 @@ const runReminderCron=async env=>{
         continue;
       }
 
-      console.error("Push failed",row.client_id,response.status);
+      console.error("Push failed",row.client_id,await readProviderError(response));
     }catch(error){
       console.error("Push error",row.client_id,error);
     }
