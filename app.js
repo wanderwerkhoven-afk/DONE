@@ -17,13 +17,15 @@ const state={...defaultState,...(savedState||{})};
 const APP_ICON_COUNT=16;
 const appIconId=n=>`illustration-${String(n).padStart(2,"0")}`;
 const appIconPath=id=>`assets/images/app-icons/illustration-art/${id}.png`;
+const validAppIcon=id=>/^illustration-(0[1-9]|1[0-6])$/.test(String(id));
+const launchAppIcon=new URL(window.location.href).searchParams.get("appIcon");
 const normalizedAppIcon=()=>{
   const match=String(state.appIcon||"").match(/^illustration-(\d{2})$/);
   const n=match?Number(match[1]):1;
   return n>=1&&n<=APP_ICON_COUNT?appIconId(n):appIconId(1);
 };
 state.appIconCategory="illustration-art";
-state.appIcon=normalizedAppIcon();
+state.appIcon=validAppIcon(launchAppIcon)?launchAppIcon:normalizedAppIcon();
 const applySelectedAppIcon=()=>{
   const path=appIconPath(state.appIcon);
   document.querySelectorAll('link[rel="icon"],link[rel="apple-touch-icon"]').forEach(link=>{link.href=path});
@@ -37,6 +39,12 @@ state.level=Math.max(1,Number(state.level)||1);
 state.xp=Math.max(0,Number(state.xp)||0);
 state.maxXp=xpForLevel(state.level);
 while(state.xp>=state.maxXp){state.xp-=state.maxXp;state.level++;state.maxXp=xpForLevel(state.level)}
+if(validAppIcon(launchAppIcon)){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}
+  const cleanUrl=new URL(window.location.href);
+  cleanUrl.searchParams.delete("appIcon");
+  history.replaceState(history.state,"",cleanUrl.pathname+(cleanUrl.search||"")+cleanUrl.hash);
+}
 applySelectedAppIcon();
 const localDateKey=d=>{const x=d?new Date(d):new Date();return [x.getFullYear(),String(x.getMonth()+1).padStart(2,"0"),String(x.getDate()).padStart(2,"0")].join("-")};
 const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
