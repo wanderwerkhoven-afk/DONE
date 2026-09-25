@@ -1000,7 +1000,27 @@ button,.task-input,input,textarea,select{touch-action:manipulation}
    SHARED BOTTOM NAV — ICONS
    Canonical SVG icon styling for Home, Achievements and Profile navigation.
    ========================================================================== */
+.nav button{position:relative}
 .nav .ni{width:31px;height:31px;display:grid;place-items:center}
+.nav-alert{
+  position:absolute;
+  top:1px;
+  right:18px;
+  min-width:17px;
+  height:17px;
+  padding:0 4px;
+  border:2px solid #061b31;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  color:#08283e;
+  background:#7ce8c2;
+  box-shadow:0 0 8px rgba(124,232,194,.28);
+  font-size:8px;
+  line-height:1;
+  font-weight:1000;
+  text-shadow:none;
+}
 .nav .ni svg{width:30px;height:30px;display:block;overflow:visible;fill:none;stroke:none;filter:drop-shadow(0 2px 1px rgba(0,0,0,.32))}
 .nav .ni .icon-fill{fill:#8ea8d0;stroke:#b8cae8;stroke-width:1}
 .nav .ni .icon-cut{fill:none;stroke:#08223d;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
