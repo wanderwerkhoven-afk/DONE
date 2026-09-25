@@ -893,13 +893,13 @@ const achievementIcon=(type,locked=false,badgeKey="star")=>{
 
 const achievementStatusLabel=a=>a.unlocked?"Ontgrendeld":a.locked?"Vergrendeld":"Bezig";
 
-const achievementRow=a=>`<button class="achievement-card achievement-${a.status} ${a.isNew?"achievement-new":""}" type="button" data-achievement-id="${a.id}" data-category="${a.category}" onclick="openAchievementDetail('${a.id}')" aria-label="${a.title}, ${achievementStatusLabel(a)}">
-  ${achievementIcon(a.icon,a.locked,a.badgeKey)}
+const achievementRow=(a,index=0)=>`<button class="achievement-card achievement-${a.status} ${a.isNew?"achievement-new":""}" type="button" style="--achievement-index:${index};--achievement-progress:${a.unlocked?100:a.pct}%" data-achievement-id="${a.id}" data-category="${a.category}" onclick="openAchievementDetail('${a.id}')" aria-label="${a.title}, ${achievementStatusLabel(a)}">
+  <span class="achievement-medal-stage">${achievementIcon(a.icon,a.locked,a.badgeKey)}</span>
   <span class="achievement-copy">
     <span class="achievement-title-line"><strong>${a.title}</strong>${a.isNew?'<em class="achievement-new-badge">Nieuw</em>':""}</span>
     <small>${a.subtitle}</small>
     <span class="achievement-progress-copy">${a.unlocked?"Doel behaald":a.locked?"Voltooi eerst de vorige mijlpaal":`${a.value} / ${a.goal} · ${a.pct}%`}</span>
-    <span class="achievement-progress" role="progressbar" aria-label="Voortgang ${a.title}" aria-valuemin="0" aria-valuemax="${a.goal}" aria-valuenow="${a.unlocked?a.goal:a.value}"><i style="width:${a.unlocked?100:a.pct}%"></i></span>
+    <span class="achievement-progress" role="progressbar" aria-label="Voortgang ${a.title}" aria-valuemin="0" aria-valuemax="${a.goal}" aria-valuenow="${a.unlocked?a.goal:a.value}"><i></i></span>
   </span>
   <span class="achievement-card-status">
     ${a.unlocked?'<span class="achievement-check">✓</span>':`<b class="achievement-count">${a.value} / ${a.goal}</b>`}
@@ -964,7 +964,7 @@ window.openAchievementDetail=id=>{
       <p>${achievement.subtitle}</p>
       <div class="achievement-detail-progress">
         <div><span>${achievementStatusLabel(achievement)}</span><b>${achievement.unlocked?achievement.goal:achievement.value} / ${achievement.goal}</b></div>
-        <div class="achievement-progress" role="progressbar" aria-label="Voortgang ${achievement.title}" aria-valuemin="0" aria-valuemax="${achievement.goal}" aria-valuenow="${achievement.unlocked?achievement.goal:achievement.value}"><i style="width:${achievement.unlocked?100:achievement.pct}%"></i></div>
+        <div class="achievement-progress" style="--achievement-progress:${achievement.unlocked?100:achievement.pct}%" role="progressbar" aria-label="Voortgang ${achievement.title}" aria-valuemin="0" aria-valuemax="${achievement.goal}" aria-valuenow="${achievement.unlocked?achievement.goal:achievement.value}"><i></i></div>
       </div>
       <div class="achievement-detail-note">${achievement.unlocked
         ?`Ontgrendeld op <strong>${unlockedDate||"eerder"}</strong>`
@@ -1011,12 +1011,20 @@ window.openAchievements=()=>{
     .sort((a,b)=>new Date(b.unlockedAt||0)-new Date(a.unlockedAt||0))
     .slice(0,4);
 
-  const showcase=recent.length
-    ?recent.map(item=>`<button class="achievement-showcase-item ${item.isNew?"new":""}" type="button" data-achievement-id="${item.id}" onclick="openAchievementDetail('${item.id}')" aria-label="Bekijk ${item.title}">
-        ${achievementIcon(item.icon,false,item.badgeKey)}
-        <span>${item.title}</span>
-      </button>`).join("")
-    :`<div class="achievement-showcase-empty"><span class="achievement-empty-trophy" aria-hidden="true">${achievementIcon("star",true,"empty")}</span><div><strong>Je trofeeënkast wacht op je</strong><small>Voltooi je eerste achievement om hier een badge te tonen.</small></div></div>`;
+  const showcaseUnlocked=recent.map((item,index)=>`<button class="achievement-showcase-item unlocked ${item.isNew?"new":""}" type="button" style="--showcase-index:${index}" data-achievement-id="${item.id}" onclick="openAchievementDetail('${item.id}')" aria-label="Bekijk ${item.title}">
+    <span class="achievement-showcase-medal">${achievementIcon(item.icon,false,item.badgeKey)}</span>
+    <span>${item.title}</span>
+  </button>`);
+
+  const showcaseLocked=achievements
+    .filter(item=>!item.unlocked)
+    .slice(0,Math.max(0,4-showcaseUnlocked.length))
+    .map((item,index)=>`<div class="achievement-showcase-item locked" style="--showcase-index:${showcaseUnlocked.length+index}" aria-label="Nog te ontgrendelen">
+      <span class="achievement-showcase-medal">${achievementIcon(item.icon,true,item.badgeKey)}</span>
+      <span>Nog te verdienen</span>
+    </div>`);
+
+  const showcase=[...showcaseUnlocked,...showcaseLocked].join("");
 
   const filters=["all","tasks","streak","growth","world"];
   const filterButtons=filters.map(category=>{
@@ -1034,16 +1042,21 @@ window.openAchievements=()=>{
         ${unseenCount?`<span class="achievements-new-total">${unseenCount} nieuw</span>`:""}
       </header>
 
-      <section class="achievement-overview" aria-label="Totale achievementvoortgang">
-        <div class="achievement-overview-top"><div><strong>${unlockedCount} / ${total}</strong><small>ontgrendeld</small></div><b>${overallPct}%</b></div>
-        <div class="achievement-overall-progress" role="progressbar" aria-label="Totale achievementvoortgang" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${unlockedCount}"><i style="width:${overallPct}%"></i></div>
+      <section class="achievement-overview" style="--overall-progress:${overallPct}%" aria-label="Totale achievementvoortgang">
+        <div class="achievement-overview-emblem" aria-hidden="true"><img src="${achievementAsset("trophy")}" alt=""></div>
+        <div class="achievement-overview-main">
+          <span class="achievement-overview-eyebrow">Collectievoortgang</span>
+          <div class="achievement-overview-top"><div><strong>${unlockedCount}<span>/${total}</span></strong><small>ontgrendeld</small></div><b>${overallPct}%</b></div>
+          <div class="achievement-overall-progress" role="progressbar" aria-label="Totale achievementvoortgang" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${unlockedCount}"><i></i><span></span></div>
+        </div>
       </section>
 
       <section class="achievement-showcase" aria-label="Recente trofeeën">
-        <div class="achievement-section-head"><h2>Trofeeënkast</h2><small>Recent ontgrendeld</small></div>
+        <div class="achievement-section-head"><h2>Trofeeënkast</h2><small>Jouw laatste buit</small></div>
         <div class="achievement-showcase-row">${showcase}</div>
       </section>
 
+      <div class="achievement-section-head achievement-challenges-head"><h2>Uitdagingen</h2><small>Blijf bouwen</small></div>
       <div class="achievement-filters" aria-label="Filter achievements">${filterButtons}</div>
       <section class="achievement-list">${achievements.map(achievementRow).join("")}</section>
     </main>
@@ -1054,6 +1067,7 @@ window.openAchievements=()=>{
     window.scrollTo(0,0);
     const content=document.querySelector(".achievements-content");
     if(content)content.scrollTop=0;
+    document.querySelector(".achievements-screen")?.classList.add("play");
   });
 };
 
