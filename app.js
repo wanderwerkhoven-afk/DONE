@@ -899,12 +899,110 @@ window.closeAppIconPicker=()=>{
 
 window.selectAppIcon=id=>{
   if(!/^illustration-(0[1-9]|1[0-6])$/.test(String(id)))return;
+  const changed=id!==state.appIcon;
   state.appIconCategory="illustration-art";
   state.appIcon=id;
   saveState();
   applySelectedAppIcon();
   closeAppIconPicker();
-  setTimeout(()=>openProfile(),120);
+  if(!changed){setTimeout(()=>openProfile(),120);return}
+  setTimeout(()=>openAppIconInstallWizard(id),130);
+};
+
+const appIconInstallUrl=id=>{
+  const base=new URL(".",window.location.href);
+  return new URL(`install/${id}.html`,base).href;
+};
+
+window.openAppIconInstallWizard=id=>{
+  document.querySelector(".app-icon-install")?.remove();
+  const icon=/^illustration-(0[1-9]|1[0-6])$/.test(String(id))?id:state.appIcon;
+  const wizard=document.createElement("div");
+  wizard.className="app-icon-install";
+  wizard.dataset.backupReady="false";
+  wizard.innerHTML=`<button class="app-icon-install-backdrop" type="button" onclick="closeAppIconInstallWizard()" aria-label="Sluiten"></button>
+    <section class="app-icon-install-modal" role="dialog" aria-modal="true" aria-labelledby="iconInstallTitle">
+      <button class="app-icon-install-close" type="button" onclick="closeAppIconInstallWizard()" aria-label="Sluiten">×</button>
+      <div class="app-icon-install-preview"><img src="${appIconPath(icon)}" alt=""></div>
+      <header>
+        <span>Nieuw app-icoon gekozen</span>
+        <h2 id="iconInstallTitle">Zet dit icoon op je iPhone</h2>
+        <p>iOS kan een bestaand PWA-icoon niet live vervangen. Deze korte stappen zorgen dat je data behouden blijft en Safari exact dit icoon gebruikt.</p>
+      </header>
+
+      <div class="app-icon-install-steps">
+        <article class="app-icon-install-step is-active" data-install-step="1">
+          <b>1</b>
+          <div><h3>Maak eerst een back-up</h3><p>Dit bewaart je taken, XP, coins, achievements en instellingen.</p>
+            <button class="icon-install-backup" type="button" onclick="backupForIconInstall(this)">Back-up maken</button>
+            <small class="icon-install-backup-status">Verplicht voordat je verdergaat</small>
+          </div>
+        </article>
+
+        <article class="app-icon-install-step" data-install-step="2">
+          <b>2</b>
+          <div><h3>Verwijder de oude homescreen-versie</h3><p>Houd DONE. op je beginscherm ingedrukt en kies de optie om de webapp van je beginscherm te verwijderen.</p></div>
+        </article>
+
+        <article class="app-icon-install-step" data-install-step="3">
+          <b>3</b>
+          <div><h3>Open de gekozen versie in Safari</h3><p>De installpagina heeft dit icoon al vast in de favicon, Apple touch icon én het PWA-manifest staan.</p>
+            <button class="icon-install-open" type="button" onclick="openChosenIconInstallPage('${icon}')" disabled>Open DONE. in Safari</button>
+          </div>
+        </article>
+
+        <article class="app-icon-install-step" data-install-step="4">
+          <b>4</b>
+          <div><h3>Zet opnieuw op beginscherm</h3><p>Tik in Safari op <strong>Delen</strong> → <strong>Zet op beginscherm</strong>. Daarna start DONE. weer normaal vanaf de hoofdpagina.</p></div>
+        </article>
+
+        <article class="app-icon-install-step" data-install-step="5">
+          <b>5</b>
+          <div><h3>Zet je gegevens terug</h3><p>Open daarna Profiel → Gegevens → Back-up herstellen en kies het zojuist opgeslagen DONE.-bestand.</p></div>
+        </article>
+      </div>
+      <p class="app-icon-install-footnote">Je gekozen icoon blijft ook in je back-up opgeslagen.</p>
+    </section>`;
+  document.querySelector(".profile-screen")?.appendChild(wizard);
+  requestAnimationFrame(()=>wizard.classList.add("show"));
+};
+
+window.closeAppIconInstallWizard=()=>{
+  const wizard=document.querySelector(".app-icon-install");
+  if(!wizard)return;
+  wizard.classList.remove("show");
+  setTimeout(()=>{wizard.remove();openProfile()},180);
+};
+
+window.backupForIconInstall=async button=>{
+  if(button?.disabled)return;
+  button.disabled=true;
+  button.textContent="Back-up maken…";
+  const ok=await exportDoneBackup();
+  const wizard=document.querySelector(".app-icon-install");
+  if(ok&&wizard){
+    wizard.dataset.backupReady="true";
+    button.textContent="✓ Back-up gemaakt";
+    button.classList.add("done");
+    const status=wizard.querySelector(".icon-install-backup-status");
+    if(status)status.textContent="Veilig opgeslagen";
+    wizard.querySelector('[data-install-step="1"]')?.classList.add("is-done");
+    wizard.querySelector('[data-install-step="2"]')?.classList.add("is-active");
+    wizard.querySelector('[data-install-step="3"]')?.classList.add("is-active");
+    const open=wizard.querySelector(".icon-install-open");
+    if(open)open.disabled=false;
+  }else{
+    button.disabled=false;
+    button.textContent="Back-up maken";
+  }
+};
+
+window.openChosenIconInstallPage=id=>{
+  const wizard=document.querySelector(".app-icon-install");
+  if(!wizard||wizard.dataset.backupReady!=="true")return;
+  const url=appIconInstallUrl(id);
+  const opened=window.open(url,"_blank","noopener");
+  if(!opened)window.location.href=url;
 };
 
 // ============================================================================
@@ -983,10 +1081,10 @@ window.exportDoneBackup=async()=>{
     if(navigator.share&&navigator.canShare?.({files:[file]})){
       await navigator.share({files:[file],title:"DONE. back-up"});
       setDataPopupStatus("Back-up klaar om te bewaren.","success");
-      return;
+      return true;
     }
   }catch(error){
-    if(error?.name==="AbortError")return;
+    if(error?.name==="AbortError")return false;
   }
 
   const url=URL.createObjectURL(file);
@@ -998,6 +1096,7 @@ window.exportDoneBackup=async()=>{
   link.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
   setDataPopupStatus("Back-up gedownload.","success");
+  return true;
 };
 
 window.chooseDoneBackup=()=>{
