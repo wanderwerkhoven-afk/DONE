@@ -345,7 +345,14 @@ window.toggleDailyReminder=async el=>{
   }
 
   scheduleTaskReminder();
-  await syncReminderBackendState(true);
+  const synced=await syncReminderBackendState(true);
+  if(!synced&&getReminderBackendUrl()){
+    state.reminderEnabled=false;
+    saveState();
+    el.checked=false;
+    scheduleTaskReminder();
+    alert("De pushverbinding kon niet met de backend worden opgeslagen. Probeer het opnieuw.");
+  }
 };
 
 window.updateReminderTime=async el=>{
@@ -424,6 +431,7 @@ window.testDoneNotification=async button=>{
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
         clientId:getReminderClientId(),
+        endpoint:subscription.endpoint,
         subscription:subscription.toJSON()
       })
     });
