@@ -938,6 +938,19 @@ window.openAchievementDetail=id=>{
     document.querySelector(`.achievement-card[data-achievement-id="${id}"]`)?.classList.remove("achievement-new");
     document.querySelector(`.achievement-card[data-achievement-id="${id}"] .achievement-new-badge`)?.remove();
     document.querySelector(`.achievement-showcase-item[data-achievement-id="${id}"]`)?.classList.remove("new");
+
+    const remainingNew=unseenAchievementCount();
+    document.querySelectorAll(".nav-alert").forEach(alert=>{
+      if(!remainingNew){alert.remove();return}
+      alert.textContent=String(remainingNew);
+      alert.setAttribute("aria-label",`${remainingNew} nieuwe achievements`);
+    });
+
+    const totalBadge=document.querySelector(".achievements-new-total");
+    if(totalBadge){
+      if(remainingNew)totalBadge.textContent=`${remainingNew} nieuw`;
+      else totalBadge.remove();
+    }
   }
 
   document.querySelector(".achievement-detail")?.remove();
