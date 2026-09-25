@@ -15,17 +15,28 @@ const xpForLevel=level=>100+(Math.max(1,level)-1)*50;
 const savedState=(()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"null")}catch(e){return null}})();
 const state={...defaultState,...(savedState||{})};
 const APP_ICON_COUNT=16;
-const appIconId=n=>`illustration-${String(n).padStart(2,"0")}`;
-const appIconPath=id=>`assets/images/app-icons/illustration-art/${id}.png`;
-const validAppIcon=id=>/^illustration-(0[1-9]|1[0-6])$/.test(String(id));
+const APP_ICON_CATEGORIES={
+  "illustration-art":{label:"Illustration Art",prefix:"illustration",folder:"illustration-art"},
+  simple:{label:"Simple",prefix:"simple",folder:"simple"}
+};
+const appIconId=(category,n)=>{
+  const config=APP_ICON_CATEGORIES[category]||APP_ICON_CATEGORIES["illustration-art"];
+  return `${config.prefix}-${String(n).padStart(2,"0")}`;
+};
+const appIconCategoryFromId=id=>String(id||"").startsWith("simple-")?"simple":"illustration-art";
+const appIconPath=id=>{
+  const category=appIconCategoryFromId(id);
+  return `assets/images/app-icons/${APP_ICON_CATEGORIES[category].folder}/${id}.png`;
+};
+const validAppIcon=id=>/^(illustration|simple)-(0[1-9]|1[0-6])$/.test(String(id));
 const launchAppIcon=new URL(window.location.href).searchParams.get("appIcon");
 const normalizedAppIcon=()=>{
-  const match=String(state.appIcon||"").match(/^illustration-(\d{2})$/);
-  const n=match?Number(match[1]):1;
-  return n>=1&&n<=APP_ICON_COUNT?appIconId(n):appIconId(1);
+  if(validAppIcon(state.appIcon))return String(state.appIcon);
+  const category=APP_ICON_CATEGORIES[state.appIconCategory]?state.appIconCategory:"illustration-art";
+  return appIconId(category,1);
 };
-state.appIconCategory="illustration-art";
 state.appIcon=validAppIcon(launchAppIcon)?launchAppIcon:normalizedAppIcon();
+state.appIconCategory=appIconCategoryFromId(state.appIcon);
 const applySelectedAppIcon=()=>{
   const path=appIconPath(state.appIcon);
   document.querySelectorAll('link[rel="icon"],link[rel="apple-touch-icon"]').forEach(link=>{link.href=path});
@@ -822,7 +833,7 @@ window.openProfile=()=>{
       <blockquote class="profile-quote"><span>🌿</span><p>“Discipline is gewoon<br>zelfliefde in actie.”</p></blockquote>
       <button class="profile-app-icon-tile" type="button" onclick="openAppIconPicker()" aria-label="Kies app-icoon">
         <img src="${appIconPath(state.appIcon)}" alt="">
-        <span><b>App-icoon</b><small>Illustration Art · kies jouw DONE.-stijl</small></span>
+        <span><b>App-icoon</b><small>${APP_ICON_CATEGORIES[state.appIconCategory]?.label||"Illustration Art"} · kies jouw DONE.-stijl</small></span>
         <i aria-hidden="true">›</i>
       </button>
       <section class="profile-settings">
@@ -872,30 +883,42 @@ window.selectProfileAvatar=n=>{state.profileAvatar=n;saveState();closeAvatarPick
 // PROFILE APP ICON PICKER
 // Zelfde interactiepatroon als de avatar-selector, met 16 Illustration Art-iconen.
 // ============================================================================
-window.openAppIconPicker=()=>{
+window.openAppIconPicker=(category=state.appIconCategory||"illustration-art")=>{
   document.querySelector(".app-icon-picker")?.remove();
-  const selected=state.appIcon||appIconId(1);
+  const activeCategory=APP_ICON_CATEGORIES[category]?category:"illustration-art";
+  const selected=state.appIcon||appIconId("illustration-art",1);
   const picker=document.createElement("div");
   picker.className="app-icon-picker";
   picker.innerHTML=`<div class="app-icon-picker-backdrop" onclick="closeAppIconPicker()"></div>
     <section class="app-icon-picker-sheet" role="dialog" aria-modal="true" aria-labelledby="appIconPickerTitle">
       <div class="app-icon-picker-head">
-        <div><h2 id="appIconPickerTitle">Kies je app-icoon</h2><p>Illustration Art</p></div>
+        <div><h2 id="appIconPickerTitle">Kies je app-icoon</h2><p>Maak DONE. van jou</p></div>
         <button type="button" onclick="closeAppIconPicker()" aria-label="Sluiten">×</button>
+      </div>
+      <div class="app-icon-tabs" role="tablist" aria-label="Icooncategorie">
+        ${Object.entries(APP_ICON_CATEGORIES).map(([key,config])=>`<button type="button" class="${activeCategory===key?"active":""}" onclick="switchAppIconCategory('${key}')" role="tab" aria-selected="${activeCategory===key}">${config.label}</button>`).join("")}
       </div>
       <div class="app-icon-grid">
         ${Array.from({length:APP_ICON_COUNT},(_,i)=>{
-          const id=appIconId(i+1);
-          return `<button class="app-icon-option ${selected===id?"selected":""}" type="button" onclick="selectAppIcon('${id}')" aria-label="App-icoon ${i+1}">
+          const id=appIconId(activeCategory,i+1);
+          return `<button class="app-icon-option ${selected===id?"selected":""}" type="button" onclick="selectAppIcon('${id}')" aria-label="${APP_ICON_CATEGORIES[activeCategory].label} app-icoon ${i+1}">
             <img src="${appIconPath(id)}" alt="">
             <span>✓</span>
           </button>`;
         }).join("")}
       </div>
-      <p class="app-icon-picker-note">De keuze verandert direct in DONE. Een al geïnstalleerd iPhone-homescreen-icoon kan iOS pas bij een nieuwe installatie verversen.</p>
+      <p class="app-icon-picker-note">Je selectie wordt opgeslagen in DONE. Voor een ander iPhone-homescreen-icoon begeleidt DONE. je automatisch door de veilige herinstallatie.</p>
     </section>`;
   document.querySelector(".profile-screen")?.appendChild(picker);
   requestAnimationFrame(()=>picker.classList.add("show"));
+};
+
+window.switchAppIconCategory=category=>{
+  if(!APP_ICON_CATEGORIES[category])return;
+  const picker=document.querySelector(".app-icon-picker");
+  if(!picker)return;
+  picker.remove();
+  openAppIconPicker(category);
 };
 
 window.closeAppIconPicker=()=>{
@@ -906,9 +929,9 @@ window.closeAppIconPicker=()=>{
 };
 
 window.selectAppIcon=id=>{
-  if(!/^illustration-(0[1-9]|1[0-6])$/.test(String(id)))return;
+  if(!validAppIcon(id))return;
   const changed=id!==state.appIcon;
-  state.appIconCategory="illustration-art";
+  state.appIconCategory=appIconCategoryFromId(id);
   state.appIcon=id;
   saveState();
   applySelectedAppIcon();
@@ -924,7 +947,7 @@ const appIconInstallUrl=id=>{
 
 window.openAppIconInstallWizard=id=>{
   document.querySelector(".app-icon-install")?.remove();
-  const icon=/^illustration-(0[1-9]|1[0-6])$/.test(String(id))?id:state.appIcon;
+  const icon=validAppIcon(id)?id:state.appIcon;
   const wizard=document.createElement("div");
   wizard.className="app-icon-install";
   wizard.dataset.backupReady="false";
