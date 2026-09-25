@@ -179,7 +179,7 @@ const deleteSubscription=async(url,env)=>{
 // ============================================================================
 const testPush=async(request,env)=>{
   const body=await request.json().catch(()=>null);
-  const {clientId,endpoint}=body||{};
+  const {clientId,endpoint,subscription}=body||{};
 
   if(!validClientId(clientId)){
     return fail("Ongeldige of ontbrekende clientId",400,env);
@@ -188,17 +188,35 @@ const testPush=async(request,env)=>{
   const auth=request.headers.get("authorization")||"";
   const isAdmin=Boolean(env.TEST_PUSH_TOKEN)&&auth===`Bearer ${env.TEST_PUSH_TOKEN}`;
 
-  if(!isAdmin&&(typeof endpoint!=="string"||!endpoint)){
-    return fail("endpoint is verplicht voor browser testcalls",400,env);
-  }
+  // Browser testcalls may send the current PushSubscription directly. This
+  // validates the actual browser -> Worker -> push provider -> device chain
+  // without requiring daily reminders to be enabled or D1 to be in sync.
+  let row=null;
+  let ephemeral=false;
 
-  const row=isAdmin
-    ?await env.DB.prepare(
+  if(
+    subscription?.endpoint&&
+    subscription?.keys?.p256dh&&
+    subscription?.keys?.auth
+  ){
+    row={
+      client_id:clientId,
+      endpoint:String(subscription.endpoint),
+      p256dh:String(subscription.keys.p256dh),
+      auth:String(subscription.keys.auth)
+    };
+    ephemeral=true;
+  }else if(isAdmin){
+    row=await env.DB.prepare(
       "SELECT * FROM push_subscriptions WHERE client_id=? AND enabled=1"
-    ).bind(clientId).first()
-    :await env.DB.prepare(
+    ).bind(clientId).first();
+  }else if(typeof endpoint==="string"&&endpoint){
+    row=await env.DB.prepare(
       "SELECT * FROM push_subscriptions WHERE client_id=? AND endpoint=? AND enabled=1"
     ).bind(clientId,endpoint).first();
+  }else{
+    return fail("Push subscription ontbreekt",400,env);
+  }
 
   if(!row)return fail("Geen actieve push subscription gevonden voor dit apparaat",404,env);
 
@@ -210,10 +228,12 @@ const testPush=async(request,env)=>{
     }
 
     if(response.status===404||response.status===410){
-      await env.DB.prepare(
-        "DELETE FROM push_subscriptions WHERE client_id=?"
-      ).bind(clientId).run();
-      return fail("Push subscription is verlopen en is verwijderd",410,env);
+      if(!ephemeral){
+        await env.DB.prepare(
+          "DELETE FROM push_subscriptions WHERE client_id=?"
+        ).bind(clientId).run();
+      }
+      return fail("Push subscription is verlopen",410,env);
     }
 
     console.error("Test push failed",clientId,response.status);
