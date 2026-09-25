@@ -14,6 +14,20 @@ const defaultState={level:1,xp:0,maxXp:100,streak:0,coins:0,profileAvatar:1,appI
 const xpForLevel=level=>100+(Math.max(1,level)-1)*50;
 const savedState=(()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"null")}catch(e){return null}})();
 const state={...defaultState,...(savedState||{})};
+const APP_ICON_COUNT=16;
+const appIconId=n=>`illustration-${String(n).padStart(2,"0")}`;
+const appIconPath=id=>`assets/images/app-icons/illustration-art/${id}.png`;
+const normalizedAppIcon=()=>{
+  const match=String(state.appIcon||"").match(/^illustration-(\d{2})$/);
+  const n=match?Number(match[1]):1;
+  return n>=1&&n<=APP_ICON_COUNT?appIconId(n):appIconId(1);
+};
+state.appIconCategory="illustration-art";
+state.appIcon=normalizedAppIcon();
+const applySelectedAppIcon=()=>{
+  const path=appIconPath(state.appIcon);
+  document.querySelectorAll('link[rel="icon"],link[rel="apple-touch-icon"]').forEach(link=>{link.href=path});
+};
 state.rewardScreensEnabled=state.rewardScreensEnabled!==false;
 state.reminderTime=/^([01]\d|2[0-3]):[0-5]\d$/.test(String(state.reminderTime||""))
   ?String(state.reminderTime)
@@ -23,6 +37,7 @@ state.level=Math.max(1,Number(state.level)||1);
 state.xp=Math.max(0,Number(state.xp)||0);
 state.maxXp=xpForLevel(state.level);
 while(state.xp>=state.maxXp){state.xp-=state.maxXp;state.level++;state.maxXp=xpForLevel(state.level)}
+applySelectedAppIcon();
 const localDateKey=d=>{const x=d?new Date(d):new Date();return [x.getFullYear(),String(x.getMonth()+1).padStart(2,"0"),String(x.getDate()).padStart(2,"0")].join("-")};
 const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
 const coinReward=xp=>xp>=50?10:xp>=25?5:2;
@@ -797,6 +812,11 @@ window.openProfile=()=>{
         <div><b>${worldItems}</b><small>wereld items</small></div>
       </section>
       <blockquote class="profile-quote"><span>🌿</span><p>“Discipline is gewoon<br>zelfliefde in actie.”</p></blockquote>
+      <button class="profile-app-icon-tile" type="button" onclick="openAppIconPicker()" aria-label="Kies app-icoon">
+        <img src="${appIconPath(state.appIcon)}" alt="">
+        <span><b>App-icoon</b><small>Illustration Art · kies jouw DONE.-stijl</small></span>
+        <i aria-hidden="true">›</i>
+      </button>
       <section class="profile-settings">
         <label><span>🔊 <b>Geluid</b></span><input type="checkbox" data-setting="sound" onchange="saveProfileSetting(this)" ${state.sound!==false?"checked":""}><i></i></label>
         <label><span>⚙️ <b>Haptische feedback</b></span><input type="checkbox" data-setting="haptics" onchange="saveProfileSetting(this)" ${state.haptics!==false?"checked":""}><i></i></label>
@@ -839,6 +859,53 @@ window.openAvatarPicker=()=>{
 };
 window.closeAvatarPicker=()=>{const picker=document.querySelector(".avatar-picker");if(!picker)return;picker.classList.remove("show");setTimeout(()=>picker.remove(),180)};
 window.selectProfileAvatar=n=>{state.profileAvatar=n;saveState();closeAvatarPicker();setTimeout(()=>openProfile(),120)};
+
+// ============================================================================
+// PROFILE APP ICON PICKER
+// Zelfde interactiepatroon als de avatar-selector, met 16 Illustration Art-iconen.
+// ============================================================================
+window.openAppIconPicker=()=>{
+  document.querySelector(".app-icon-picker")?.remove();
+  const selected=state.appIcon||appIconId(1);
+  const picker=document.createElement("div");
+  picker.className="app-icon-picker";
+  picker.innerHTML=`<div class="app-icon-picker-backdrop" onclick="closeAppIconPicker()"></div>
+    <section class="app-icon-picker-sheet" role="dialog" aria-modal="true" aria-labelledby="appIconPickerTitle">
+      <div class="app-icon-picker-head">
+        <div><h2 id="appIconPickerTitle">Kies je app-icoon</h2><p>Illustration Art</p></div>
+        <button type="button" onclick="closeAppIconPicker()" aria-label="Sluiten">×</button>
+      </div>
+      <div class="app-icon-grid">
+        ${Array.from({length:APP_ICON_COUNT},(_,i)=>{
+          const id=appIconId(i+1);
+          return `<button class="app-icon-option ${selected===id?"selected":""}" type="button" onclick="selectAppIcon('${id}')" aria-label="App-icoon ${i+1}">
+            <img src="${appIconPath(id)}" alt="">
+            <span>✓</span>
+          </button>`;
+        }).join("")}
+      </div>
+      <p class="app-icon-picker-note">De keuze verandert direct in DONE. Een al geïnstalleerd iPhone-homescreen-icoon kan iOS pas bij een nieuwe installatie verversen.</p>
+    </section>`;
+  document.querySelector(".profile-screen")?.appendChild(picker);
+  requestAnimationFrame(()=>picker.classList.add("show"));
+};
+
+window.closeAppIconPicker=()=>{
+  const picker=document.querySelector(".app-icon-picker");
+  if(!picker)return;
+  picker.classList.remove("show");
+  setTimeout(()=>picker.remove(),180);
+};
+
+window.selectAppIcon=id=>{
+  if(!/^illustration-(0[1-9]|1[0-6])$/.test(String(id)))return;
+  state.appIconCategory="illustration-art";
+  state.appIcon=id;
+  saveState();
+  applySelectedAppIcon();
+  closeAppIconPicker();
+  setTimeout(()=>openProfile(),120);
+};
 
 // ============================================================================
 // PROFILE DATA / BACKUP
