@@ -26,6 +26,28 @@ const localDateKey=d=>{const x=d?new Date(d):new Date();return [x.getFullYear(),
 const coinReward=xp=>xp>=50?10:xp>=25?5:2;
 state.taskHistory=Array.isArray(state.taskHistory)?state.taskHistory:[];
 state.tasks=state.tasks.map(t=>({...t,createdAt:t.createdAt||new Date().toISOString(),rewardClaimed:Boolean(t.rewardClaimed),completedAt:t.done?(t.completedAt||new Date().toISOString()):t.completedAt}));
+
+const normalizePendingLevelUp=event=>{
+  if(!event||typeof event!=="object")return null;
+  const previousLevel=Math.max(1,Number(event.previousLevel)||0);
+  const newLevel=Math.max(1,Number(event.newLevel)||0);
+  const levelsGained=Math.max(0,Number(event.levelsGained)||(newLevel-previousLevel));
+  if(newLevel<=previousLevel||levelsGained<=0)return null;
+
+  return {
+    ...event,
+    previousLevel,
+    newLevel,
+    levelsGained,
+    previousXp:Math.max(0,Number(event.previousXp)||0),
+    previousMaxXp:Math.max(1,Number(event.previousMaxXp)||xpForLevel(previousLevel)),
+    newXp:Math.max(0,Number(event.newXp)||0),
+    newMaxXp:Math.max(1,Number(event.newMaxXp)||xpForLevel(newLevel)),
+    xpAwarded:Math.max(0,Number(event.xpAwarded)||0),
+    coinsAwarded:Math.max(0,Number(event.coinsAwarded)||0)
+  };
+};
+state.pendingLevelUp=normalizePendingLevelUp(state.pendingLevelUp);
 // ============================================================================
 // TASK HISTORY / DAILY ARCHIVING
 // Verplaatst afgeronde taken van eerdere dagen naar het permanente takenlogboek.
@@ -383,7 +405,53 @@ function render(){cancelTaskLongPress?.();activeTaskEditIndex=null;archiveOldCom
 // PROGRESSION: XP, LEVELS & STREAK
 // Verwerkt XP, levelgrenzen en de dagelijkse streak.
 // ============================================================================
-const addXp=amount=>{state.xp+=amount;let levelsGained=0;while(state.xp>=state.maxXp){state.xp-=state.maxXp;state.level++;levelsGained++;state.maxXp=xpForLevel(state.level)}saveState();return levelsGained};
+const addXp=amount=>{
+  state.xp+=Math.max(0,Number(amount)||0);
+  let levelsGained=0;
+
+  while(state.xp>=state.maxXp){
+    state.xp-=state.maxXp;
+    state.level++;
+    levelsGained++;
+    state.maxXp=xpForLevel(state.level);
+  }
+
+  return levelsGained;
+};
+
+const awardTaskReward=task=>{
+  const previousLevel=state.level;
+  const previousXp=state.xp;
+  const previousMaxXp=state.maxXp;
+  const xpAwarded=Math.max(0,Number(task.xp)||0);
+  const levelsGained=addXp(xpAwarded);
+  const coinsAwarded=coinReward(xpAwarded);
+
+  state.coins=(Number(state.coins)||0)+coinsAwarded;
+  updateStreak();
+
+  const reward={
+    previousLevel,
+    previousXp,
+    previousMaxXp,
+    newLevel:state.level,
+    newXp:state.xp,
+    newMaxXp:state.maxXp,
+    levelsGained,
+    xpAwarded,
+    coinsAwarded
+  };
+
+  if(levelsGained>0){
+    state.pendingLevelUp=normalizePendingLevelUp({
+      id:`level-up-${Date.now()}`,
+      ...reward,
+      createdAt:new Date().toISOString()
+    });
+  }
+
+  return reward;
+};
 const updateStreak=()=>{
   const today=localDateKey(),last=state.lastActiveDate;
   if(last===today)return;
@@ -470,27 +538,40 @@ window.deleteTask=(event,index)=>{
 // ============================================================================
 window.toggleTask=i=>{
   const t=state.tasks[i];
+  if(!t)return;
+
   if(!t.done){
-    t.done=true;t.completedAt=new Date().toISOString();
-    let levelsGained=0,coins=0;
-    const previousLevel=state.level;
+    t.done=true;
+    t.completedAt=new Date().toISOString();
+
+    let reward={
+      levelsGained:0,
+      xpAwarded:0,
+      coinsAwarded:0,
+      previousLevel:state.level,
+      previousXp:state.xp,
+      previousMaxXp:state.maxXp,
+      newLevel:state.level,
+      newXp:state.xp,
+      newMaxXp:state.maxXp
+    };
+
     if(!t.rewardClaimed){
-      t.rewardClaimed=true;levelsGained=addXp(t.xp);coins=coinReward(t.xp);state.coins=(Number(state.coins)||0)+coins;updateStreak();
-      if(levelsGained>0){
-        state.pendingLevelUp={
-          id:`level-up-${Date.now()}`,
-          previousLevel,
-          newLevel:state.level,
-          levelsGained,
-          xpAwarded:t.xp,
-          coinsAwarded:coins,
-          createdAt:new Date().toISOString()
-        };
-      }
+      t.rewardClaimed=true;
+      reward=awardTaskReward(t);
     }
-    saveState();queueReminderBackendSync();openTaskCompleted(t,{coins,levelsGained});return;
+
+    saveState();
+    queueReminderBackendSync();
+    openTaskCompleted(t,reward);
+    return;
   }
-  t.done=false;t.completedAt=null;saveState();queueReminderBackendSync();render();
+
+  t.done=false;
+  t.completedAt=null;
+  saveState();
+  queueReminderBackendSync();
+  render();
 };
 
 // ============================================================================
@@ -511,7 +592,42 @@ window.saveNewTask=()=>{const input=document.querySelector("#taskName"),size=doc
 // TASK COMPLETED SCREEN
 // Volledig reward-scherm na het afronden van een taak.
 // ============================================================================
-window.openTaskCompleted=(t,reward={coins:0,levelsGained:0})=>{window.scrollTo(0,0);document.querySelector("#app").scrollTop=0;const nextAction=reward.levelsGained>0?"openLevelUp()":"render()";document.querySelector("#app").innerHTML=`<div class="phone completed-screen"><section class="completed-scene"><div class="completed-copy"><h1 class="arched-title" aria-label="Taak voltooid!"><span style="--n:0">T</span><span style="--n:1">a</span><span style="--n:2">a</span><span style="--n:3">k</span><span class="gap" style="--n:4">&nbsp;</span><span style="--n:5">v</span><span style="--n:6">o</span><span style="--n:7">l</span><span style="--n:8">t</span><span style="--n:9">o</span><span style="--n:10">o</span><span style="--n:11">i</span><span style="--n:12">d</span><span style="--n:13">!</span></h1><p>Goed bezig!</p></div><div class="celebration-rays"></div><div class="completion-check"><span>✓</span></div><div class="xp-pop">+${t.xp} XP${reward.coins?`<small>+${reward.coins} coins</small>`:""}${reward.levelsGained?`<em>Level ${state.level}!</em>`:""}</div><div class="completion-quote">“Consistentie bouwt<br>een betere jij.”</div><div class="landing-glow" aria-hidden="true"></div><div class="completion-character" aria-hidden="true"></div><div class="confetti" aria-hidden="true">${Array.from({length:32},(_,i)=>`<i class="${i<16?"pop-left":"pop-right"}" style="--i:${i%16}"></i>`).join("")}</div></section><button class="completed-btn" onclick="${nextAction}">Nice! ✨</button></div>`;requestAnimationFrame(()=>{window.scrollTo(0,0);const app=document.querySelector("#app");if(app)app.scrollTop=0;const screen=document.querySelector(".completed-screen");if(screen){screen.scrollTop=0;screen.classList.add("play")}})};
+window.openTaskCompleted=(t,reward={levelsGained:0,xpAwarded:0,coinsAwarded:0})=>{
+  window.scrollTo(0,0);
+  const appRoot=document.querySelector("#app");
+  if(appRoot)appRoot.scrollTop=0;
+
+  const isLevelUp=Boolean(state.pendingLevelUp)&&Number(reward.levelsGained)>0;
+  const nextAction=isLevelUp?"openLevelUp()":"render()";
+  const buttonLabel=isLevelUp?"LEVEL UP!":"Nice! ✨";
+  const xpAwarded=Math.max(0,Number(reward.xpAwarded)||Number(t.xp)||0);
+  const coinsAwarded=Math.max(0,Number(reward.coinsAwarded)||0);
+
+  document.querySelector("#app").innerHTML=`<div class="phone completed-screen">
+    <section class="completed-scene">
+      <div class="completed-copy"><h1 class="arched-title" aria-label="Taak voltooid!"><span style="--n:0">T</span><span style="--n:1">a</span><span style="--n:2">a</span><span style="--n:3">k</span><span class="gap" style="--n:4">&nbsp;</span><span style="--n:5">v</span><span style="--n:6">o</span><span style="--n:7">l</span><span style="--n:8">t</span><span style="--n:9">o</span><span style="--n:10">o</span><span style="--n:11">i</span><span style="--n:12">d</span><span style="--n:13">!</span></h1><p>Goed bezig!</p></div>
+      <div class="celebration-rays"></div>
+      <div class="completion-check"><span>✓</span></div>
+      <div class="xp-pop">+${xpAwarded} XP${coinsAwarded?`<small>+${coinsAwarded} coins</small>`:""}</div>
+      <div class="completion-quote">“Consistentie bouwt<br>een betere jij.”</div>
+      <div class="landing-glow" aria-hidden="true"></div>
+      <div class="completion-character" aria-hidden="true"></div>
+      <div class="confetti" aria-hidden="true">${Array.from({length:32},(_,i)=>`<i class="${i<16?"pop-left":"pop-right"}" style="--i:${i%16}"></i>`).join("")}</div>
+    </section>
+    <button class="completed-btn" onclick="${nextAction}">${buttonLabel}</button>
+  </div>`;
+
+  requestAnimationFrame(()=>{
+    window.scrollTo(0,0);
+    const root=document.querySelector("#app");
+    if(root)root.scrollTop=0;
+    const screen=document.querySelector(".completed-screen");
+    if(screen){
+      screen.scrollTop=0;
+      screen.classList.add("play");
+    }
+  });
+};
 
 
 // ============================================================================
@@ -519,8 +635,14 @@ window.openTaskCompleted=(t,reward={coins:0,levelsGained:0})=>{window.scrollTo(0
 // Tweede reward-stap wanneer een taak één of meerdere levels oplevert.
 // ============================================================================
 window.openLevelUp=()=>{
-  const event=state.pendingLevelUp;
-  if(!event){render();return}
+  const event=normalizePendingLevelUp(state.pendingLevelUp);
+  if(!event){
+    state.pendingLevelUp=null;
+    saveState();
+    render();
+    return;
+  }
+  state.pendingLevelUp=event;
   window.scrollTo(0,0);
   const appRoot=document.querySelector("#app");
   if(appRoot)appRoot.scrollTop=0;
