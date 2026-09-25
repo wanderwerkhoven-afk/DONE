@@ -784,29 +784,29 @@ window.openTaskLog=()=>{
 // Definitieve badge-art kan later via badgeKey naar assets/images/achievements/.
 // ============================================================================
 const ACHIEVEMENT_DEFINITIONS=[
-  {id:"tasks-1",title:"Eerste stap",subtitle:"Voltooi je eerste taak",category:"tasks",icon:"star",badgeKey:"first-step",stat:"completedTasks",goal:1},
-  {id:"tasks-10",title:"Op stoom",subtitle:"Voltooi 10 taken",category:"tasks",icon:"badge",badgeKey:"tasks-10",stat:"completedTasks",goal:10,requires:"tasks-1"},
-  {id:"tasks-25",title:"Doener",subtitle:"Voltooi 25 taken",category:"tasks",icon:"badge",badgeKey:"tasks-25",stat:"completedTasks",goal:25,requires:"tasks-10"},
-  {id:"tasks-50",title:"Taakheld",subtitle:"Voltooi 50 taken",category:"tasks",icon:"badge",badgeKey:"tasks-50",stat:"completedTasks",goal:50,requires:"tasks-25"},
-  {id:"tasks-100",title:"Niet te stoppen",subtitle:"Voltooi 100 taken",category:"tasks",icon:"badge",badgeKey:"tasks-100",stat:"completedTasks",goal:100,requires:"tasks-50"},
-  {id:"early-bird-5",title:"Vroege vogel",subtitle:"Rond op 5 dagen vóór 10:00 een taak af",category:"tasks",icon:"clock",badgeKey:"early-bird",stat:"earlyBirdDays",goal:5},
+  {id:"tasks-1",title:"Eerste stap",subtitle:"Voltooi je eerste taak",category:"tasks",icon:"star",badgeKey:"sprout",stat:"completedTasks",goal:1},
+  {id:"tasks-10",title:"Op stoom",subtitle:"Voltooi 10 taken",category:"tasks",icon:"badge",badgeKey:"number-ten",stat:"completedTasks",goal:10,requires:"tasks-1"},
+  {id:"tasks-25",title:"Doener",subtitle:"Voltooi 25 taken",category:"tasks",icon:"badge",badgeKey:"check",stat:"completedTasks",goal:25,requires:"tasks-10"},
+  {id:"tasks-50",title:"Taakheld",subtitle:"Voltooi 50 taken",category:"tasks",icon:"badge",badgeKey:"trophy",stat:"completedTasks",goal:50,requires:"tasks-25"},
+  {id:"tasks-100",title:"Niet te stoppen",subtitle:"Voltooi 100 taken",category:"tasks",icon:"badge",badgeKey:"crown",stat:"completedTasks",goal:100,requires:"tasks-50"},
+  {id:"early-bird-5",title:"Vroege vogel",subtitle:"Rond op 5 dagen vóór 10:00 een taak af",category:"tasks",icon:"clock",badgeKey:"bird",stat:"earlyBirdDays",goal:5},
 
-  {id:"streak-3",title:"Vonkje",subtitle:"Houd een streak van 3 dagen",category:"streak",icon:"flame",badgeKey:"streak-3",stat:"streak",goal:3},
-  {id:"streak-7",title:"Productieve week",subtitle:"Houd een streak van 7 dagen",category:"streak",icon:"week",badgeKey:"streak-7",stat:"streak",goal:7,requires:"streak-3"},
-  {id:"streak-14",title:"Ritme gevonden",subtitle:"Houd een streak van 14 dagen",category:"streak",icon:"flame",badgeKey:"streak-14",stat:"streak",goal:14,requires:"streak-7"},
-  {id:"streak-30",title:"Maandmeester",subtitle:"Houd een streak van 30 dagen",category:"streak",icon:"flame",badgeKey:"streak-30",stat:"streak",goal:30,requires:"streak-14"},
+  {id:"streak-3",title:"Vonkje",subtitle:"Houd een streak van 3 dagen",category:"streak",icon:"flame",badgeKey:"flame",stat:"streak",goal:3},
+  {id:"streak-7",title:"Productieve week",subtitle:"Houd een streak van 7 dagen",category:"streak",icon:"week",badgeKey:"calendar",stat:"streak",goal:7,requires:"streak-3"},
+  {id:"streak-14",title:"Ritme gevonden",subtitle:"Houd een streak van 14 dagen",category:"streak",icon:"flame",badgeKey:"lightning",stat:"streak",goal:14,requires:"streak-7"},
+  {id:"streak-30",title:"Maandmeester",subtitle:"Houd een streak van 30 dagen",category:"streak",icon:"flame",badgeKey:"diamond",stat:"streak",goal:30,requires:"streak-14"},
 
-  {id:"level-2",title:"Op weg",subtitle:"Bereik level 2",category:"growth",icon:"level",badgeKey:"level-2",stat:"level",goal:2},
-  {id:"level-5",title:"Groeispurt",subtitle:"Bereik level 5",category:"growth",icon:"level",badgeKey:"level-5",stat:"level",goal:5,requires:"level-2"},
-  {id:"level-10",title:"Ervaren avonturier",subtitle:"Bereik level 10",category:"growth",icon:"level",badgeKey:"level-10",stat:"level",goal:10,requires:"level-5"},
-  {id:"focus-1",title:"Focus gestart",subtitle:"Registreer je eerste focusdag",category:"growth",icon:"focus",badgeKey:"focus-1",stat:"focusDays",goal:1},
-  {id:"focus-10",title:"Focusritme",subtitle:"Bereik 10 focusdagen",category:"growth",icon:"focus",badgeKey:"focus-10",stat:"focusDays",goal:10,requires:"focus-1"},
-  {id:"coins-100",title:"Spaarpot",subtitle:"Verzamel 100 coins",category:"growth",icon:"coin",badgeKey:"coins-100",stat:"coins",goal:100},
+  {id:"level-2",title:"Op weg",subtitle:"Bereik level 2",category:"growth",icon:"level",badgeKey:"star",stat:"level",goal:2},
+  {id:"level-5",title:"Groeispurt",subtitle:"Bereik level 5",category:"growth",icon:"level",badgeKey:"ribbon-medal",stat:"level",goal:5,requires:"level-2"},
+  {id:"level-10",title:"Ervaren avonturier",subtitle:"Bereik level 10",category:"growth",icon:"level",badgeKey:"mountaintop",stat:"level",goal:10,requires:"level-5"},
+  {id:"focus-1",title:"Focus gestart",subtitle:"Registreer je eerste focusdag",category:"growth",icon:"focus",badgeKey:"clock",stat:"focusDays",goal:1},
+  {id:"focus-10",title:"Focusritme",subtitle:"Bereik 10 focusdagen",category:"growth",icon:"focus",badgeKey:"moon",stat:"focusDays",goal:10,requires:"focus-1"},
+  {id:"coins-100",title:"Spaarpot",subtitle:"Verzamel 100 coins",category:"growth",icon:"coin",badgeKey:"treasure-chest",stat:"coins",goal:100},
 
-  {id:"world-1",title:"Eerste vondst",subtitle:"Ontgrendel je eerste werelditem",category:"world",icon:"world",badgeKey:"world-1",stat:"worldItems",goal:1},
-  {id:"world-5",title:"Wereldmaker",subtitle:"Ontgrendel 5 werelditems",category:"world",icon:"world",badgeKey:"world-5",stat:"worldItems",goal:5,requires:"world-1"},
-  {id:"world-10",title:"Wereldbouwer",subtitle:"Ontgrendel 10 werelditems",category:"world",icon:"world",badgeKey:"world-10",stat:"worldItems",goal:10,requires:"world-5"},
-  {id:"world-20",title:"Eigen universum",subtitle:"Ontgrendel 20 werelditems",category:"world",icon:"world",badgeKey:"world-20",stat:"worldItems",goal:20,requires:"world-10"}
+  {id:"world-1",title:"Eerste vondst",subtitle:"Ontgrendel je eerste werelditem",category:"world",icon:"world",badgeKey:"globe",stat:"worldItems",goal:1},
+  {id:"world-5",title:"Wereldmaker",subtitle:"Ontgrendel 5 werelditems",category:"world",icon:"world",badgeKey:"compass",stat:"worldItems",goal:5,requires:"world-1"},
+  {id:"world-10",title:"Wereldbouwer",subtitle:"Ontgrendel 10 werelditems",category:"world",icon:"world",badgeKey:"castle",stat:"worldItems",goal:10,requires:"world-5"},
+  {id:"world-20",title:"Eigen universum",subtitle:"Ontgrendel 20 werelditems",category:"world",icon:"world",badgeKey:"crown",stat:"worldItems",goal:20,requires:"world-10"}
 ];
 
 const achievementStats=()=>({
@@ -881,22 +881,14 @@ const syncAchievementUnlocks=()=>{
 // Vector placeholders blijven bewust behouden totdat definitieve badge-art
 // wordt gegenereerd. badgeKey houdt de mapping naar toekomstige assets stabiel.
 // ============================================================================
-const achievementIcon=(type,locked=false,badgeKey="")=>{
-  if(locked)return `<span class="achievement-medal locked-medal" data-badge-key="${badgeKey}"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 22v-5a9 9 0 0 1 18 0v5"/><rect x="10" y="21" width="28" height="23" rx="8"/><path d="M24 29v7"/></svg></span>`;
+const ACHIEVEMENT_ASSET_PATH="assets/images/achievements";
+const achievementAsset=badgeKey=>`${ACHIEVEMENT_ASSET_PATH}/achievement-${badgeKey}.png`;
 
-  const icons={
-    star:'<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="19"/><circle cx="24" cy="24" r="15"/><path d="m24 13 3.2 6.5 7.2 1-5.2 5.1 1.2 7.2-6.4-3.4-6.4 3.4 1.2-7.2-5.2-5.1 7.2-1z"/></svg>',
-    week:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 8 7 18l4 5-2 11 9 2 6 8 6-8 9-2-2-11 4-5-5-10-12 3z"/><path d="m24 16 2.7 5.5 6.1.9-4.4 4.3 1 6-5.4-2.9-5.4 2.9 1-6-4.4-4.3 6.1-.9z"/></svg>',
-    badge:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 7h18l2 5 5 3-2 19-14 8-14-8-2-19 5-3z"/><path d="m17 24 5 5 10-11"/></svg>',
-    clock:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 7h18l2 5 5 3-2 19-14 8-14-8-2-19 5-3z"/><circle cx="24" cy="24" r="8"/><path d="M24 19v6l4 2"/></svg>',
-    flame:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M26 5c2 8-5 10-2 17 1-5 6-6 8-11 7 8 8 15 5 22-3 7-9 10-14 10S10 39 9 30c-1-8 4-14 11-21-1 7 1 10 6 12-3-7 2-10 0-16z"/></svg>',
-    level:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 5 38 13v17L24 43 10 30V13z"/><path d="m16 27 8-12 8 12M19 25h10"/></svg>',
-    focus:'<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="16"/><circle cx="24" cy="24" r="8"/><path d="M24 3v8M24 37v8M3 24h8M37 24h8"/></svg>',
-    coin:'<svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="24" cy="24" rx="17" ry="19"/><path d="M24 12v24M31 17c-2-2-5-3-8-2-4 1-5 5-2 7l7 3c4 2 3 7-1 8-4 1-8-1-10-3"/></svg>',
-    world:'<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="18"/><path d="M6 24h36M24 6c7 6 10 12 10 18S31 36 24 42M24 6c-7 6-10 12-10 18s3 12 10 18"/></svg>'
-  };
-
-  return `<span class="achievement-medal medal-gold medal-${type}" data-badge-key="${badgeKey}">${icons[type]||icons.star}</span>`;
+const achievementIcon=(type,locked=false,badgeKey="star")=>{
+  const key=locked?"lock":badgeKey;
+  return `<span class="achievement-medal ${locked?"locked-medal":"illustrated-medal"}" data-badge-key="${key}">
+    <img src="${achievementAsset(key)}" alt="" aria-hidden="true" loading="lazy" decoding="async">
+  </span>`;
 };
 
 const achievementStatusLabel=a=>a.unlocked?"Ontgrendeld":a.locked?"Vergrendeld":"Bezig";
