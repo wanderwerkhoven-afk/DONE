@@ -218,6 +218,93 @@ window.updateReminderTime=async el=>{
 
   await syncReminderBackendState(true);
 };
+
+// ============================================================================
+// NOTIFICATION TEST
+// Controleert permission + actieve push subscription en laat de backend
+// één test-push versturen. Eén in-flight request voorkomt dubbele pushes.
+// ============================================================================
+let notificationTestInFlight=false;
+
+const setNotificationTestButtonState=(button,stateName,message)=>{
+  if(!button)return;
+  button.classList.remove("loading","sent","error");
+  if(stateName)button.classList.add(stateName);
+
+  const title=button.querySelector("[data-test-title]");
+  const detail=button.querySelector("[data-test-detail]");
+
+  if(stateName==="loading"){
+    if(title)title.textContent="Test versturen…";
+    if(detail)detail.textContent="Pushverbinding controleren";
+  }else if(stateName==="sent"){
+    if(title)title.textContent="Test verstuurd";
+    if(detail)detail.textContent=message||"Controleer je notificaties";
+  }else if(stateName==="error"){
+    if(title)title.textContent="Test niet verstuurd";
+    if(detail)detail.textContent=message||"Controleer je notificatie-instellingen";
+  }else{
+    if(title)title.textContent="Test notificatie";
+    if(detail)detail.textContent="Stuur nu een proefmelding naar dit apparaat";
+  }
+};
+
+window.testDoneNotification=async button=>{
+  if(notificationTestInFlight)return;
+  notificationTestInFlight=true;
+  setNotificationTestButtonState(button,"loading");
+
+  try{
+    if(!("Notification" in window)){
+      throw new Error("Notificaties worden op dit apparaat niet ondersteund.");
+    }
+
+    let permission=Notification.permission;
+    if(permission==="default")permission=await Notification.requestPermission();
+    if(permission!=="granted"){
+      throw new Error("Sta notificaties toe in iOS om een test te versturen.");
+    }
+
+    const subscription=await getActivePushSubscription();
+    if(!subscription){
+      throw new Error("Er is nog geen actieve push-subscription op dit apparaat.");
+    }
+
+    const backendUrl=getReminderBackendUrl();
+    if(!backendUrl){
+      throw new Error("De push-backend is nog niet gekoppeld.");
+    }
+
+    // Zorg dat de backend eerst de actuele subscription/reminderstatus kent.
+    await syncReminderBackendState(true);
+
+    const response=await fetch(`${backendUrl}/test-push`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({clientId:getReminderClientId()})
+    });
+
+    let payload={};
+    try{payload=await response.json()}catch(e){}
+
+    if(!response.ok||payload.ok===false){
+      throw new Error(payload.error||"De backend kon de test-push niet versturen.");
+    }
+
+    setNotificationTestButtonState(button,"sent","Controleer je notificaties");
+    setTimeout(()=>{
+      if(button?.isConnected)setNotificationTestButtonState(button,null);
+    },2200);
+  }catch(error){
+    console.warn("Testnotificatie mislukt",error);
+    setNotificationTestButtonState(button,"error",error?.message||"Testnotificatie mislukt");
+    setTimeout(()=>{
+      if(button?.isConnected)setNotificationTestButtonState(button,null);
+    },3200);
+  }finally{
+    notificationTestInFlight=false;
+  }
+};
 archiveOldCompletedTasks();
 saveState();
 // ============================================================================
@@ -432,6 +519,11 @@ window.openProfile=()=>{
         <label class="profile-reminder-setting"><span>🔔 <b>Dagelijkse herinnering</b><small data-reminder-time-label>${state.reminderTime} · alleen bij open taken</small></span><input type="checkbox" onchange="toggleDailyReminder(this)" ${state.reminderEnabled?"checked":""}><i></i></label>
         <label class="profile-reminder-time"><span>🕒 <b>Tijdstip</b></span><input class="profile-time-input" type="time" value="${state.reminderTime}" step="60" onchange="updateReminderTime(this)" aria-label="Tijdstip dagelijkse herinnering"></label>
       </section>
+      <button class="profile-test-notification" type="button" onclick="testDoneNotification(this)" aria-label="Stuur testnotificatie">
+        <span class="profile-test-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span>
+        <span class="profile-test-copy"><b data-test-title>Test notificatie</b><small data-test-detail>Stuur nu een proefmelding naar dit apparaat</small></span>
+        <span class="profile-test-arrow" aria-hidden="true">›</span>
+      </button>
       <button class="profile-reset-progress" type="button" onclick="resetProgress()" aria-label="Reset level en XP">
         <span class="profile-reset-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8V4m0 0h4M4 4l3.1 3.1A7 7 0 1 1 5 13"/></svg></span>
         <span><b>Refresh voortgang</b><small>Zet level en XP terug naar het begin</small></span>
