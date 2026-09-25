@@ -4,15 +4,19 @@
 // ============================================================================
 const STORAGE_KEY="done-state-v1";
 const REMINDER_CLIENT_ID_KEY="done-reminder-client-id";
+const DEFAULT_REMINDER_TIME="17:00";
 // ============================================================================
 // SHARED NAVIGATION ICONS
 // SVG-iconen die door de onderste navigatie op meerdere schermen worden gebruikt.
 // ============================================================================
 const navIcon=name=>({today:`<svg viewBox="0 0 32 32" aria-hidden="true"><rect class="icon-fill" x="5" y="7" width="22" height="20" rx="6"/><path class="icon-cut" d="M10 5v5M22 5v5M9 14h14"/><path class="icon-detail" d="M11 18.5c1.3 2.5 3 3.7 5 3.7s3.7-1.2 5-3.7"/></svg>`,world:`<svg viewBox="0 0 32 32" aria-hidden="true"><circle class="icon-fill" cx="16" cy="16" r="11"/><path class="icon-cut" d="M7.2 13.2c3.2-.2 5.2.6 6.2 2.4.8 1.4.2 2.6-.3 3.8-.6 1.4-.4 2.7.9 4M17.5 5.4c-.4 2.4.5 4 2.7 4.8 2.2.8 3.4 2.3 3.5 4.4.1 1.5 1 2.4 2.5 2.7M16.5 11.3c1.1 1.1 1.2 2.1.3 3-.9.9-2 1-3.2.2"/></svg>`,achievements:`<svg viewBox="0 0 32 32" aria-hidden="true"><path class="icon-fill" d="M10 6h12v7c0 4-2.4 6.5-6 6.5S10 17 10 13z"/><path class="icon-fill" d="M10 9H5v2.5c0 4 2.4 6 6.3 6M22 9h5v2.5c0 4-2.4 6-6.3 6M14 19h4v5h4v3H10v-3h4z"/><circle class="icon-cut" cx="16" cy="12" r="2.2"/></svg>`,profile:`<svg viewBox="0 0 32 32" aria-hidden="true"><circle class="icon-fill" cx="16" cy="10" r="6"/><path class="icon-fill" d="M6 27c.6-6.2 3.9-9.3 10-9.3S25.4 20.8 26 27z"/></svg>`})[name];
-const defaultState={level:1,xp:0,maxXp:100,streak:0,coins:0,profileAvatar:1,reminderEnabled:false,reminderTime:"17:00",reminderLastSent:null,tasks:[{title:"Verslag afmaken",meta:"Grote taak",xp:50,icon:"🧠"},{title:"Mail beantwoorden",meta:"Kleine taak",xp:10,icon:"✉️"},{title:"Was ophangen",meta:"",xp:10,icon:"🧹",done:true},{title:"20 min sporten",meta:"Normale taak",xp:25,icon:"🏋️"}]};
+const defaultState={level:1,xp:0,maxXp:100,streak:0,coins:0,profileAvatar:1,reminderEnabled:false,reminderTime:DEFAULT_REMINDER_TIME,reminderLastSent:null,tasks:[{title:"Verslag afmaken",meta:"Grote taak",xp:50,icon:"🧠"},{title:"Mail beantwoorden",meta:"Kleine taak",xp:10,icon:"✉️"},{title:"Was ophangen",meta:"",xp:10,icon:"🧹",done:true},{title:"20 min sporten",meta:"Normale taak",xp:25,icon:"🏋️"}]};
 const xpForLevel=level=>100+(Math.max(1,level)-1)*50;
 const savedState=(()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"null")}catch(e){return null}})();
 const state={...defaultState,...(savedState||{})};
+state.reminderTime=/^([01]\d|2[0-3]):[0-5]\d$/.test(String(state.reminderTime||""))
+  ?String(state.reminderTime)
+  :DEFAULT_REMINDER_TIME;
 state.tasks=Array.isArray(state.tasks)?state.tasks:defaultState.tasks;
 state.level=Math.max(1,Number(state.level)||1);
 state.xp=Math.max(0,Number(state.xp)||0);
@@ -96,7 +100,7 @@ const syncReminderBackendState=async(force=false)=>{
         clientId,
         subscription:subscription.toJSON(),
         timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||"Europe/Amsterdam",
-        reminderTime:state.reminderTime||"17:00",
+        reminderTime:state.reminderTime,
         hasOpenTasks:hasOpenTasksToday(),
         enabled:true
       })
@@ -156,7 +160,7 @@ const scheduleTaskReminder=()=>{
 
   if(!state.reminderEnabled||!("Notification" in window)||Notification.permission!=="granted")return;
 
-  const [rawHour,rawMinute]=String(state.reminderTime||"17:00").split(":").map(Number);
+  const [rawHour,rawMinute]=state.reminderTime.split(":").map(Number);
   const hour=Number.isFinite(rawHour)?rawHour:17;
   const minute=Number.isFinite(rawMinute)?rawMinute:0;
   const now=new Date();
@@ -195,19 +199,19 @@ window.toggleDailyReminder=async el=>{
     el.checked=false;
     state.reminderEnabled=false;
     saveState();
-    alert(`Sta notificaties toe om de dagelijkse herinnering om ${state.reminderTime||"17:00"} te gebruiken.`);
+    alert(`Sta notificaties toe om de dagelijkse herinnering om ${state.reminderTime} te gebruiken.`);
     return;
   }
 
   state.reminderEnabled=true;
-  if(!state.reminderTime)state.reminderTime="17:00";
+  if(!state.reminderTime)state.reminderTime=DEFAULT_REMINDER_TIME;
   saveState();
   scheduleTaskReminder();
   await syncReminderBackendState(true);
 };
 
 window.updateReminderTime=el=>{
-  const value=/^([01]\d|2[0-3]):[0-5]\d$/.test(el.value)?el.value:"17:00";
+  const value=/^([01]\d|2[0-3]):[0-5]\d$/.test(el.value)?el.value:DEFAULT_REMINDER_TIME;
   state.reminderTime=value;
   state.reminderLastSent=null;
   saveState();
