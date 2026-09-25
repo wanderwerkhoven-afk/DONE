@@ -181,23 +181,24 @@ const testPush=async(request,env)=>{
   const body=await request.json().catch(()=>null);
   const {clientId,endpoint}=body||{};
 
-  if(!validClientId(clientId)||typeof endpoint!=="string"||!endpoint){
-    return fail("clientId en endpoint zijn verplicht",400,env);
+  if(!validClientId(clientId)){
+    return fail("Ongeldige of ontbrekende clientId",400,env);
   }
 
-  if(env.TEST_PUSH_TOKEN){
-    const auth=request.headers.get("authorization")||"";
-    const hasAdminToken=auth===`Bearer ${env.TEST_PUSH_TOKEN}`;
+  const auth=request.headers.get("authorization")||"";
+  const isAdmin=Boolean(env.TEST_PUSH_TOKEN)&&auth===`Bearer ${env.TEST_PUSH_TOKEN}`;
 
-    if(!hasAdminToken){
-      // Browser flow is still allowed only if the client proves the exact
-      // registered endpoint below. The secret is never shipped to the app.
-    }
+  if(!isAdmin&&(typeof endpoint!=="string"||!endpoint)){
+    return fail("endpoint is verplicht voor browser testcalls",400,env);
   }
 
-  const row=await env.DB.prepare(
-    "SELECT * FROM push_subscriptions WHERE client_id=? AND endpoint=? AND enabled=1"
-  ).bind(clientId,endpoint).first();
+  const row=isAdmin
+    ?await env.DB.prepare(
+      "SELECT * FROM push_subscriptions WHERE client_id=? AND enabled=1"
+    ).bind(clientId).first()
+    :await env.DB.prepare(
+      "SELECT * FROM push_subscriptions WHERE client_id=? AND endpoint=? AND enabled=1"
+    ).bind(clientId,endpoint).first();
 
   if(!row)return fail("Geen actieve push subscription gevonden voor dit apparaat",404,env);
 
