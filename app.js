@@ -406,25 +406,25 @@ window.testDoneNotification=async button=>{
       throw new Error("Sta notificaties toe in iOS om een test te versturen.");
     }
 
-    const subscription=await getActivePushSubscription();
-    if(!subscription){
-      throw new Error("Er is nog geen actieve push-subscription op dit apparaat.");
-    }
-
     const backendUrl=getReminderBackendUrl();
     if(!backendUrl){
       throw new Error("De push-backend is nog niet gekoppeld.");
     }
 
-    // Zorg dat de backend eerst de actuele subscription/reminderstatus kent.
-    await syncReminderBackendState(true);
+    // Test de echte Web Push-keten rechtstreeks met de actuele browser-
+    // subscription. De test is daardoor niet afhankelijk van de dagelijkse
+    // reminder-toggle of een reeds gesynchroniseerde D1-record.
+    const subscription=await getOrCreatePushSubscription();
+    if(!subscription){
+      throw new Error("Push-subscription kon niet worden aangemaakt.");
+    }
 
     const response=await fetch(`${backendUrl}/test-push`,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
         clientId:getReminderClientId(),
-        endpoint:subscription.endpoint
+        subscription:subscription.toJSON()
       })
     });
 
