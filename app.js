@@ -281,7 +281,10 @@ window.testDoneNotification=async button=>{
     const response=await fetch(`${backendUrl}/test-push`,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({clientId:getReminderClientId()})
+      body:JSON.stringify({
+        clientId:getReminderClientId(),
+        endpoint:subscription.endpoint
+      })
     });
 
     let payload={};
