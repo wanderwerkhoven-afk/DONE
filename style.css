@@ -3581,3 +3581,14 @@ body,
   78%{transform:translate3d(-2px,2px,0)}
   91%{transform:translate3d(-3px,-1px,0)}
 }
+
+/* Night fireflies: wider but still calm wandering radius */
+@keyframes heroFireflyFloat{
+  0%,100%{transform:translate3d(0,0,0)}
+  16%{transform:translate3d(7px,-10px,0)}
+  34%{transform:translate3d(15px,-5px,0)}
+  52%{transform:translate3d(11px,9px,0)}
+  69%{transform:translate3d(2px,14px,0)}
+  84%{transform:translate3d(-10px,7px,0)}
+  94%{transform:translate3d(-7px,-5px,0)}
+}
