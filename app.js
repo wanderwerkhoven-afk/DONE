@@ -795,6 +795,18 @@ window.endTaskLongPress=()=>{
   cancelTaskLongPress();
 };
 
+const haptic=(type="tap")=>{
+  if(state.haptics===false)return;
+  const patterns={tap:10,select:16,success:[18,45,28],heavy:32};
+  try{navigator.vibrate?.(patterns[type]||patterns.tap)}catch{}
+};
+document.addEventListener("pointerup",event=>{
+  if(state.haptics===false)return;
+  const control=event.target.closest("button,.profile-settings label,.theme-segment button");
+  if(!control||control.disabled)return;
+  haptic(control.classList.contains("submit-task")?"success":"tap");
+},{passive:true});
+
 window.handleTaskClick=(event,index)=>{
   if(taskLongPressTriggered){
     taskLongPressTriggered=false;
@@ -837,6 +849,7 @@ window.toggleTask=i=>{
     const beforeTasks=state.tasks.filter(task=>!task.done||!task.completedAt||localDateKey(task.completedAt)===today);
     const beforeDone=beforeTasks.filter(task=>task.done).length;
     const beforePct=beforeTasks.length?Math.round(beforeDone/beforeTasks.length*100):0;
+    haptic("success");
     t.done=true;
     t.completedAt=new Date().toISOString();
 
@@ -893,9 +906,9 @@ window.spinCoin=el=>{if(el.dataset.spinning==="1")return;el.dataset.spinning="1"
 // Openen, taakgrootte kiezen en nieuwe taak opslaan.
 // ============================================================================
 window.openNewTask=()=>{document.querySelector("#app").innerHTML=`<div class="phone new-task-screen"><header class="new-task-header"><button class="back-btn" onclick="render()" aria-label="Terug">←</button><h1>Nieuwe taak</h1></header><section class="new-task-hero"><div class="quote-bubble">Elke grote reis<br>begint met een kleine stap.</div></section><main class="new-task-form"><label for="taskName">Wat wil je doen?</label><input id="taskName" class="task-input" placeholder="Bijv. Verslag afmaken..." maxlength="80"><fieldset><legend>Hoe groot is deze taak?</legend><div class="size-grid"><button class="size-card" data-size="small" onclick="selectTaskSize(this)"><span class="size-icon">🌱</span><strong>Klein</strong><b>+10 XP</b></button><button class="size-card selected" data-size="normal" onclick="selectTaskSize(this)"><span class="size-icon">🔥</span><strong>Normaal</strong><b>+25 XP</b></button><button class="size-card" data-size="large" onclick="selectTaskSize(this)"><span class="size-icon">⛰️</span><strong>Groot</strong><b>+50 XP</b></button></div></fieldset><button class="repeat-task-toggle" type="button" onclick="toggleRepeatTask(this)" aria-expanded="false"><span class="repeat-task-icon">↻</span><span><b>Herhalende taak</b><small>Zet deze taak automatisch opnieuw in je planning</small></span><i>＋</i></button><section class="repeat-task-panel" hidden><label>Herhalen</label><div class="repeat-options"><button type="button" class="selected" data-repeat="daily" onclick="selectRepeatTask(this)">Dagelijks</button><button type="button" data-repeat="weekdays" onclick="selectRepeatTask(this)">Werkdagen</button><button type="button" data-repeat="weekly" onclick="selectRepeatTask(this)">Wekelijks</button></div></section><button class="submit-task" onclick="saveNewTask()">Taak toevoegen</button></main></div>`};
-window.selectTaskSize=el=>{document.querySelectorAll(".size-card").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")};
+window.selectTaskSize=el=>{haptic("select");document.querySelectorAll(".size-card").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")};
 window.toggleRepeatTask=el=>{const panel=document.querySelector(".repeat-task-panel");if(!panel)return;const open=panel.hidden;panel.hidden=!open;el.classList.toggle("active",open);el.setAttribute("aria-expanded",String(open));const plus=el.querySelector("i");if(plus)plus.textContent=open?"−":"＋"};
-window.selectRepeatTask=el=>{document.querySelectorAll(".repeat-options button").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")};
+window.selectRepeatTask=el=>{haptic("select");document.querySelectorAll(".repeat-options button").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")};
 window.saveNewTask=()=>{const input=document.querySelector("#taskName"),size=document.querySelector(".size-card.selected")?.dataset.size||"normal";if(!input.value.trim()){input.focus();return}const values={small:["Kleine taak",10,"🌱"],normal:["Normale taak",25,"🔥"],large:["Grote taak",50,"⛰️"]}[size],repeatPanel=document.querySelector(".repeat-task-panel"),repeat=repeatPanel&&!repeatPanel.hidden?document.querySelector(".repeat-options .selected")?.dataset.repeat||"daily":null;state.tasks.unshift({id:`task-${Date.now()}`,title:input.value.trim(),meta:values[0],xp:values[1],icon:values[2],done:false,rewardClaimed:false,createdAt:new Date().toISOString(),repeat});saveState();queueReminderBackendSync();render()};
 
 // ============================================================================
@@ -1216,6 +1229,7 @@ window.closeAppIconPicker=()=>{
 
 window.selectAppIcon=id=>{
   if(!validAppIcon(id))return;
+  haptic("select");
   const changed=id!==state.appIcon;
   state.appIconCategory=appIconCategoryFromId(id);
   state.appIcon=id;
@@ -1636,6 +1650,7 @@ window.resetProgress=()=>{
 
 window.setTheme=theme=>{
   if(theme!=="light"&&theme!=="dark")return;
+  haptic("select");
   state.theme=theme;
   applyTheme();
   saveState();
