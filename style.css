@@ -3703,3 +3703,9 @@ body,
   .completed-copy{top:calc(env(safe-area-inset-top) + 28px)!important}
   .completed-copy p{top:62px!important}
 }
+
+/* Completion focal point: larger check with a little more breathing room below subtitle */
+.completion-check{top:32.5%!important;width:166px!important;height:166px!important;border-width:7px!important}
+.completion-check span{font-size:89px!important}
+.celebration-rays{top:32.5%!important;width:420px!important;height:420px!important}
+@media(max-height:760px){.completion-check,.celebration-rays{top:32%!important}.completion-check{width:154px!important;height:154px!important}.completion-check span{font-size:83px!important}.celebration-rays{width:380px!important;height:380px!important}}
