@@ -2698,6 +2698,109 @@ input,textarea,[contenteditable="true"]{
 
 
 /* ============================================================================
+   PROFILE — HERO SELECTOR
+   Persoonlijke keuze tussen tijdgestuurde en vaste Home hero.
+   ========================================================================== */
+.profile-hero-tile{
+  width:100%;min-height:70px;margin:0 0 14px;padding:9px 13px;
+  border:1px solid rgba(138,169,205,.20);border-radius:17px;
+  display:grid;grid-template-columns:76px 1fr auto;align-items:center;gap:12px;
+  text-align:left;color:#fff;background:linear-gradient(180deg,#123452,#0d2944);
+  box-shadow:inset 0 1px rgba(255,255,255,.04);cursor:pointer;
+  transition:transform .14s ease,border-color .16s ease;
+}
+.profile-hero-tile:active{transform:scale(.985)}
+.profile-hero-preview{
+  width:76px;height:48px;border-radius:12px;display:block;
+  background-image:var(--profile-hero-preview);background-size:cover;background-position:center 58%;
+  box-shadow:0 4px 12px rgba(0,0,0,.28),0 0 0 1px rgba(255,255,255,.12);
+}
+.profile-hero-tile>span:nth-child(2){min-width:0;display:flex;flex-direction:column;gap:3px}
+.profile-hero-tile b{font-size:13px;font-weight:950}
+.profile-hero-tile small{font-size:10px;line-height:1.25;color:#96adc3;font-weight:650}
+.profile-hero-tile>i{font-style:normal;font-size:25px;color:#6f89a3}
+
+.hero-picker{
+  position:absolute;z-index:125;inset:0;
+  display:flex;align-items:flex-end;pointer-events:none;
+}
+.hero-picker-backdrop{
+  position:absolute;inset:0;border:0;
+  background:rgba(0,9,24,.76);opacity:0;
+  transition:opacity .18s ease;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.hero-picker-sheet{
+  position:relative;width:100%;max-height:min(88dvh,760px);overflow-y:auto;
+  padding:22px 18px calc(22px + env(safe-area-inset-bottom));
+  border-radius:28px 28px 0 0;
+  color:#f7fbff;
+  background:radial-gradient(circle at 50% 0,rgba(91,210,191,.08),transparent 30%),linear-gradient(180deg,#0d3156,#071f3a);
+  box-shadow:0 -18px 50px rgba(0,0,0,.4);
+  transform:translateY(105%);
+  transition:transform .24s cubic-bezier(.2,.8,.2,1);
+  scrollbar-width:none;
+}
+.hero-picker-sheet::-webkit-scrollbar{display:none}
+.hero-picker.show{pointer-events:auto}
+.hero-picker.show .hero-picker-backdrop{opacity:1}
+.hero-picker.show .hero-picker-sheet{transform:translateY(0)}
+.hero-picker-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px;padding:0 3px}
+.hero-picker-head h2{margin:0;font-size:24px;letter-spacing:-.5px}
+.hero-picker-head p{margin:4px 0 0;color:#a9bfd3;font-size:11px;line-height:1.35}
+.hero-picker-head>button{
+  width:38px;height:38px;flex:0 0 38px;border:0;border-radius:50%;
+  background:#173d61;color:#fff;font-size:26px;line-height:1;cursor:pointer;
+}
+.hero-mode-option{
+  width:100%;min-height:70px;padding:10px 12px;border:1px solid rgba(255,255,255,.08);border-radius:17px;
+  display:grid;grid-template-columns:42px 1fr 24px;align-items:center;gap:11px;text-align:left;
+  color:#f7fbff;background:rgba(8,38,63,.72);font:inherit;cursor:pointer;
+}
+.hero-mode-clock{
+  width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
+  color:#7de2cf;background:rgba(76,207,186,.10);border:1px solid rgba(111,230,209,.15);
+}
+.hero-mode-clock svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hero-mode-option>span:nth-child(2){display:flex;flex-direction:column;gap:3px}
+.hero-mode-option b{font-size:13px;font-weight:950}
+.hero-mode-option small{color:#8ea8bf;font-size:9px;line-height:1.35;font-weight:650}
+.hero-mode-option>i,.hero-option>i{
+  width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+  font-style:normal;font-size:12px;font-weight:1000;color:#15314c;background:transparent;opacity:0;
+}
+.hero-mode-option.selected{border-color:rgba(255,211,106,.42);background:rgba(32,63,79,.86)}
+.hero-mode-option.selected>i,.hero-option.selected>i{opacity:1;background:#ffd36a}
+.hero-picker-divider{display:flex;align-items:center;gap:10px;margin:17px 2px 11px;color:#7f98af;font-size:9px;font-weight:850;text-transform:uppercase;letter-spacing:.06em}
+.hero-picker-divider:before,.hero-picker-divider:after{content:"";height:1px;flex:1;background:rgba(255,255,255,.08)}
+.hero-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.hero-option{
+  position:relative;overflow:hidden;padding:0;border:2px solid transparent;border-radius:16px;
+  color:#fff;background:#102f4d;text-align:left;font:inherit;cursor:pointer;
+  box-shadow:0 5px 14px rgba(0,0,0,.18);
+}
+.hero-option-image{display:block;width:100%;aspect-ratio:1.65;background-size:cover;background-position:center 58%}
+.hero-option-label{display:block;padding:8px 10px 9px;font-size:10px;font-weight:900}
+.hero-option>i{position:absolute;right:7px;top:7px;border:2px solid rgba(255,255,255,.82)}
+.hero-option.selected{border-color:#ffd36a;box-shadow:0 0 0 2px rgba(255,211,106,.14),0 7px 18px rgba(0,0,0,.25)}
+.hero-picker-done{
+  width:100%;height:46px;margin-top:15px;border:0;border-radius:15px;
+  color:#173354;background:linear-gradient(180deg,#ffe487,#ffc85c);
+  font:inherit;font-size:13px;font-weight:1000;cursor:pointer;
+  box-shadow:0 6px 15px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.5);
+}
+@media(max-height:720px){
+  .hero-picker-sheet{padding-top:17px}
+  .hero-picker-head{margin-bottom:11px}
+  .hero-mode-option{min-height:62px}
+  .hero-grid{gap:8px}
+  .hero-option-image{aspect-ratio:1.85}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-picker-backdrop,.hero-picker-sheet{transition:none}
+}
+
+/* ============================================================================
    PROFILE — APP ICON PICKER
    Compact profieltegel + bottom sheet, gelijk aan de avatar-selector.
    ========================================================================== */
@@ -2980,6 +3083,7 @@ input,textarea,[contenteditable="true"]{
 [data-theme="light"] .profile-quote,
 [data-theme="light"] .profile-settings,
 [data-theme="light"] .profile-app-icon-tile,
+[data-theme="light"] .profile-hero-tile,
 [data-theme="light"] .profile-test-notification,
 [data-theme="light"] .profile-data-tile,
 [data-theme="light"] .profile-reset-progress{
@@ -2995,6 +3099,7 @@ input,textarea,[contenteditable="true"]{
 [data-theme="light"] .profile-settings label>span,
 [data-theme="light"] .profile-settings b,
 [data-theme="light"] .profile-app-icon-tile b,
+[data-theme="light"] .profile-hero-tile b,
 [data-theme="light"] .profile-test-copy b,
 [data-theme="light"] .profile-data-copy b,
 [data-theme="light"] .profile-reset-progress b{
@@ -3003,6 +3108,7 @@ input,textarea,[contenteditable="true"]{
 [data-theme="light"] .profile-reward-setting>span small,
 [data-theme="light"] .profile-reminder-setting>span small,
 [data-theme="light"] .profile-app-icon-tile small,
+[data-theme="light"] .profile-hero-tile small,
 [data-theme="light"] .profile-test-copy small,
 [data-theme="light"] .profile-data-copy small,
 [data-theme="light"] .profile-reset-progress small{
@@ -3100,6 +3206,7 @@ input,textarea,[contenteditable="true"]{
 /* Modal surfaces follow the selected interface theme. */
 [data-theme="light"] .avatar-picker-sheet,
 [data-theme="light"] .app-icon-picker-sheet,
+[data-theme="light"] .hero-picker-sheet,
 [data-theme="light"] .data-popup-modal{
   color:#17354a;
   background:linear-gradient(180deg,#fbfcf8,#eef4f1);
@@ -3107,15 +3214,27 @@ input,textarea,[contenteditable="true"]{
 }
 [data-theme="light"] .avatar-picker-head p,
 [data-theme="light"] .app-icon-picker-head p,
+[data-theme="light"] .hero-picker-head p,
 [data-theme="light"] .app-icon-picker-note,
 [data-theme="light"] .data-popup-head p{
   color:#748897;
 }
 [data-theme="light"] .avatar-picker-head>button,
 [data-theme="light"] .app-icon-picker-head>button,
+[data-theme="light"] .hero-picker-head>button,
 [data-theme="light"] .data-popup-close{
   color:#17354a;background:#e5eeec;
 }
+[data-theme="light"] .hero-mode-option,
+[data-theme="light"] .hero-option{
+  color:#17354a;background:#f4f7f3;border-color:rgba(47,80,98,.11);
+}
+[data-theme="light"] .hero-mode-option small{color:#748897}
+[data-theme="light"] .hero-picker-divider{color:#748897}
+[data-theme="light"] .hero-picker-divider:before,
+[data-theme="light"] .hero-picker-divider:after{background:rgba(47,80,98,.10)}
+[data-theme="light"] .hero-mode-option.selected,
+[data-theme="light"] .hero-option.selected{border-color:#d6a13a;background:#fff8df}
 
 /* Keep cinematic/game reward areas dark even when the interface is light. */
 [data-theme="light"] .completed-screen,
