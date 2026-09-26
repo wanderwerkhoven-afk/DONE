@@ -72,6 +72,74 @@
 }
 .hero.hero-image::after{content:"";position:absolute;inset:auto 0 0;height:58px;background:linear-gradient(180deg,transparent,#03254b)}
 .hero-image .brand,.hero-image .level{z-index:3}
+
+/* Night-only ambient fireflies: lightweight DOM particles over the static hero artwork. */
+.hero-fireflies{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  overflow:hidden;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .35s ease;
+}
+.hero.hero-image[data-hero-period="night"] .hero-fireflies{opacity:1}
+.hero-firefly{
+  position:absolute;
+  left:var(--x);
+  top:var(--y);
+  width:var(--size);
+  height:var(--size);
+  border-radius:50%;
+  background:#fff1a0;
+  box-shadow:
+    0 0 4px rgba(255,238,128,.95),
+    0 0 9px rgba(255,211,69,.75),
+    0 0 16px rgba(255,181,37,.28);
+  will-change:transform,opacity;
+  animation:
+    heroFireflyDrift var(--drift-duration) ease-in-out var(--delay) infinite,
+    heroFireflyGlow var(--glow-duration) ease-in-out var(--delay) infinite;
+}
+.hero-firefly::after{
+  content:"";
+  position:absolute;
+  inset:-5px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,229,112,.25) 0%,rgba(255,209,67,.10) 42%,transparent 72%);
+}
+.hero-firefly:nth-child(1){--x:10%;--y:69%;--size:2.5px;--drift-x:8px;--drift-y:-10px;--drift-x2:-5px;--drift-y2:-4px;--drift-duration:8.8s;--glow-duration:2.9s;--delay:-1.4s}
+.hero-firefly:nth-child(2){--x:18%;--y:82%;--size:3px;--drift-x:-7px;--drift-y:-12px;--drift-x2:4px;--drift-y2:-6px;--drift-duration:10.2s;--glow-duration:3.4s;--delay:-4.7s}
+.hero-firefly:nth-child(3){--x:27%;--y:62%;--size:2px;--drift-x:6px;--drift-y:-8px;--drift-x2:-4px;--drift-y2:3px;--drift-duration:9.4s;--glow-duration:2.6s;--delay:-2.1s}
+.hero-firefly:nth-child(4){--x:35%;--y:89%;--size:3.5px;--drift-x:-9px;--drift-y:-9px;--drift-x2:6px;--drift-y2:-3px;--drift-duration:11.1s;--glow-duration:3.1s;--delay:-6.3s}
+.hero-firefly:nth-child(5){--x:43%;--y:73%;--size:2.2px;--drift-x:7px;--drift-y:-13px;--drift-x2:-5px;--drift-y2:-5px;--drift-duration:9.8s;--glow-duration:2.8s;--delay:-3.6s}
+.hero-firefly:nth-child(6){--x:51%;--y:91%;--size:3px;--drift-x:-6px;--drift-y:-11px;--drift-x2:7px;--drift-y2:-4px;--drift-duration:10.7s;--glow-duration:3.6s;--delay:-5.2s}
+.hero-firefly:nth-child(7){--x:58%;--y:66%;--size:2.6px;--drift-x:8px;--drift-y:-8px;--drift-x2:-6px;--drift-y2:4px;--drift-duration:8.9s;--glow-duration:2.5s;--delay:-.9s}
+.hero-firefly:nth-child(8){--x:66%;--y:84%;--size:3.4px;--drift-x:-8px;--drift-y:-14px;--drift-x2:4px;--drift-y2:-5px;--drift-duration:11.6s;--glow-duration:3.3s;--delay:-7.4s}
+.hero-firefly:nth-child(9){--x:74%;--y:71%;--size:2px;--drift-x:6px;--drift-y:-10px;--drift-x2:-7px;--drift-y2:-2px;--drift-duration:9.6s;--glow-duration:2.7s;--delay:-4.1s}
+.hero-firefly:nth-child(10){--x:83%;--y:90%;--size:3.2px;--drift-x:-7px;--drift-y:-9px;--drift-x2:5px;--drift-y2:-5px;--drift-duration:10.9s;--glow-duration:3.5s;--delay:-1.8s}
+.hero-firefly:nth-child(11){--x:91%;--y:76%;--size:2.4px;--drift-x:-5px;--drift-y:-12px;--drift-x2:7px;--drift-y2:2px;--drift-duration:9.2s;--glow-duration:2.9s;--delay:-6.8s}
+.hero-firefly:nth-child(12){--x:22%;--y:54%;--size:1.8px;--drift-x:5px;--drift-y:-7px;--drift-x2:-3px;--drift-y2:3px;--drift-duration:8.4s;--glow-duration:3.2s;--delay:-2.7s}
+.hero-firefly:nth-child(13){--x:69%;--y:56%;--size:2.1px;--drift-x:-6px;--drift-y:-8px;--drift-x2:4px;--drift-y2:3px;--drift-duration:10.4s;--glow-duration:2.6s;--delay:-5.9s}
+.hero-firefly:nth-child(14){--x:47%;--y:80%;--size:2.8px;--drift-x:7px;--drift-y:-10px;--drift-x2:-5px;--drift-y2:-3px;--drift-duration:9.9s;--glow-duration:3s;--delay:-3.2s}
+
+@keyframes heroFireflyDrift{
+  0%,100%{transform:translate3d(0,0,0)}
+  34%{transform:translate3d(var(--drift-x),var(--drift-y),0)}
+  68%{transform:translate3d(var(--drift-x2),var(--drift-y2),0)}
+}
+@keyframes heroFireflyGlow{
+  0%,100%{opacity:.28}
+  24%{opacity:.78}
+  47%{opacity:.42}
+  72%{opacity:1}
+  88%{opacity:.55}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .hero-firefly{animation:none;opacity:.52;will-change:auto}
+}
+
 .coin-stat{cursor:pointer}
 .coin-sprite{appearance:none;-webkit-appearance:none;background-color:transparent!important;border-radius:50%;overflow:hidden}
 
