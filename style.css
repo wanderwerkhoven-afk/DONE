@@ -3394,3 +3394,7 @@ body,
 
 .app-icon-grid{transition:opacity .18s ease,transform .18s ease}.app-icon-grid.is-switching{opacity:.25;transform:translateY(3px)}
 @media(prefers-reduced-motion:reduce){.app-icon-tabs::before,.app-icon-tabs button,.app-icon-grid{transition:none!important}}
+
+/* Home task progress: calm fill instead of an instant jump */
+.progress i{transition:width 1.15s cubic-bezier(.22,.72,.28,1);will-change:width}
+@media(prefers-reduced-motion:reduce){.progress i{transition:none}}
