@@ -3415,3 +3415,47 @@ body,
 .theme-segment button.active{color:#173354}
 .theme-segment button span,.theme-segment button svg{width:19px;height:19px;display:block;filter:none}
 [data-theme="light"] .theme-segment{background:#45d6cf;border-color:rgba(45,170,164,.25)}
+
+/* ===== Team GO review: coherent Home light mode =====
+   Keep the fantasy hero, but make the complete Home UI a deliberate daylight skin. */
+[data-theme="light"] .phone:not(.new-task-screen):not(.profile-screen):not(.task-log-screen):not(.completed-screen):not(.level-up-screen):not(.achievements-screen){
+  background:#edf3ef!important;
+}
+[data-theme="light"] .phone:not(.new-task-screen):not(.profile-screen):not(.task-log-screen):not(.completed-screen):not(.level-up-screen):not(.achievements-screen) .content{
+  background:linear-gradient(180deg,#f4f7f2 0%,#eaf1ed 100%)!important;
+  box-shadow:0 -12px 30px rgba(25,56,66,.12)!important;
+  color:#17354a!important;
+}
+[data-theme="light"] .greet h1{color:#17354a!important;text-shadow:none!important}
+[data-theme="light"] .greet p{color:#667f8f!important}
+[data-theme="light"] .progress{background:#d6e2df!important;border-color:#b9ceca!important;box-shadow:inset 0 1px 4px rgba(35,75,82,.12)!important}
+[data-theme="light"] .progress i{background:linear-gradient(90deg,#39b9a7,#78ddc9)!important;box-shadow:0 0 8px rgba(54,169,151,.24)!important}
+[data-theme="light"] .fraction{color:#526f7d!important}
+[data-theme="light"] .stat{
+  background:rgba(255,255,255,.82)!important;
+  border:1px solid rgba(47,80,98,.10)!important;
+  box-shadow:0 6px 18px rgba(47,72,80,.08),inset 0 1px rgba(255,255,255,.9)!important;
+}
+[data-theme="light"] .stat strong{color:#17354a!important}
+[data-theme="light"] .stat small{color:#6f8291!important}
+[data-theme="light"] .task{
+  background:rgba(255,255,255,.9)!important;
+  color:#17354a!important;
+  border:1px solid rgba(47,80,98,.10)!important;
+  box-shadow:0 5px 14px rgba(45,69,77,.07)!important;
+}
+[data-theme="light"] .task.done{background:#dfe8e5!important;opacity:.78}
+[data-theme="light"] .task.done .tasktitle{color:#738793!important}
+[data-theme="light"] .check{border-color:#a9c0c4!important}
+[data-theme="light"] .task.done .check{border-color:#54b79c!important;background:#8ad9bd!important;color:#174f43!important;box-shadow:0 0 10px rgba(73,181,151,.25)!important}
+[data-theme="light"] .reward{color:#c58c1c!important}
+[data-theme="light"] .task-log-link{color:#385b6d!important;background:rgba(255,255,255,.62)!important;border-color:rgba(47,80,98,.14)!important}
+[data-theme="light"] .nav{
+  background:rgba(248,250,247,.96)!important;
+  border-top-color:rgba(47,80,98,.12)!important;
+  box-shadow:0 -8px 24px rgba(45,69,77,.10)!important;
+}
+[data-theme="light"] .nav button{color:#718696!important}
+[data-theme="light"] .nav button.active{color:#bd861c!important;text-shadow:0 0 9px rgba(218,164,52,.22)!important}
+[data-theme="light"] .nav button.active .ni svg{filter:drop-shadow(0 0 5px rgba(218,164,52,.28))!important}
+[data-theme="light"] .add{border-color:#fff!important;background:linear-gradient(180deg,#ffe99f,#ffd166)!important;color:#df841a!important;box-shadow:0 5px 16px rgba(176,123,31,.20),0 0 13px rgba(255,209,102,.25)!important}
