@@ -989,6 +989,17 @@ window.continueLevelUp=()=>{if(state.pendingLevelUp){state.lastSeenLevel=Math.ma
 // PROFILE / SETTINGS
 // Profieloverzicht, statistieken en gebruikersinstellingen.
 // ============================================================================
+const profileSettingIcon=name=>({
+  sound:'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>',
+  haptics:'<svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M10 6h4M4 8v8M20 8v8"/></svg>',
+  theme:'<svg viewBox="0 0 24 24"><path d="M20 15.2A8.5 8.5 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"/></svg>',
+  rewards:'<svg viewBox="0 0 24 24"><path d="m12 3 1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3Z"/><path d="m19 15 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z"/></svg>',
+  reminder:'<svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>',
+  time:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  sun:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg>',
+  moon:'<svg viewBox="0 0 24 24"><path d="M20 15.2A8.5 8.5 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"/></svg>'
+}[name]||"");
+
 window.openSettings=()=>openProfile();
 window.openProfile=()=>{
   const completed=state.taskHistory.length+state.tasks.filter(t=>t.done).length;
@@ -1023,18 +1034,18 @@ window.openProfile=()=>{
         <i aria-hidden="true">›</i>
       </button>
       <section class="profile-settings">
-        <label><span>🔊 <b>Geluid</b></span><input type="checkbox" data-setting="sound" onchange="saveProfileSetting(this)" ${state.sound!==false?"checked":""}><i></i></label>
-        <label><span>⚙️ <b>Haptische feedback</b></span><input type="checkbox" data-setting="haptics" onchange="saveProfileSetting(this)" ${state.haptics!==false?"checked":""}><i></i></label>
+        <label><span><span class="profile-setting-icon">${profileSettingIcon("sound")}</span><b>Geluid</b></span><input type="checkbox" data-setting="sound" onchange="saveProfileSetting(this)" ${state.sound!==false?"checked":""}><i></i></label>
+        <label><span><span class="profile-setting-icon">${profileSettingIcon("haptics")}</span><b>Haptische feedback</b></span><input type="checkbox" data-setting="haptics" onchange="saveProfileSetting(this)" ${state.haptics!==false?"checked":""}><i></i></label>
         <div class="profile-theme-setting">
-          <span class="profile-theme-copy"><span class="profile-theme-symbol" aria-hidden="true">${state.theme==="light"?"☀️":"🌙"}</span><span><b>Weergave</b><small>Kies de sfeer van je interface</small></span></span>
+          <span class="profile-theme-copy"><span class="profile-setting-icon" aria-hidden="true">${profileSettingIcon("theme")}</span><span><b>Weergave</b><small>Kies de sfeer van je interface</small></span></span>
           <div class="theme-segment" role="group" aria-label="Weergave">
-            <button type="button" class="theme-icon-button ${state.theme==="light"?"active":""}" onclick="setTheme('light')" aria-label="Lichte modus" aria-pressed="${state.theme==="light"}"><span aria-hidden="true">☀️</span></button>
-            <button type="button" class="theme-icon-button ${state.theme==="dark"?"active":""}" onclick="setTheme('dark')" aria-label="Donkere modus" aria-pressed="${state.theme==="dark"}"><span aria-hidden="true">🌙</span></button>
+            <button type="button" class="theme-icon-button ${state.theme==="light"?"active":""}" onclick="setTheme('light')" aria-label="Lichte modus" aria-pressed="${state.theme==="light"}"><span aria-hidden="true">${profileSettingIcon("sun")}</span></button>
+            <button type="button" class="theme-icon-button ${state.theme==="dark"?"active":""}" onclick="setTheme('dark')" aria-label="Donkere modus" aria-pressed="${state.theme==="dark"}"><span aria-hidden="true">${profileSettingIcon("moon")}</span></button>
           </div>
         </div>
-        <label class="profile-reward-setting"><span>✨ <b>Beloningsschermen</b><small>Taak voltooid + Level Up</small></span><input type="checkbox" onchange="toggleRewardScreens(this)" ${state.rewardScreensEnabled?"checked":""}><i></i></label>
-        <label class="profile-reminder-setting"><span>🔔 <b>Dagelijkse herinnering</b><small data-reminder-time-label>${state.reminderTime} · alleen bij open taken</small></span><input type="checkbox" onchange="toggleDailyReminder(this)" ${state.reminderEnabled?"checked":""}><i></i></label>
-        <label class="profile-reminder-time"><span>🕒 <b>Tijdstip</b></span><input class="profile-time-input" type="time" value="${state.reminderTime}" step="60" onchange="updateReminderTime(this)" aria-label="Tijdstip dagelijkse herinnering"></label>
+        <label class="profile-reward-setting"><span><span class="profile-setting-icon">${profileSettingIcon("rewards")}</span><b>Beloningsschermen</b><small>Taak voltooid + Level Up</small></span><input type="checkbox" onchange="toggleRewardScreens(this)" ${state.rewardScreensEnabled?"checked":""}><i></i></label>
+        <label class="profile-reminder-setting"><span><span class="profile-setting-icon">${profileSettingIcon("reminder")}</span><b>Dagelijkse herinnering</b><small data-reminder-time-label>${state.reminderTime} · alleen bij open taken</small></span><input type="checkbox" onchange="toggleDailyReminder(this)" ${state.reminderEnabled?"checked":""}><i></i></label>
+        <label class="profile-reminder-time"><span><span class="profile-setting-icon">${profileSettingIcon("time")}</span><b>Tijdstip</b></span><input class="profile-time-input" type="time" value="${state.reminderTime}" step="60" onchange="updateReminderTime(this)" aria-label="Tijdstip dagelijkse herinnering"></label>
       </section>
       <button class="profile-test-notification" type="button" onclick="testDoneNotification(this)" aria-label="Stuur testnotificatie">
         <span class="profile-test-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span>
