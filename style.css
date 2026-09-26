@@ -3499,3 +3499,26 @@ body,
 .hero.hero-image>.brand,.hero.hero-image>.level{z-index:4}
 @media(max-width:499px){.hero-time-transition{background-position:center 54%}}
 @media(prefers-reduced-motion:reduce){.hero-time-transition{transition-duration:.8s}}
+
+/* Team GO: iOS Home scroll containment.
+   Keep scrolling inside the app shell so Safari cannot move the fixed nav away
+   from the visual viewport or reveal the page canvas below it. */
+@media(max-width:499px){
+  html,body{height:100%;overflow:hidden}
+  #app{position:fixed;inset:0;width:100%;height:100dvh;overflow:hidden}
+  #app>.phone:not(.new-task-screen):not(.profile-screen):not(.task-log-screen):not(.completed-screen):not(.level-up-screen):not(.achievements-screen){
+    position:relative;
+    width:min(100%,430px);
+    height:100dvh;
+    min-height:0;
+    overflow-x:hidden;
+    overflow-y:auto;
+    overscroll-behavior-y:none;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:calc(92px + env(safe-area-inset-bottom));
+  }
+  #app>.phone:not(.new-task-screen):not(.profile-screen):not(.task-log-screen):not(.completed-screen):not(.level-up-screen):not(.achievements-screen) .nav{
+    position:fixed;
+    bottom:0;
+  }
+}
