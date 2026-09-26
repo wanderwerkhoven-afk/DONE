@@ -3769,3 +3769,6 @@ body,
 }
 @keyframes rays-inner-spin{to{transform:rotate(360deg)}}
 .completion-check{z-index:10!important}
+
+/* Celebration rays removed permanently. Historical selectors above are intentionally neutralized. */
+.celebration-rays,.celebration-rays::before{display:none!important;animation:none!important}
