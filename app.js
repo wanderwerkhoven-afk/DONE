@@ -1379,6 +1379,11 @@ window.openDataPopup=()=>{
           <span><b>Back-up maken</b><small>Bewaar al je taken, XP en instellingen</small></span>
           <i>›</i>
         </button>
+        <button type="button" onclick="copyDoneBackup()">
+          <span class="data-action-icon"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></span>
+          <span><b>Back-up kopiëren</b><small>Kopieer de volledige JSON inclusief alle taken</small></span>
+          <i>›</i>
+        </button>
         <button type="button" onclick="toggleRestoreBackupOptions()">
           <span class="data-action-icon"><svg viewBox="0 0 24 24"><path d="M12 20V10m0 0 4 4m-4-4-4 4"/><path d="M5 5h14"/></svg></span>
           <span><b>Back-up herstellen</b><small>Kies een bestand of plak een gekopieerde back-up</small></span>
@@ -1431,14 +1436,39 @@ const setDataPopupStatus=(message,type="")=>{
   el.dataset.type=type;
 };
 
+const createDoneBackup=()=>({
+  app:"DONE.",
+  format:"done-backup",
+  version:BACKUP_VERSION,
+  exportedAt:new Date().toISOString(),
+  state:JSON.parse(JSON.stringify(state))
+});
+
+window.copyDoneBackup=async()=>{
+  const content=JSON.stringify(createDoneBackup(),null,2);
+  try{
+    if(!navigator.clipboard?.writeText)throw new Error("Clipboard API niet beschikbaar");
+    await navigator.clipboard.writeText(content);
+    setDataPopupStatus(`Volledige JSON gekopieerd · ${state.tasks.length} taken + ${state.taskHistory.length} historische taken.`,"success");
+    return true;
+  }catch(error){
+    const area=document.querySelector(".data-backup-paste-area");
+    const field=document.querySelector(".data-backup-paste");
+    if(area&&field){
+      area.hidden=false;
+      field.value=content;
+      field.focus();
+      field.select();
+      setDataPopupStatus("Automatisch kopiëren lukt niet. De volledige JSON staat geselecteerd; kies Kopieer.","error");
+    }else{
+      setDataPopupStatus("Kopiëren naar het klembord wordt hier niet ondersteund.","error");
+    }
+    return false;
+  }
+};
+
 window.exportDoneBackup=async()=>{
-  const backup={
-    app:"DONE.",
-    format:"done-backup",
-    version:BACKUP_VERSION,
-    exportedAt:new Date().toISOString(),
-    state:JSON.parse(JSON.stringify(state))
-  };
+  const backup=createDoneBackup();
   const content=JSON.stringify(backup,null,2);
   const date=localDateKey();
   const fileName=`DONE-backup-${date}.json`;
