@@ -342,8 +342,8 @@ button,a,label,.task,input,textarea,select{
   .new-task-header{
     position:absolute;
     top:0;
-    height:64px;
-    padding:0 18px 10px;
+    height:82px;
+    padding:0 18px 12px;
     align-items:flex-end;
     background:linear-gradient(180deg,
       rgba(2,14,36,.52) 0%,
@@ -355,19 +355,19 @@ button,a,label,.task,input,textarea,select{
   .new-task-header .back-btn{
     left:18px;
     top:auto;
-    bottom:3px;
+    bottom:5px;
     width:38px;
     height:38px;
     font-size:31px;
   }
   .new-task-hero{
-    height:365px;
+    height:398px;
     background-size:112% auto;
-    background-position:20% 60%;
+    background-position:20% 68%;
     background-repeat:no-repeat;
   }
   .new-task-hero:after{
-    height:92px;
+    height:104px;
     background:linear-gradient(180deg,
       rgba(3,24,47,0) 0%,
       rgba(3,24,47,.08) 22%,
@@ -377,7 +377,7 @@ button,a,label,.task,input,textarea,select{
   }
   .new-task-screen .quote-bubble{
     display:block;
-    top:76px;
+    top:112px;
     width:238px;
     padding:10px 15px 11px;
     border-radius:15px;
@@ -428,8 +428,8 @@ button,a,label,.task,input,textarea,select{
    Extends artwork behind the top safe-area while controls stay readable.
    ========================================================================== */
 @media(max-width:499px){
-  .new-task-header{top:0;padding-top:env(safe-area-inset-top);height:calc(64px + env(safe-area-inset-top))}
-  .new-task-hero{height:calc(365px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
+  .new-task-header{top:0;padding-top:env(safe-area-inset-top);height:calc(82px + env(safe-area-inset-top))}
+  .new-task-hero{height:calc(398px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
   .new-task-hero::before{
     content:"";position:absolute;z-index:1;top:0;left:0;right:0;
     height:calc(env(safe-area-inset-top) + 52px);pointer-events:none;
