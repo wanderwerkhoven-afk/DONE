@@ -1016,6 +1016,8 @@ window.continueLevelUp=()=>{if(state.pendingLevelUp){state.lastSeenLevel=Math.ma
 // PROFILE / SETTINGS
 // Profieloverzicht, statistieken en gebruikersinstellingen.
 // ============================================================================
+const APP_VERSION="V.1.1.1.1";
+
 const profileSettingIcon=name=>({
   sound:'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>',
   haptics:'<svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M10 6h4M4 8v8M20 8v8"/></svg>',
@@ -1088,6 +1090,7 @@ window.openProfile=()=>{
         <span class="profile-reset-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8V4m0 0h4M4 4l3.1 3.1A7 7 0 1 1 5 13"/></svg></span>
         <span><b>Refresh voortgang</b><small>Zet level en XP terug naar het begin</small></span>
       </button>
+      <footer class="profile-version" aria-label="App-versie">${APP_VERSION}</footer>
     </main>
     <nav class="nav profile-nav"><button onclick="render()"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button class="active"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav>
   </div>`;
