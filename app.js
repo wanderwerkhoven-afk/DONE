@@ -1146,7 +1146,7 @@ window.openAppIconPicker=(category=state.appIconCategory||"illustration-art")=>{
         <div><h2 id="appIconPickerTitle">Kies je app-icoon</h2><p>Maak DONE. van jou</p></div>
         <button type="button" onclick="closeAppIconPicker()" aria-label="Sluiten">×</button>
       </div>
-      <div class="app-icon-tabs" role="tablist" aria-label="Icooncategorie">
+      <div class="app-icon-tabs" data-active="${activeCategory}" role="tablist" aria-label="Icooncategorie">
         ${Object.entries(APP_ICON_CATEGORIES).map(([key,config])=>`<button type="button" class="${activeCategory===key?"active":""}" onclick="switchAppIconCategory('${key}')" role="tab" aria-selected="${activeCategory===key}">${config.label}</button>`).join("")}
       </div>
       <div class="app-icon-grid">
@@ -1168,8 +1168,26 @@ window.switchAppIconCategory=category=>{
   if(!APP_ICON_CATEGORIES[category])return;
   const picker=document.querySelector(".app-icon-picker");
   if(!picker)return;
-  picker.remove();
-  openAppIconPicker(category);
+  const tabs=picker.querySelector(".app-icon-tabs");
+  const grid=picker.querySelector(".app-icon-grid");
+  if(!tabs||!grid||tabs.dataset.active===category)return;
+
+  tabs.dataset.active=category;
+  tabs.querySelectorAll("button").forEach(button=>{
+    const active=button.getAttribute("onclick")?.includes("'"+category+"'");
+    button.classList.toggle("active",active);
+    button.setAttribute("aria-selected",String(active));
+  });
+
+  const selected=state.appIcon||appIconId("illustration-art",1);
+  grid.classList.add("is-switching");
+  setTimeout(()=>{
+    grid.innerHTML=Array.from({length:APP_ICON_COUNT},(_,i)=>{
+      const id=appIconId(category,i+1);
+      return `<button class="app-icon-option ${selected===id?"selected":""}" type="button" onclick="selectAppIcon('${id}')" aria-label="${APP_ICON_CATEGORIES[category].label} app-icoon ${i+1}"><img src="${appIconPath(id)}" alt=""><span>✓</span></button>`;
+    }).join("");
+    grid.classList.remove("is-switching");
+  },110);
 };
 
 window.closeAppIconPicker=()=>{
