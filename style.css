@@ -3177,3 +3177,18 @@ body,
   94%{transform:translate3d(-7px,-5px,0)}
 }
 
+
+
+/* Profile build marker — visible release/version check */
+.profile-version{
+  margin:18px 0 6px;
+  padding:4px 0 8px;
+  text-align:center;
+  font-size:11px;
+  line-height:1;
+  font-weight:750;
+  letter-spacing:.55px;
+  color:rgba(174,191,210,.62);
+  user-select:text;
+}
+[data-theme="light"] .profile-version{color:rgba(49,78,99,.48)}
