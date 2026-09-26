@@ -103,9 +103,7 @@
   );
   filter:blur(.15px);
   will-change:transform,opacity;
-  animation:
-    heroFireflyDrift var(--drift-duration) ease-in-out var(--delay) infinite,
-    heroFireflyGlow var(--glow-duration) ease-in-out var(--delay) infinite;
+  animation:heroFireflyGlow var(--glow-duration) ease-in-out var(--delay) infinite;
 }
 .hero-firefly::after{
   content:"";
