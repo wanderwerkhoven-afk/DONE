@@ -1649,12 +1649,20 @@ window.resetProgress=()=>{
 };
 
 window.setTheme=theme=>{
-  if(theme!=="light"&&theme!=="dark")return;
+  if(theme!=="light"&&theme!=="dark"||state.theme===theme)return;
   haptic("select");
   state.theme=theme;
   applyTheme();
   saveState();
-  openProfile();
+
+  // Keep the current Profile DOM and scroll position intact.
+  // Re-rendering openProfile() here used to rebuild the screen and jump to the top.
+  document.querySelectorAll(".theme-icon-button").forEach(button=>{
+    const buttonTheme=button.getAttribute("onclick")?.includes("'light'")?"light":"dark";
+    const active=buttonTheme===theme;
+    button.classList.toggle("active",active);
+    button.setAttribute("aria-pressed",String(active));
+  });
 };
 window.saveProfileSetting=el=>{state[el.dataset.setting]=el.checked;saveState()};
 window.toggleHaptics=el=>{
