@@ -3557,3 +3557,12 @@ body,
   .xp-pop{top:40.5%!important}
   .completion-quote{top:47%!important}
 }
+
+/* Team GO: Home uses the same natural iOS vertical overscroll feel as Profile.
+   The scroll remains inside the app shell; fixed bottom navigation stays stable. */
+@media(max-width:499px){
+  #app>.phone:not(.new-task-screen):not(.profile-screen):not(.task-log-screen):not(.completed-screen):not(.level-up-screen):not(.achievements-screen){
+    overscroll-behavior-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+}
