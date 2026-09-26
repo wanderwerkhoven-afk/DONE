@@ -946,7 +946,6 @@ window.openTaskCompleted=(t,reward={levelsGained:0,xpAwarded:0,coinsAwarded:0})=
   document.querySelector("#app").innerHTML=`<div class="phone completed-screen">
     <section class="completed-scene">
       <div class="completed-copy"><h1 class="arched-title" aria-label="Taak voltooid!"><span style="--n:0">T</span><span style="--n:1">a</span><span style="--n:2">a</span><span style="--n:3">k</span><span class="gap" style="--n:4">&nbsp;</span><span style="--n:5">v</span><span style="--n:6">o</span><span style="--n:7">l</span><span style="--n:8">t</span><span style="--n:9">o</span><span style="--n:10">o</span><span style="--n:11">i</span><span style="--n:12">d</span><span style="--n:13">!</span></h1><p>Goed bezig!</p></div>
-      <div class="celebration-rays"></div>
       <div class="completion-check"><span>✓</span></div>
       <div class="xp-pop">+${xpAwarded} XP${coinsAwarded?`<small>+${coinsAwarded} coins</small>`:""}</div>
       <div class="completion-quote">“Consistentie bouwt<br>een betere jij.”</div>
