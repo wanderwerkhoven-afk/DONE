@@ -88,14 +88,20 @@
   position:absolute;
   left:var(--x);
   top:var(--y);
-  width:var(--size);
-  height:var(--size);
+  width:calc(var(--size) * 4.8);
+  height:calc(var(--size) * 4.8);
+  margin-left:calc(var(--size) * -1.9);
+  margin-top:calc(var(--size) * -1.9);
   border-radius:50%;
-  background:#fff1a0;
-  box-shadow:
-    0 0 4px rgba(255,238,128,.95),
-    0 0 9px rgba(255,211,69,.75),
-    0 0 16px rgba(255,181,37,.28);
+  background:radial-gradient(circle,
+    rgba(255,248,186,.98) 0%,
+    rgba(255,237,128,.94) 9%,
+    rgba(255,218,68,.72) 20%,
+    rgba(255,194,38,.38) 39%,
+    rgba(255,183,31,.14) 56%,
+    rgba(255,183,31,0) 74%
+  );
+  filter:blur(.15px);
   will-change:transform,opacity;
   animation:
     heroFireflyDrift var(--drift-duration) ease-in-out var(--delay) infinite,
@@ -104,9 +110,14 @@
 .hero-firefly::after{
   content:"";
   position:absolute;
-  inset:-5px;
+  inset:20%;
   border-radius:50%;
-  background:radial-gradient(circle,rgba(255,229,112,.25) 0%,rgba(255,209,67,.10) 42%,transparent 72%);
+  background:radial-gradient(circle,
+    rgba(255,247,181,.68) 0%,
+    rgba(255,217,78,.26) 46%,
+    rgba(255,198,45,0) 100%
+  );
+  filter:blur(.45px);
 }
 .hero-firefly:nth-child(1){--x:10%;--y:69%;--size:2.5px;--drift-x:8px;--drift-y:-10px;--drift-x2:-5px;--drift-y2:-4px;--drift-duration:8.8s;--glow-duration:2.9s;--delay:-1.4s}
 .hero-firefly:nth-child(2){--x:18%;--y:82%;--size:3px;--drift-x:-7px;--drift-y:-12px;--drift-x2:4px;--drift-y2:-6px;--drift-duration:10.2s;--glow-duration:3.4s;--delay:-4.7s}
@@ -129,11 +140,11 @@
   68%{transform:translate3d(var(--drift-x2),var(--drift-y2),0)}
 }
 @keyframes heroFireflyGlow{
-  0%,100%{opacity:.28}
-  24%{opacity:.78}
-  47%{opacity:.42}
-  72%{opacity:1}
-  88%{opacity:.55}
+  0%,100%{opacity:.48}
+  24%{opacity:.76}
+  47%{opacity:.58}
+  72%{opacity:.92}
+  88%{opacity:.66}
 }
 
 @media(prefers-reduced-motion:reduce){
