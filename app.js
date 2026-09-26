@@ -104,9 +104,23 @@ const applyHomeHeroForCurrentTime=()=>{
   if(!hero)return;
   const period=selectedHomeHeroPeriod();
   if(hero.dataset.heroPeriod===period)return;
-  hero.dataset.heroPeriod=period;
-  hero.style.setProperty("--home-hero-image",`url("${HOME_HERO_BY_PERIOD[period]}")`);
-  if(period==="night")requestAnimationFrame(positionNightFireflies);
+  const previous=hero.dataset.heroPeriod;
+  if(!previous){
+    hero.dataset.heroPeriod=period;
+    hero.style.setProperty("--home-hero-image",`url("${HOME_HERO_BY_PERIOD[period]}")`);
+    return;
+  }
+  const transition=document.createElement("div");
+  transition.className="hero-time-transition";
+  transition.style.backgroundImage=`linear-gradient(180deg,rgba(1,18,48,.12),rgba(1,18,48,.04) 64%,rgba(2,28,58,.55)),url("${HOME_HERO_BY_PERIOD[period]}")`;
+  hero.appendChild(transition);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>transition.classList.add("show")));
+  setTimeout(()=>{
+    hero.dataset.heroPeriod=period;
+    hero.style.setProperty("--home-hero-image",`url("${HOME_HERO_BY_PERIOD[period]}")`);
+    transition.remove();
+    if(period==="night")requestAnimationFrame(positionNightFireflies);
+  },5000);
 };
 const scheduleHomeHeroRefresh=()=>{
   if(homeHeroTimer){clearTimeout(homeHeroTimer);homeHeroTimer=null}
