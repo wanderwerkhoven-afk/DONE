@@ -3492,3 +3492,10 @@ body,
     box-shadow:none!important;
   }
 }
+
+/* Home automatic hero: cinematic cross-fade at period boundaries */
+.hero-time-transition{position:absolute;z-index:1;inset:0;background-size:cover;background-position:center 54%;background-repeat:no-repeat;opacity:0;pointer-events:none;transition:opacity 5s cubic-bezier(.4,0,.2,1);will-change:opacity}
+.hero-time-transition.show{opacity:1}
+.hero.hero-image>.brand,.hero.hero-image>.level{z-index:4}
+@media(max-width:499px){.hero-time-transition{background-position:center 54%}}
+@media(prefers-reduced-motion:reduce){.hero-time-transition{transition-duration:.8s}}
