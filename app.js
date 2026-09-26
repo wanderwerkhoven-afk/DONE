@@ -1048,7 +1048,7 @@ window.openProfile=()=>{
       </button>
       <section class="profile-settings">
         <label><span><span class="profile-setting-icon">${profileSettingIcon("sound")}</span><b>Geluid</b></span><input type="checkbox" data-setting="sound" onchange="saveProfileSetting(this)" ${state.sound!==false?"checked":""}><i></i></label>
-        <label><span><span class="profile-setting-icon">${profileSettingIcon("haptics")}</span><b>Haptische feedback</b></span><input type="checkbox" data-setting="haptics" onchange="saveProfileSetting(this)" ${state.haptics!==false?"checked":""}><i></i></label>
+        <label><span><span class="profile-setting-icon">${profileSettingIcon("haptics")}</span><b>Haptische feedback</b></span><input type="checkbox" data-setting="haptics" onchange="toggleHaptics(this)" ${state.haptics!==false?"checked":""}><i></i></label>
         <div class="profile-theme-setting">
           <span class="profile-theme-copy"><span class="profile-setting-icon" aria-hidden="true">${profileSettingIcon("theme")}</span><span><b>Weergave</b><small>Kies de sfeer van je interface</small></span></span>
           <div class="theme-segment" role="group" aria-label="Weergave">
@@ -1657,6 +1657,14 @@ window.setTheme=theme=>{
   openProfile();
 };
 window.saveProfileSetting=el=>{state[el.dataset.setting]=el.checked;saveState()};
+window.toggleHaptics=el=>{
+  state.haptics=Boolean(el.checked);
+  saveState();
+  if(state.haptics){
+    // Direct confirmation while this user gesture is still active.
+    try{navigator.vibrate?.([22,35,22])}catch{}
+  }
+};
 window.toggleRewardScreens=el=>{
   state.rewardScreensEnabled=Boolean(el.checked);
   if(!state.rewardScreensEnabled&&state.pendingLevelUp){
