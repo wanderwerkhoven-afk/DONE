@@ -3566,3 +3566,18 @@ body,
     -webkit-overflow-scrolling:touch;
   }
 }
+
+/* Night ambience: slow, subtle floating motion for the fireflies */
+.hero.hero-image[data-hero-period="night"] .hero-firefly{
+  animation:
+    heroFireflyFloat var(--drift-duration) cubic-bezier(.45,.05,.55,.95) var(--delay) infinite,
+    heroFireflyGlow var(--glow-duration) ease-in-out var(--delay) infinite;
+}
+@keyframes heroFireflyFloat{
+  0%,100%{transform:translate3d(0,0,0)}
+  18%{transform:translate3d(2px,-3px,0)}
+  38%{transform:translate3d(5px,-1px,0)}
+  58%{transform:translate3d(3px,3px,0)}
+  78%{transform:translate3d(-2px,2px,0)}
+  91%{transform:translate3d(-3px,-1px,0)}
+}
