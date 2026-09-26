@@ -3522,3 +3522,38 @@ body,
     bottom:0;
   }
 }
+
+/* Team GO: lock completion focal stack — title, check and rays must never collide */
+.completed-copy{top:calc(env(safe-area-inset-top) + 54px)!important}
+.completed-copy .arched-title{height:62px!important}
+.completed-copy p{margin-top:10px!important}
+.completion-check{
+  top:27.5%!important;
+  z-index:10!important;
+}
+.celebration-rays{
+  top:27.5%!important;
+  left:50%!important;
+  z-index:6!important;
+  transform:translate(-50%,-50%) scale(.45)!important;
+  transform-origin:center center!important;
+  opacity:0!important;
+}
+.completed-screen.play .celebration-rays{
+  animation:rays-in-fixed 1s ease-out .1s forwards,rays-spin-fixed 13s linear 1.1s infinite!important;
+}
+@keyframes rays-in-fixed{
+  to{opacity:.86;transform:translate(-50%,-50%) scale(1)}
+}
+@keyframes rays-spin-fixed{
+  from{transform:translate(-50%,-50%) scale(1) rotate(0deg)}
+  to{transform:translate(-50%,-50%) scale(1) rotate(360deg)}
+}
+.xp-pop{top:41%!important}
+.completion-quote{top:47%!important}
+@media(max-height:760px){
+  .completed-copy{top:calc(env(safe-area-inset-top) + 42px)!important}
+  .completion-check,.celebration-rays{top:27%!important}
+  .xp-pop{top:40.5%!important}
+  .completion-quote{top:47%!important}
+}
