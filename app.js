@@ -11,7 +11,7 @@ const DEFAULT_REMINDER_TIME="17:00";
 // SVG-iconen die door de onderste navigatie op meerdere schermen worden gebruikt.
 // ============================================================================
 const navIcon=name=>({today:`<svg viewBox="0 0 32 32" aria-hidden="true"><rect class="icon-fill" x="5" y="7" width="22" height="20" rx="6"/><path class="icon-cut" d="M10 5v5M22 5v5M9 14h14"/><path class="icon-detail" d="M11 18.5c1.3 2.5 3 3.7 5 3.7s3.7-1.2 5-3.7"/></svg>`,world:`<svg viewBox="0 0 32 32" aria-hidden="true"><circle class="icon-fill" cx="16" cy="16" r="11"/><path class="icon-cut" d="M7.2 13.2c3.2-.2 5.2.6 6.2 2.4.8 1.4.2 2.6-.3 3.8-.6 1.4-.4 2.7.9 4M17.5 5.4c-.4 2.4.5 4 2.7 4.8 2.2.8 3.4 2.3 3.5 4.4.1 1.5 1 2.4 2.5 2.7M16.5 11.3c1.1 1.1 1.2 2.1.3 3-.9.9-2 1-3.2.2"/></svg>`,achievements:`<svg viewBox="0 0 32 32" aria-hidden="true"><path class="icon-fill" d="M10 6h12v7c0 4-2.4 6.5-6 6.5S10 17 10 13z"/><path class="icon-fill" d="M10 9H5v2.5c0 4 2.4 6 6.3 6M22 9h5v2.5c0 4-2.4 6-6.3 6M14 19h4v5h4v3H10v-3h4z"/><circle class="icon-cut" cx="16" cy="12" r="2.2"/></svg>`,profile:`<svg viewBox="0 0 32 32" aria-hidden="true"><circle class="icon-fill" cx="16" cy="10" r="6"/><path class="icon-fill" d="M6 27c.6-6.2 3.9-9.3 10-9.3S25.4 20.8 26 27z"/></svg>`})[name];
-const defaultState={level:1,xp:0,maxXp:100,streak:0,coins:0,profileAvatar:1,appIconCategory:"illustration-art",appIcon:"illustration-01",theme:"dark",rewardScreensEnabled:true,reminderEnabled:false,reminderTime:DEFAULT_REMINDER_TIME,reminderLastSent:null,tasks:[{title:"Verslag afmaken",meta:"Grote taak",xp:50,icon:"🧠"},{title:"Mail beantwoorden",meta:"Kleine taak",xp:10,icon:"✉️"},{title:"Was ophangen",meta:"",xp:10,icon:"🧹",done:true},{title:"20 min sporten",meta:"Normale taak",xp:25,icon:"🏋️"}]};
+const defaultState={level:1,xp:0,maxXp:100,streak:0,coins:0,profileAvatar:1,appIconCategory:"illustration-art",appIcon:"illustration-01",theme:"dark",heroMode:"auto",heroFixedPeriod:"daytime",rewardScreensEnabled:true,reminderEnabled:false,reminderTime:DEFAULT_REMINDER_TIME,reminderLastSent:null,tasks:[{title:"Verslag afmaken",meta:"Grote taak",xp:50,icon:"🧠"},{title:"Mail beantwoorden",meta:"Kleine taak",xp:10,icon:"✉️"},{title:"Was ophangen",meta:"",xp:10,icon:"🧹",done:true},{title:"20 min sporten",meta:"Normale taak",xp:25,icon:"🏋️"}]};
 const xpForLevel=level=>100+(Math.max(1,level)-1)*50;
 const savedState=(()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"null")}catch(e){return null}})();
 const state={...defaultState,...(savedState||{})};
@@ -77,6 +77,15 @@ const HOME_HERO_BY_PERIOD={
   evening:"assets/images/home/hero-home-evening.png",
   night:"assets/images/home/hero-home-night.png"
 };
+const HOME_HERO_LABELS={
+  morning:"Ochtend",
+  daytime:"Overdag",
+  sundown:"Zonsondergang",
+  evening:"Avond",
+  night:"Nacht"
+};
+state.heroMode=state.heroMode==="fixed"?"fixed":"auto";
+state.heroFixedPeriod=HOME_HERO_BY_PERIOD[state.heroFixedPeriod]?state.heroFixedPeriod:"daytime";
 const homeHeroPeriod=date=>{
   const hour=(date||new Date()).getHours();
   if(hour>=6&&hour<10)return "morning";
@@ -85,13 +94,15 @@ const homeHeroPeriod=date=>{
   if(hour>=21&&hour<23)return "evening";
   return "night";
 };
-const homeHeroUrl=date=>HOME_HERO_BY_PERIOD[homeHeroPeriod(date)];
+const selectedHomeHeroPeriod=date=>state.heroMode==="fixed"?state.heroFixedPeriod:homeHeroPeriod(date);
+const homeHeroUrl=date=>HOME_HERO_BY_PERIOD[selectedHomeHeroPeriod(date)];
 const homeGreeting=date=>{const period=homeHeroPeriod(date);return period==="morning"?"Goedemorgen! 👋":period==="daytime"?"Goedemiddag! 👋":"Goedenavond! 👋"};
+const heroSelectionLabel=()=>state.heroMode==="fixed"?`Vaste hero · ${HOME_HERO_LABELS[state.heroFixedPeriod]}`:"Automatisch · tijd van de dag";
 let homeHeroTimer=null;
 const applyHomeHeroForCurrentTime=()=>{
   const hero=document.querySelector(".hero.hero-image");
   if(!hero)return;
-  const period=homeHeroPeriod();
+  const period=selectedHomeHeroPeriod();
   if(hero.dataset.heroPeriod===period)return;
   hero.dataset.heroPeriod=period;
   hero.style.setProperty("--home-hero-image",`url("${HOME_HERO_BY_PERIOD[period]}")`);
@@ -101,6 +112,7 @@ const scheduleHomeHeroRefresh=()=>{
   const hero=document.querySelector(".hero.hero-image");
   if(!hero)return;
   applyHomeHeroForCurrentTime();
+  if(state.heroMode==="fixed")return;
   const now=new Date();
   const next=new Date(now);
   const hour=now.getHours();
@@ -621,7 +633,7 @@ saveState();
 // Bouwt het hoofdscherm: hero, voortgang, stats, takenlijst, FAB en bottom-nav.
 // ============================================================================
 const homeNightFireflies=()=>Array.from({length:14},()=>'<i class="hero-firefly"></i>').join("");
-function render(){cancelTaskLongPress?.();activeTaskEditIndex=null;archiveOldCompletedTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image" data-hero-period="${homeHeroPeriod()}" style="--home-hero-image:url('${homeHeroUrl()}')"><div class="hero-fireflies" aria-hidden="true">${homeNightFireflies()}</div><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>${homeGreeting()}</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${taskPct}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.length?visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<div class="task-wrap" data-task-index="${i}"><button class="task ${t.done?"done":""}" onclick="handleTaskClick(event,${i})" onpointerdown="startTaskLongPress(event,${i},this)" onpointerup="endTaskLongPress(event)" onpointercancel="cancelTaskLongPress()" onpointerleave="cancelTaskLongPress()" onpointermove="trackTaskLongPress(event)" oncontextmenu="return false"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${escapeHtml(t.title)}</div>${t.meta?`<div class="taskmeta">${escapeHtml(t.meta)}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button><button class="task-delete-btn" type="button" aria-label="Verwijder taak ${escapeHtml(t.title)}" onclick="deleteTask(event,${i})"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button></div>`}).join(""):`<section class="tasks-empty-state" aria-label="Geen taken"><div class="tasks-empty-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"/><path d="m21 33 7 7 15-17"/></svg></div><h2>Alles afgevinkt</h2><p>Je hebt voor vandaag geen openstaande taken.</p><button type="button" onclick="openNewTask()">Nieuwe taak toevoegen</button></section>`}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`;scheduleHomeHeroRefresh()}
+function render(){cancelTaskLongPress?.();activeTaskEditIndex=null;archiveOldCompletedTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image" data-hero-period="${selectedHomeHeroPeriod()}" style="--home-hero-image:url('${homeHeroUrl()}')"><div class="hero-fireflies" aria-hidden="true">${homeNightFireflies()}</div><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>${homeGreeting()}</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${taskPct}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.length?visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<div class="task-wrap" data-task-index="${i}"><button class="task ${t.done?"done":""}" onclick="handleTaskClick(event,${i})" onpointerdown="startTaskLongPress(event,${i},this)" onpointerup="endTaskLongPress(event)" onpointercancel="cancelTaskLongPress()" onpointerleave="cancelTaskLongPress()" onpointermove="trackTaskLongPress(event)" oncontextmenu="return false"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${escapeHtml(t.title)}</div>${t.meta?`<div class="taskmeta">${escapeHtml(t.meta)}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button><button class="task-delete-btn" type="button" aria-label="Verwijder taak ${escapeHtml(t.title)}" onclick="deleteTask(event,${i})"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button></div>`}).join(""):`<section class="tasks-empty-state" aria-label="Geen taken"><div class="tasks-empty-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"/><path d="m21 33 7 7 15-17"/></svg></div><h2>Alles afgevinkt</h2><p>Je hebt voor vandaag geen openstaande taken.</p><button type="button" onclick="openNewTask()">Nieuwe taak toevoegen</button></section>`}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`;scheduleHomeHeroRefresh()}
 
 // ============================================================================
 // PROGRESSION: XP, LEVELS & STREAK
@@ -942,6 +954,11 @@ window.openProfile=()=>{
         <span><b>App-icoon</b><small>${APP_ICON_CATEGORIES[state.appIconCategory]?.label||"Illustration Art"} · kies jouw DONE.-stijl</small></span>
         <i aria-hidden="true">›</i>
       </button>
+      <button class="profile-hero-tile" type="button" onclick="openHeroPicker()" aria-label="Kies Home hero">
+        <span class="profile-hero-preview" style="--profile-hero-preview:url('${HOME_HERO_BY_PERIOD[selectedHomeHeroPeriod()]}')"></span>
+        <span><b>Home Hero</b><small>${heroSelectionLabel()}</small></span>
+        <i aria-hidden="true">›</i>
+      </button>
       <section class="profile-settings">
         <label><span>🔊 <b>Geluid</b></span><input type="checkbox" data-setting="sound" onchange="saveProfileSetting(this)" ${state.sound!==false?"checked":""}><i></i></label>
         <label><span>⚙️ <b>Haptische feedback</b></span><input type="checkbox" data-setting="haptics" onchange="saveProfileSetting(this)" ${state.haptics!==false?"checked":""}><i></i></label>
@@ -973,6 +990,71 @@ window.openProfile=()=>{
     </main>
     <nav class="nav profile-nav"><button onclick="render()"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button class="active"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav>
   </div>`;
+};
+
+// ============================================================================
+// PROFILE HERO PICKER
+// Kiest tussen automatische tijdsgebonden hero's en één vaste Home hero.
+// ============================================================================
+window.openHeroPicker=()=>{
+  document.querySelector(".hero-picker")?.remove();
+  const picker=document.createElement("div");
+  picker.className="hero-picker";
+  picker.innerHTML=`<button class="hero-picker-backdrop" type="button" onclick="closeHeroPicker()" aria-label="Sluiten"></button>
+    <section class="hero-picker-sheet" role="dialog" aria-modal="true" aria-labelledby="heroPickerTitle">
+      <div class="hero-picker-head">
+        <div><h2 id="heroPickerTitle">Kies je Home Hero</h2><p>Laat de wereld met je dag meebewegen of kies één vaste sfeer.</p></div>
+        <button type="button" onclick="closeHeroPicker()" aria-label="Sluiten">×</button>
+      </div>
+      <button class="hero-mode-option ${state.heroMode==="auto"?"selected":""}" data-hero-mode="auto" type="button" onclick="selectHeroMode('auto')" aria-pressed="${state.heroMode==="auto"}">
+        <span class="hero-mode-clock" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></span>
+        <span><b>Meebewegen met tijd</b><small>Ochtend, dag, zonsondergang, avond en nacht wisselen automatisch.</small></span>
+        <i aria-hidden="true">✓</i>
+      </button>
+      <div class="hero-picker-divider"><span>of kies een vaste Hero</span></div>
+      <div class="hero-grid">
+        ${Object.entries(HOME_HERO_BY_PERIOD).map(([period,path])=>`<button class="hero-option ${state.heroMode==="fixed"&&state.heroFixedPeriod===period?"selected":""}" data-hero-period="${period}" type="button" onclick="selectHeroMode('fixed','${period}')" aria-pressed="${state.heroMode==="fixed"&&state.heroFixedPeriod===period}">
+          <span class="hero-option-image" style="background-image:url('${path}')"></span>
+          <span class="hero-option-label">${HOME_HERO_LABELS[period]}</span>
+          <i aria-hidden="true">✓</i>
+        </button>`).join("")}
+      </div>
+      <button class="hero-picker-done" type="button" onclick="closeHeroPicker()">Klaar</button>
+    </section>`;
+  document.querySelector(".profile-screen")?.appendChild(picker);
+  requestAnimationFrame(()=>picker.classList.add("show"));
+};
+
+window.selectHeroMode=(mode,period)=>{
+  if(mode==="auto"){
+    state.heroMode="auto";
+  }else if(mode==="fixed"&&HOME_HERO_BY_PERIOD[period]){
+    state.heroMode="fixed";
+    state.heroFixedPeriod=period;
+  }else return;
+  saveState();
+
+  const picker=document.querySelector(".hero-picker");
+  if(!picker)return;
+  const auto=picker.querySelector('[data-hero-mode="auto"]');
+  const autoSelected=state.heroMode==="auto";
+  auto?.classList.toggle("selected",autoSelected);
+  auto?.setAttribute("aria-pressed",String(autoSelected));
+  picker.querySelectorAll("[data-hero-period]").forEach(button=>{
+    const selected=state.heroMode==="fixed"&&button.dataset.heroPeriod===state.heroFixedPeriod;
+    button.classList.toggle("selected",selected);
+    button.setAttribute("aria-pressed",String(selected));
+  });
+};
+
+window.closeHeroPicker=()=>{
+  const picker=document.querySelector(".hero-picker");
+  if(!picker)return;
+  picker.classList.remove("show");
+  setTimeout(()=>{
+    picker.remove();
+    if(document.querySelector(".profile-screen"))openProfile();
+  },180);
 };
 
 // ============================================================================
