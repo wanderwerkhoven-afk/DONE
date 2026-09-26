@@ -70,6 +70,7 @@ applySelectedAppIcon();
 const localDateKey=d=>{const x=d?new Date(d):new Date();return [x.getFullYear(),String(x.getMonth()+1).padStart(2,"0"),String(x.getDate()).padStart(2,"0")].join("-")};
 const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
 const coinReward=xp=>xp>=50?10:xp>=25?5:2;
+const hapticsSupported=()=>typeof navigator.vibrate==="function";
 const HOME_HERO_BY_PERIOD={
   morning:"assets/images/home/hero-home-morning.png",
   daytime:"assets/images/home/hero-home-daytime.png",
@@ -1062,7 +1063,7 @@ window.openProfile=()=>{
       </button>
       <section class="profile-settings">
         <label><span><span class="profile-setting-icon">${profileSettingIcon("sound")}</span><b>Geluid</b></span><input type="checkbox" data-setting="sound" onchange="saveProfileSetting(this)" ${state.sound!==false?"checked":""}><i></i></label>
-        <label><span><span class="profile-setting-icon">${profileSettingIcon("haptics")}</span><b>Haptische feedback</b></span><input type="checkbox" data-setting="haptics" onchange="toggleHaptics(this)" ${state.haptics!==false?"checked":""}><i></i></label>
+        <label class="${hapticsSupported()?"":"profile-setting-unavailable"}"><span><span class="profile-setting-icon">${profileSettingIcon("haptics")}</span><span><b>Haptische feedback</b>${hapticsSupported()?"":'<small>Niet beschikbaar op dit apparaat</small>'}</span></span><input type="checkbox" data-setting="haptics" onchange="toggleHaptics(this)" ${hapticsSupported()&&state.haptics!==false?"checked":""} ${hapticsSupported()?"":"disabled"}><i></i></label>
         <div class="profile-theme-setting">
           <span class="profile-theme-copy"><span class="profile-setting-icon" aria-hidden="true">${profileSettingIcon("theme")}</span><span><b>Weergave</b><small>Kies de sfeer van je interface</small></span></span>
           <div class="theme-segment" role="group" aria-label="Weergave">
@@ -1680,11 +1681,11 @@ window.setTheme=theme=>{
 };
 window.saveProfileSetting=el=>{state[el.dataset.setting]=el.checked;saveState()};
 window.toggleHaptics=el=>{
+  if(!hapticsSupported()){el.checked=false;return}
   state.haptics=Boolean(el.checked);
   saveState();
   if(state.haptics){
-    // Direct confirmation while this user gesture is still active.
-    try{navigator.vibrate?.([22,35,22])}catch{}
+    try{navigator.vibrate([22,35,22])}catch{}
   }
 };
 window.toggleRewardScreens=el=>{
