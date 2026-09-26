@@ -3691,3 +3691,15 @@ body,
   to{opacity:.82;transform:translate(-50%,-50%) rotate(360deg)}
 }
 @media(max-height:760px){.celebration-rays{width:350px!important;height:350px!important}}
+
+/* Completion heading: move title + subtitle up as one composition */
+.completed-copy{
+  top:calc(env(safe-area-inset-top) + 38px)!important;
+}
+.completed-copy p{
+  top:66px!important;
+}
+@media(max-height:760px){
+  .completed-copy{top:calc(env(safe-area-inset-top) + 28px)!important}
+  .completed-copy p{top:62px!important}
+}
