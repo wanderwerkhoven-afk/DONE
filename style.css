@@ -3192,3 +3192,45 @@ body,
   user-select:text;
 }
 [data-theme="light"] .profile-version{color:rgba(49,78,99,.48)}
+
+
+/* ============================================================================
+   WORLD — COLLECTIBLE FLOATING ISLAND
+   Mobile-first build screen using the existing illustrated world as its stage.
+   ========================================================================== */
+.world-screen{height:100dvh;overflow:hidden;background:linear-gradient(180deg,#04234a 0%,#03172f 100%);color:#fff}
+.world-content{height:calc(100dvh - 78px);overflow-y:auto;overscroll-behavior-y:contain;padding:calc(env(safe-area-inset-top) + 22px) 14px 26px;box-sizing:border-box;scrollbar-width:none}
+.world-content::-webkit-scrollbar{display:none}
+.world-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:0 4px 16px}
+.world-heading h1{margin:0;font-size:30px;line-height:1;font-weight:1000;letter-spacing:-1.2px}
+.world-heading p{margin:7px 0 0;max-width:255px;color:#b9cce3;font-size:13px;line-height:1.35;font-weight:650}
+.world-coin-pill{flex:0 0 auto;height:44px;min-width:103px;padding:0 12px 0 7px;border:2px solid rgba(123,102,255,.68);border-radius:24px;background:linear-gradient(180deg,rgba(11,37,73,.94),rgba(5,28,58,.98));display:flex;align-items:center;justify-content:flex-end;gap:7px;box-shadow:inset 0 0 0 1px rgba(120,210,255,.08),0 8px 18px rgba(0,0,0,.2)}
+.world-coin-pill .coin-sprite{width:31px;height:31px;min-width:31px;margin:0;background-size:auto 31px}
+.world-coin-pill b{font-size:18px;letter-spacing:.1px}
+.world-stage{position:relative;height:430px;border-radius:28px;overflow:hidden;background-image:linear-gradient(180deg,rgba(2,25,58,.02),rgba(4,28,60,.03) 63%,rgba(2,18,38,.66)),var(--world-bg);background-size:cover;background-position:center 48%;box-shadow:0 18px 34px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.1);isolation:isolate}
+.world-stage:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,118,211,.08),transparent 35%,rgba(0,18,44,.16));z-index:1;pointer-events:none}
+.world-stage-vignette{position:absolute;inset:0;z-index:2;box-shadow:inset 0 -80px 60px rgba(0,22,47,.2),inset 0 0 45px rgba(0,25,60,.12);pointer-events:none}
+.world-message{position:absolute;z-index:5;right:14px;top:92px;width:175px;padding:13px 14px;border-radius:18px;background:linear-gradient(145deg,rgba(12,54,92,.94),rgba(8,36,70,.95));border:1px solid rgba(160,211,255,.16);box-shadow:0 10px 28px rgba(0,0,0,.3);backdrop-filter:blur(10px)}
+.world-message strong,.world-message span{display:block}.world-message strong{font-size:15px}.world-message span{margin-top:3px;color:#d2e2f3;font-size:13px;font-weight:700;line-height:1.3}.world-message i{position:absolute;right:12px;bottom:8px;color:#d9ef50;font-size:20px;font-style:normal;text-shadow:0 0 10px rgba(218,239,80,.75)}
+.world-progress-chip{position:absolute;z-index:5;left:14px;bottom:14px;display:flex;align-items:baseline;gap:6px;padding:9px 12px;border-radius:16px;background:rgba(5,31,63,.84);border:1px solid rgba(190,220,255,.15);backdrop-filter:blur(10px)}
+.world-progress-chip b{font-size:19px}.world-progress-chip span{font-size:11px;color:#bbcee3;font-weight:750}
+.world-built-layer{position:absolute;inset:0;z-index:4;pointer-events:none}
+.world-built-item{position:absolute;width:58px;height:51px;filter:drop-shadow(0 7px 7px rgba(0,0,0,.28));animation:worldItemIn .55s cubic-bezier(.2,.9,.25,1.15) both;animation-delay:var(--built-delay)}
+.world-built-item svg{width:100%;height:100%;overflow:visible}
+.world-built-house{left:23%;top:54%;width:68px;height:60px}.world-built-tree{left:59%;top:53%;width:58px;height:54px}.world-built-bench{left:52%;top:69%;width:54px;height:48px}.world-built-bridge{left:72%;top:75%;width:62px;height:52px}
+.world-built-layer.just-built .world-built-item{animation:none}.world-built-layer.just-built .world-built-item[aria-label]{opacity:1}.world-built-layer.just-built[data-just-built="house"] .world-built-house,.world-built-layer.just-built[data-just-built="tree"] .world-built-tree,.world-built-layer.just-built[data-just-built="bench"] .world-built-bench,.world-built-layer.just-built[data-just-built="bridge"] .world-built-bridge{animation:worldBuildPop .8s cubic-bezier(.18,.9,.2,1.25) both}
+.world-shop{padding:17px 0 4px}.world-shop-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;padding:0 4px 11px}.world-shop-heading span{display:block;color:#86a7c8;font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:900}.world-shop-heading h2{margin:3px 0 0;font-size:17px;line-height:1.1}.world-shop-heading small{color:#86a7c8;font-size:10px;font-weight:700;white-space:nowrap}
+.world-shop-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.world-shop-card{min-width:0;height:128px;padding:8px 5px 9px;border:0;border-radius:20px;background:linear-gradient(180deg,#10365c,#0a294b);color:#fff;box-shadow:inset 0 0 0 1px rgba(161,207,248,.08),0 7px 18px rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .16s ease,filter .16s ease}
+.world-shop-card:active:not(:disabled){transform:translateY(2px) scale(.97)}.world-shop-card.unaffordable{filter:saturate(.6) brightness(.82)}.world-shop-card.owned{background:linear-gradient(180deg,#124766,#0b304d);box-shadow:inset 0 0 0 1px rgba(79,230,188,.2);cursor:default}
+.world-shop-art{height:68px;width:70px;display:grid;place-items:center;margin-bottom:3px;filter:drop-shadow(0 6px 5px rgba(0,0,0,.22))}.world-shop-art svg{width:66px;height:58px;overflow:visible}
+.world-shop-card>strong{font-size:13px;line-height:1.1}.world-shop-price{height:20px;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:5px;color:#f4f7fb}.world-shop-price b{font-size:12px}.world-mini-coin{width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fff5a6 0 10%,#ffd74c 11% 35%,#f0a400 36% 73%,#b46d00 74%);box-shadow:inset 0 0 0 1px rgba(255,246,152,.8),0 1px 3px rgba(0,0,0,.3)}.world-owned-check{width:16px;height:16px;border-radius:50%;display:grid;place-items:center;background:#48d9ae;color:#062f35;font-size:11px;font-weight:1000}
+.world-icon-shadow{fill:rgba(0,25,43,.24)}.world-icon-wall{fill:#f2bd64;stroke:#9b572c;stroke-width:2}.world-icon-roof{fill:#d75d39;stroke:#873723;stroke-width:2}.world-icon-door{fill:#824326}.world-icon-window{fill:#8de4ef;stroke:#fff2b7;stroke-width:1.8}.world-icon-trim{fill:none;stroke:#9b572c;stroke-width:4;stroke-linecap:round}.world-icon-trunk{fill:#8c512d;stroke:#66351f;stroke-width:1.5}.world-icon-leaf{fill:#4f9a45}.world-icon-leaf-light{fill:#6eb453}.world-icon-leaf-top{fill:#82c65c}.world-icon-wood{fill:#c98045;stroke:#7f482a;stroke-width:2}.world-icon-metal{fill:none;stroke:#6f482f;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.world-nav{background:rgba(4,25,52,.98);border-top:1px solid rgba(255,255,255,.06)}.world-nav button{color:#8aa5c4}.world-nav button.active{color:#ffd46c}.world-nav button.active .ni{filter:drop-shadow(0 0 7px rgba(255,202,78,.45))}
+.world-shop-shake{animation:worldShopShake .36s ease}
+@keyframes worldItemIn{from{opacity:0;transform:translateY(14px) scale(.74)}to{opacity:1;transform:none}}
+@keyframes worldBuildPop{0%{opacity:0;transform:translateY(-20px) scale(.35) rotate(-8deg)}55%{opacity:1;transform:translateY(4px) scale(1.18) rotate(2deg)}100%{transform:none}}
+@keyframes worldShopShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+@media(max-width:380px){.world-stage{height:390px}.world-heading p{max-width:210px}.world-shop-row{gap:6px}.world-shop-card{height:121px;border-radius:18px}.world-shop-art{width:62px;height:63px}.world-shop-art svg{width:60px}.world-message{top:78px;width:160px}}
+@media(max-height:720px){.world-content{padding-top:calc(env(safe-area-inset-top) + 14px)}.world-stage{height:340px}.world-heading{padding-bottom:11px}.world-shop{padding-top:12px}.world-shop-card{height:112px}.world-shop-art{height:54px}.world-shop-art svg{height:52px}}
+@media(prefers-reduced-motion:reduce){.world-built-item,.world-shop-card,.world-shop-shake{animation:none!important;transition:none!important}}

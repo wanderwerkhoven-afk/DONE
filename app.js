@@ -705,7 +705,7 @@ window.addEventListener("resize",()=>{
     positionNightFireflies();
   });
 });
-function render(options={}){cancelTaskLongPress?.();activeTaskEditIndex=null;archiveOldCompletedTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0,progressFrom=Number.isFinite(options.progressFrom)?Math.max(0,Math.min(100,options.progressFrom)):taskPct;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image" data-hero-period="${selectedHomeHeroPeriod()}" style="--home-hero-image:url('${homeHeroUrl()}')"><div class="hero-fireflies" aria-hidden="true">${homeNightFireflies()}</div><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>${homeGreeting()}</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${progressFrom}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.length?visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<div class="task-wrap" data-task-index="${i}"><button class="task ${t.done?"done":""}" onclick="handleTaskClick(event,${i})" onpointerdown="startTaskLongPress(event,${i},this)" onpointerup="endTaskLongPress(event)" onpointercancel="cancelTaskLongPress()" onpointerleave="cancelTaskLongPress()" onpointermove="trackTaskLongPress(event)" oncontextmenu="return false"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${escapeHtml(t.title)}</div>${t.meta?`<div class="taskmeta">${escapeHtml(t.meta)}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button><button class="task-delete-btn" type="button" aria-label="Verwijder taak ${escapeHtml(t.title)}" onclick="deleteTask(event,${i})"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button></div>`}).join(""):`<section class="tasks-empty-state" aria-label="Geen taken"><div class="tasks-empty-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"/><path d="m21 33 7 7 15-17"/></svg></div><h2>Alles afgevinkt</h2><p>Je hebt voor vandaag geen openstaande taken.</p><button type="button" onclick="openNewTask()">Nieuwe taak toevoegen</button></section>`}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`;scheduleHomeHeroRefresh();requestAnimationFrame(()=>{positionNightFireflies();if(progressFrom!==taskPct){requestAnimationFrame(()=>{const fill=document.querySelector(".progress i");if(fill)fill.style.width=taskPct+"%"})}})}
+function render(options={}){cancelTaskLongPress?.();activeTaskEditIndex=null;archiveOldCompletedTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0,progressFrom=Number.isFinite(options.progressFrom)?Math.max(0,Math.min(100,options.progressFrom)):taskPct;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image" data-hero-period="${selectedHomeHeroPeriod()}" style="--home-hero-image:url('${homeHeroUrl()}')"><div class="hero-fireflies" aria-hidden="true">${homeNightFireflies()}</div><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>${homeGreeting()}</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${progressFrom}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.length?visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<div class="task-wrap" data-task-index="${i}"><button class="task ${t.done?"done":""}" onclick="handleTaskClick(event,${i})" onpointerdown="startTaskLongPress(event,${i},this)" onpointerup="endTaskLongPress(event)" onpointercancel="cancelTaskLongPress()" onpointerleave="cancelTaskLongPress()" onpointermove="trackTaskLongPress(event)" oncontextmenu="return false"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${escapeHtml(t.title)}</div>${t.meta?`<div class="taskmeta">${escapeHtml(t.meta)}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button><button class="task-delete-btn" type="button" aria-label="Verwijder taak ${escapeHtml(t.title)}" onclick="deleteTask(event,${i})"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button></div>`}).join(""):`<section class="tasks-empty-state" aria-label="Geen taken"><div class="tasks-empty-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"/><path d="m21 33 7 7 15-17"/></svg></div><h2>Alles afgevinkt</h2><p>Je hebt voor vandaag geen openstaande taken.</p><button type="button" onclick="openNewTask()">Nieuwe taak toevoegen</button></section>`}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button onclick="openWorld()"><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`;scheduleHomeHeroRefresh();requestAnimationFrame(()=>{positionNightFireflies();if(progressFrom!==taskPct){requestAnimationFrame(()=>{const fill=document.querySelector(".progress i");if(fill)fill.style.width=taskPct+"%"})}})}
 
 // ============================================================================
 // PROGRESSION: XP, LEVELS & STREAK
@@ -1013,10 +1013,108 @@ window.openLevelUp=()=>{
 window.continueLevelUp=()=>{if(state.pendingLevelUp){state.lastSeenLevel=Math.max(Number(state.lastSeenLevel)||1,Number(state.pendingLevelUp.newLevel)||state.level);state.pendingLevelUp=null;saveState()}render()};
 
 // ============================================================================
+// WORLD / BUILD MODE
+// Coin-driven collectible world. Purchases persist and feed world achievements.
+// ============================================================================
+const WORLD_ITEMS=[
+  {id:"house",name:"Huisje",price:100,slot:"house"},
+  {id:"tree",name:"Boom",price:50,slot:"tree"},
+  {id:"bench",name:"Bankje",price:75,slot:"bench"},
+  {id:"bridge",name:"Brug",price:120,slot:"bridge"}
+];
+
+const normalizeWorldInventory=()=>{
+  const validIds=new Set(WORLD_ITEMS.map(item=>item.id));
+  if(Array.isArray(state.worldInventory)){
+    state.worldInventory=[...new Set(state.worldInventory.map(String).filter(id=>validIds.has(id)))];
+  }else{
+    const legacyCount=Math.max(0,Number(state.worldItems)||0);
+    state.worldInventory=WORLD_ITEMS.slice(0,legacyCount).map(item=>item.id);
+  }
+  state.worldItems=state.worldInventory.length;
+};
+
+const worldItemSvg=id=>({
+  house:`<svg viewBox="0 0 80 70" aria-hidden="true"><path class="world-icon-shadow" d="M14 62h54l-4 5H19z"/><path class="world-icon-wall" d="M21 31h40v31H21z"/><path class="world-icon-roof" d="m14 34 26-23 28 23-7 6-21-18-20 18z"/><path class="world-icon-door" d="M35 45h11v17H35z"/><path class="world-icon-window" d="M50 41h7v8h-7z"/><path class="world-icon-trim" d="M28 34v-8h8v3"/></svg>`,
+  tree:`<svg viewBox="0 0 80 70" aria-hidden="true"><path class="world-icon-shadow" d="M17 62h47l-6 5H24z"/><path class="world-icon-trunk" d="M35 38h11l3 25H31z"/><circle class="world-icon-leaf" cx="40" cy="26" r="19"/><circle class="world-icon-leaf-light" cx="27" cy="31" r="12"/><circle class="world-icon-leaf-light" cx="53" cy="32" r="13"/><circle class="world-icon-leaf-top" cx="42" cy="15" r="12"/></svg>`,
+  bench:`<svg viewBox="0 0 80 70" aria-hidden="true"><path class="world-icon-shadow" d="M14 62h52l-5 5H19z"/><path class="world-icon-wood" d="M18 29h45v11H18zM20 43h44v9H20z"/><path class="world-icon-metal" d="M24 39v24M58 39v24M20 59h11M52 59h13"/></svg>`,
+  bridge:`<svg viewBox="0 0 80 70" aria-hidden="true"><path class="world-icon-shadow" d="M8 59h64l-8 7H17z"/><path class="world-icon-wood" d="M13 39c15-10 39-10 54 0l-6 17c-13-6-29-6-42 0z"/><path class="world-icon-metal" d="M13 38v18M67 38v18M18 35v-8M62 35v-8M18 29c13-9 31-9 44 0"/></svg>`
+}[id]||"");
+
+const worldBuiltItems=()=>state.worldInventory.map((id,index)=>`<div class="world-built-item world-built-${id}" style="--built-delay:${index*70}ms" aria-label="${WORLD_ITEMS.find(item=>item.id===id)?.name||id} geplaatst">${worldItemSvg(id)}</div>`).join("");
+
+const worldShopCard=item=>{
+  const owned=state.worldInventory.includes(item.id);
+  const affordable=Number(state.coins)>=item.price;
+  return `<button class="world-shop-card ${owned?"owned":affordable?"":"unaffordable"}" type="button" onclick="${owned?"return false":`buyWorldItem('${item.id}',this)`}" ${owned?"disabled":""} aria-label="${owned?`${item.name} al gebouwd`:`${item.name} kopen voor ${item.price} coins`}">
+    <span class="world-shop-art">${worldItemSvg(item.id)}</span>
+    <strong>${item.name}</strong>
+    <span class="world-shop-price">${owned?'<span class="world-owned-check">✓</span><b>Gebouwd</b>':`<i class="world-mini-coin"></i><b>${item.price}</b>`}</span>
+  </button>`;
+};
+
+window.buyWorldItem=(id,button)=>{
+  normalizeWorldInventory();
+  const item=WORLD_ITEMS.find(entry=>entry.id===id);
+  if(!item||state.worldInventory.includes(id))return;
+
+  if(Number(state.coins)<item.price){
+    button?.classList.remove("world-shop-shake");
+    void button?.offsetWidth;
+    button?.classList.add("world-shop-shake");
+    if(navigator.vibrate&&state.haptics!==false)navigator.vibrate([24,35,24]);
+    return;
+  }
+
+  state.coins=Math.max(0,Number(state.coins)-item.price);
+  state.worldInventory.push(item.id);
+  state.worldItems=state.worldInventory.length;
+  syncAchievementUnlocks();
+  saveState();
+  if(navigator.vibrate&&state.haptics!==false)navigator.vibrate(26);
+  openWorld({justBuilt:id});
+};
+
+window.openWorld=(options={})=>{
+  normalizeWorldInventory();
+  saveState();
+  const justBuilt=options.justBuilt||"";
+  const period=selectedHomeHeroPeriod();
+  document.querySelector("#app").innerHTML=`<div class="phone world-screen">
+    <main class="world-content">
+      <header class="world-heading">
+        <div><h1>Mijn wereld</h1><p>Bouw aan jouw eigen eiland met je progressie.</p></div>
+        <div class="world-coin-pill" aria-label="${state.coins} coins"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><b>${Number(state.coins).toLocaleString("nl-NL")}</b></div>
+      </header>
+
+      <section class="world-stage" data-period="${period}" style="--world-bg:url('${HOME_HERO_BY_PERIOD[period]}')" aria-label="Jouw groeiende wereld">
+        <div class="world-stage-vignette" aria-hidden="true"></div>
+        <div class="world-built-layer ${justBuilt?"just-built":""}" data-just-built="${justBuilt}">${worldBuiltItems()}</div>
+        <div class="world-message"><strong>Elke taak</strong><span>laat je wereld groeien.</span><i aria-hidden="true">✦</i></div>
+        <div class="world-progress-chip"><b>${state.worldItems}</b><span>werelditems</span></div>
+      </section>
+
+      <section class="world-shop" aria-labelledby="worldShopTitle">
+        <div class="world-shop-heading"><div><span>Bouwplaats</span><h2 id="worldShopTitle">Kies je volgende upgrade</h2></div><small>Verdien coins met taken</small></div>
+        <div class="world-shop-row">${WORLD_ITEMS.map(worldShopCard).join("")}</div>
+      </section>
+    </main>
+    <nav class="nav world-nav"><button onclick="render()"><span class="ni">${navIcon("today")}</span>Vandaag</button><button class="active" onclick="openWorld()"><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav>
+  </div>`;
+
+  requestAnimationFrame(()=>{
+    window.scrollTo(0,0);
+    const content=document.querySelector(".world-content");
+    if(content)content.scrollTop=0;
+    document.querySelector(".world-screen")?.classList.add("play");
+  });
+};
+
+// ============================================================================
 // PROFILE / SETTINGS
 // Profieloverzicht, statistieken en gebruikersinstellingen.
 // ============================================================================
-const APP_VERSION="V.1.1.1.1";
+const APP_VERSION="V.1.1.1.2";
 
 const profileSettingIcon=name=>({
   sound:'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>',
@@ -1092,7 +1190,7 @@ window.openProfile=()=>{
       </button>
       <footer class="profile-version" aria-label="App-versie">${APP_VERSION}</footer>
     </main>
-    <nav class="nav profile-nav"><button onclick="render()"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button class="active"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav>
+    <nav class="nav profile-nav"><button onclick="render()"><span class="ni">${navIcon("today")}</span>Vandaag</button><button onclick="openWorld()"><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button class="active"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav>
   </div>`;
 };
 
@@ -2044,7 +2142,7 @@ window.openAchievements=()=>{
       <div class="achievement-filters" aria-label="Filter achievements">${filterButtons}</div>
       <section class="achievement-list">${achievements.map(achievementRow).join("")}</section>
     </main>
-    <nav class="nav achievements-nav"><button onclick="render()"><span class="ni">${navIcon("today")}</span>Vandaag</button><button><span class="ni">${navIcon("world")}</span>Wereld</button><button class="active" onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav>
+    <nav class="nav achievements-nav"><button onclick="render()"><span class="ni">${navIcon("today")}</span>Vandaag</button><button onclick="openWorld()"><span class="ni">${navIcon("world")}</span>Wereld</button><button class="active" onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav>
   </div>`;
 
   requestAnimationFrame(()=>{
