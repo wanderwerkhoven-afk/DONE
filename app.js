@@ -1114,7 +1114,7 @@ window.openWorld=(options={})=>{
 // PROFILE / SETTINGS
 // Profieloverzicht, statistieken en gebruikersinstellingen.
 // ============================================================================
-const APP_VERSION="V.1.1.1.2";
+const APP_VERSION="V.1.1.1.3";
 
 const profileSettingIcon=name=>({
   sound:'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>',
@@ -1161,18 +1161,18 @@ window.openProfile=()=>{
         <i aria-hidden="true">›</i>
       </button>
       <section class="profile-settings">
-        <label><span><span class="profile-setting-icon">${profileSettingIcon("sound")}</span><b>Geluid</b></span><input type="checkbox" data-setting="sound" onchange="saveProfileSetting(this)" ${state.sound!==false?"checked":""}><i></i></label>
-        <label class="${hapticsSupported()?"":"profile-setting-unavailable"}"><span><span class="profile-setting-icon">${profileSettingIcon("haptics")}</span><span><b>Haptische feedback</b>${hapticsSupported()?"":'<small>Niet beschikbaar op dit apparaat</small>'}</span></span><input type="checkbox" data-setting="haptics" onchange="toggleHaptics(this)" ${hapticsSupported()&&state.haptics!==false?"checked":""} ${hapticsSupported()?"":"disabled"}><i></i></label>
+        <label><span><span class="profile-setting-icon">${profileSettingIcon("sound")}</span><span class="profile-setting-copy"><b>Geluid</b></span></span><input type="checkbox" data-setting="sound" onchange="saveProfileSetting(this)" ${state.sound!==false?"checked":""}><i></i></label>
+        <label class="${hapticsSupported()?"":"profile-setting-unavailable"}"><span><span class="profile-setting-icon">${profileSettingIcon("haptics")}</span><span class="profile-setting-copy"><b>Haptische feedback</b>${hapticsSupported()?"":'<small>Niet beschikbaar op dit apparaat</small>'}</span></span><input type="checkbox" data-setting="haptics" onchange="toggleHaptics(this)" ${hapticsSupported()&&state.haptics!==false?"checked":""} ${hapticsSupported()?"":"disabled"}><i></i></label>
         <div class="profile-theme-setting">
-          <span class="profile-theme-copy"><span class="profile-setting-icon" aria-hidden="true">${profileSettingIcon("theme")}</span><span><b>Weergave</b><small>Kies de sfeer van je interface</small></span></span>
+          <span class="profile-theme-copy"><span class="profile-setting-icon" aria-hidden="true">${profileSettingIcon("theme")}</span><span class="profile-setting-copy"><b>Weergave</b><small>Kies de sfeer van je interface</small></span></span>
           <div class="theme-segment" role="group" aria-label="Weergave">
             <button type="button" class="theme-icon-button ${state.theme==="light"?"active":""}" onclick="setTheme('light')" aria-label="Lichte modus" aria-pressed="${state.theme==="light"}"><span aria-hidden="true">${profileSettingIcon("sun")}</span></button>
             <button type="button" class="theme-icon-button ${state.theme==="dark"?"active":""}" onclick="setTheme('dark')" aria-label="Donkere modus" aria-pressed="${state.theme==="dark"}"><span aria-hidden="true">${profileSettingIcon("moon")}</span></button>
           </div>
         </div>
-        <label class="profile-reward-setting"><span><span class="profile-setting-icon">${profileSettingIcon("rewards")}</span><b>Beloningsschermen</b><small>Taak voltooid + Level Up</small></span><input type="checkbox" onchange="toggleRewardScreens(this)" ${state.rewardScreensEnabled?"checked":""}><i></i></label>
-        <label class="profile-reminder-setting"><span><span class="profile-setting-icon">${profileSettingIcon("reminder")}</span><b>Dagelijkse herinnering</b><small data-reminder-time-label>${state.reminderTime} · alleen bij open taken</small></span><input type="checkbox" onchange="toggleDailyReminder(this)" ${state.reminderEnabled?"checked":""}><i></i></label>
-        <label class="profile-reminder-time"><span><span class="profile-setting-icon">${profileSettingIcon("time")}</span><b>Tijdstip</b></span><input class="profile-time-input" type="time" value="${state.reminderTime}" step="60" onchange="updateReminderTime(this)" aria-label="Tijdstip dagelijkse herinnering"></label>
+        <label class="profile-reward-setting"><span><span class="profile-setting-icon">${profileSettingIcon("rewards")}</span><span class="profile-setting-copy"><b>Beloningsschermen</b><small>Taak voltooid + Level Up</small></span></span><input type="checkbox" onchange="toggleRewardScreens(this)" ${state.rewardScreensEnabled?"checked":""}><i></i></label>
+        <label class="profile-reminder-setting"><span><span class="profile-setting-icon">${profileSettingIcon("reminder")}</span><span class="profile-setting-copy"><b>Dagelijkse herinnering</b><small data-reminder-time-label>${state.reminderTime} · alleen bij open taken</small></span></span><input type="checkbox" onchange="toggleDailyReminder(this)" ${state.reminderEnabled?"checked":""}><i></i></label>
+        <label class="profile-reminder-time"><span><span class="profile-setting-icon">${profileSettingIcon("time")}</span><span class="profile-setting-copy"><b>Tijdstip</b></span></span><input class="profile-time-input" type="time" value="${state.reminderTime}" step="60" onchange="updateReminderTime(this)" aria-label="Tijdstip dagelijkse herinnering"></label>
       </section>
       <button class="profile-test-notification" type="button" onclick="testDoneNotification(this)" aria-label="Stuur testnotificatie">
         <span class="profile-test-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span>
