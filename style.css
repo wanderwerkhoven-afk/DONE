@@ -3248,3 +3248,11 @@ body,
 .profile-setting-icon{align-self:center}
 @media(max-height:760px){.profile-settings label,.profile-theme-setting{min-height:58px;height:auto!important;padding-top:8px!important;padding-bottom:8px!important}}
 [data-theme="light"] .profile-setting-copy small{color:#748897}
+
+/* V.1.1.1.4 — New Task: compact the form upward without changing the Hero */
+@media(max-width:499px){
+  .new-task-form{padding-top:8px!important}
+  .new-task-form fieldset{margin-top:14px!important;margin-bottom:16px!important}
+  .new-task-form label,.new-task-form legend{margin-bottom:7px!important}
+  .repeat-task-toggle{margin-top:-1px!important;margin-bottom:8px!important}
+}
