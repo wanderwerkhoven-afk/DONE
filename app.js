@@ -920,11 +920,76 @@ window.spinCoin=el=>{if(el.dataset.spinning==="1")return;el.dataset.spinning="1"
 // NEW TASK SCREEN
 // Openen, taakgrootte kiezen en nieuwe taak opslaan.
 // ============================================================================
-window.openNewTask=()=>{document.querySelector("#app").innerHTML=`<div class="phone new-task-screen"><header class="new-task-header"><button class="back-btn" onclick="render()" aria-label="Terug">←</button><h1>Nieuwe taak</h1></header><section class="new-task-hero"><div class="quote-bubble">Elke grote reis<br>begint met een kleine stap.</div></section><main class="new-task-form"><label for="taskName">Wat wil je doen?</label><input id="taskName" class="task-input" placeholder="Bijv. Verslag afmaken..." maxlength="80"><fieldset><legend>Hoe groot is deze taak?</legend><div class="size-grid"><button class="size-card" data-size="small" onclick="selectTaskSize(this)"><span class="size-icon">🌱</span><strong>Klein</strong><b>+10 XP</b></button><button class="size-card selected" data-size="normal" onclick="selectTaskSize(this)"><span class="size-icon">🔥</span><strong>Normaal</strong><b>+25 XP</b></button><button class="size-card" data-size="large" onclick="selectTaskSize(this)"><span class="size-icon">⛰️</span><strong>Groot</strong><b>+50 XP</b></button></div></fieldset><button class="repeat-task-toggle" type="button" onclick="toggleRepeatTask(this)" aria-expanded="false"><span class="repeat-task-icon">↻</span><span><b>Herhalende taak</b><small>Zet deze taak automatisch opnieuw in je planning</small></span><i>＋</i></button><section class="repeat-task-panel" hidden><label>Herhalen</label><div class="repeat-options"><button type="button" class="selected" data-repeat="daily" onclick="selectRepeatTask(this)">Dagelijks</button><button type="button" data-repeat="weekdays" onclick="selectRepeatTask(this)">Werkdagen</button><button type="button" data-repeat="weekly" onclick="selectRepeatTask(this)">Wekelijks</button></div></section><button class="submit-task" onclick="saveNewTask()">Taak toevoegen</button></main></div>`};
+window.openNewTask=()=>{document.querySelector("#app").innerHTML=`<div class="phone new-task-screen"><header class="new-task-header"><button class="back-btn" onclick="render()" aria-label="Terug">←</button><h1>Nieuwe taak</h1></header><section class="new-task-hero"><div class="quote-bubble">Elke grote reis<br>begint met een kleine stap.</div></section><main class="new-task-form"><label for="taskName">Wat wil je doen?</label><input id="taskName" class="task-input" placeholder="Bijv. Verslag afmaken..." maxlength="80"><fieldset><legend>Hoe groot is deze taak?</legend><div class="size-grid"><button class="size-card" data-size="small" onclick="selectTaskSize(this)"><span class="size-icon">🌱</span><strong>Klein</strong><b>+10 XP</b></button><button class="size-card selected" data-size="normal" onclick="selectTaskSize(this)"><span class="size-icon">🔥</span><strong>Normaal</strong><b>+25 XP</b></button><button class="size-card" data-size="large" onclick="selectTaskSize(this)"><span class="size-icon">⛰️</span><strong>Groot</strong><b>+50 XP</b></button></div></fieldset><button class="repeat-task-toggle" type="button" onclick="openRepeatTaskPlanner()" aria-haspopup="dialog"><span class="repeat-task-icon">↻</span><span><b>Herhalende taak</b><small data-repeat-summary>Plan dagen, interval en einddatum</small></span><i>＋</i></button><button class="submit-task" onclick="saveNewTask()">Taak toevoegen</button></main></div>`};
 window.selectTaskSize=el=>{haptic("select");document.querySelectorAll(".size-card").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")};
-window.toggleRepeatTask=el=>{const panel=document.querySelector(".repeat-task-panel");if(!panel)return;const open=panel.hidden;panel.hidden=!open;el.classList.toggle("active",open);el.setAttribute("aria-expanded",String(open));const plus=el.querySelector("i");if(plus)plus.textContent=open?"−":"＋"};
-window.selectRepeatTask=el=>{haptic("select");document.querySelectorAll(".repeat-options button").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")};
-window.saveNewTask=()=>{const input=document.querySelector("#taskName"),size=document.querySelector(".size-card.selected")?.dataset.size||"normal";if(!input.value.trim()){input.focus();return}const values={small:["Kleine taak",10,"🌱"],normal:["Normale taak",25,"🔥"],large:["Grote taak",50,"⛰️"]}[size],repeatPanel=document.querySelector(".repeat-task-panel"),repeat=repeatPanel&&!repeatPanel.hidden?document.querySelector(".repeat-options .selected")?.dataset.repeat||"daily":null;state.tasks.unshift({id:`task-${Date.now()}`,title:input.value.trim(),meta:values[0],xp:values[1],icon:values[2],done:false,rewardClaimed:false,createdAt:new Date().toISOString(),repeat});saveState();queueReminderBackendSync();render()};
+let newTaskRepeat=null;
+const repeatDayLabels=["Ma","Di","Wo","Do","Vr","Za","Zo"];
+const repeatSummary=config=>{
+  if(!config)return "Plan dagen, interval en einddatum";
+  const every=Math.max(1,Number(config.interval)||1);
+  if(config.frequency==="daily")return every===1?"Elke dag":`Elke ${every} dagen`;
+  if(config.frequency==="monthly")return every===1?"Elke maand":`Elke ${every} maanden`;
+  const days=(config.days||[]).map(i=>repeatDayLabels[i]).join(", ");
+  return `${every===1?"Elke week":`Elke ${every} weken`}${days?` · ${days}`:""}`;
+};
+const updateRepeatTaskSummary=()=>{
+  const summary=document.querySelector("[data-repeat-summary]"),toggle=document.querySelector(".repeat-task-toggle");
+  if(summary)summary.textContent=repeatSummary(newTaskRepeat);
+  toggle?.classList.toggle("active",Boolean(newTaskRepeat));
+  const plus=toggle?.querySelector("i");if(plus)plus.textContent=newTaskRepeat?"✓":"＋";
+};
+window.openRepeatTaskPlanner=()=>{
+  haptic("tap");
+  document.querySelector(".repeat-planner-overlay")?.remove();
+  const current=newTaskRepeat||{frequency:"weekly",interval:1,days:[(new Date().getDay()+6)%7],end:"never",endDate:"",occurrences:10};
+  const overlay=document.createElement("div");
+  overlay.className="repeat-planner-overlay";
+  overlay.innerHTML=`<section class="repeat-planner" role="dialog" aria-modal="true" aria-labelledby="repeatPlannerTitle">
+    <div class="repeat-planner-head"><button type="button" onclick="closeRepeatTaskPlanner()" aria-label="Sluiten">×</button><div><h2 id="repeatPlannerTitle">Herhalende taak</h2><p>Stel je planning flexibel in</p></div></div>
+    <div class="repeat-planner-body">
+      <label class="repeat-field"><span>Herhalen</span><div class="repeat-frequency"><button type="button" data-frequency="daily">Dag</button><button type="button" data-frequency="weekly">Week</button><button type="button" data-frequency="monthly">Maand</button></div></label>
+      <label class="repeat-field repeat-interval"><span>Iedere</span><div><button type="button" onclick="changeRepeatInterval(-1)">−</button><strong data-repeat-interval></strong><button type="button" onclick="changeRepeatInterval(1)">＋</button></div></label>
+      <div class="repeat-field repeat-days"><span>Op deze dagen</span><div>${repeatDayLabels.map((d,i)=>`<button type="button" data-day="${i}">${d}</button>`).join("")}</div></div>
+      <div class="repeat-field"><span>Eindigt</span><div class="repeat-end-options"><button type="button" data-end="never">Nooit</button><button type="button" data-end="date">Op datum</button><button type="button" data-end="count">Na aantal</button></div></div>
+      <label class="repeat-end-detail repeat-end-date"><span>Einddatum</span><input type="date" data-repeat-end-date></label>
+      <label class="repeat-end-detail repeat-end-count"><span>Aantal keer</span><input type="number" min="2" max="365" inputmode="numeric" data-repeat-count></label>
+    </div>
+    <div class="repeat-planner-actions"><button type="button" class="repeat-remove" onclick="removeRepeatTask()">Niet herhalen</button><button type="button" class="repeat-save" onclick="saveRepeatTaskPlanner()">Planning opslaan</button></div>
+  </section>`;
+  document.body.appendChild(overlay);
+  overlay._repeatDraft=JSON.parse(JSON.stringify(current));
+  overlay.addEventListener("click",e=>{if(e.target===overlay)closeRepeatTaskPlanner()});
+  overlay.querySelectorAll("[data-frequency]").forEach(b=>b.onclick=()=>{overlay._repeatDraft.frequency=b.dataset.frequency;if(b.dataset.frequency!=="weekly")overlay._repeatDraft.days=[];renderRepeatPlanner()});
+  overlay.querySelectorAll("[data-day]").forEach(b=>b.onclick=()=>{const d=Number(b.dataset.day),days=overlay._repeatDraft.days||[];overlay._repeatDraft.days=days.includes(d)?days.filter(x=>x!==d):[...days,d].sort();renderRepeatPlanner()});
+  overlay.querySelectorAll("[data-end]").forEach(b=>b.onclick=()=>{overlay._repeatDraft.end=b.dataset.end;renderRepeatPlanner()});
+  renderRepeatPlanner();
+  requestAnimationFrame(()=>overlay.classList.add("open"));
+};
+const renderRepeatPlanner=()=>{
+  const overlay=document.querySelector(".repeat-planner-overlay");if(!overlay)return;
+  const d=overlay._repeatDraft;
+  overlay.querySelectorAll("[data-frequency]").forEach(b=>b.classList.toggle("selected",b.dataset.frequency===d.frequency));
+  overlay.querySelectorAll("[data-day]").forEach(b=>b.classList.toggle("selected",(d.days||[]).includes(Number(b.dataset.day))));
+  overlay.querySelector(".repeat-days").hidden=d.frequency!=="weekly";
+  overlay.querySelector("[data-repeat-interval]").textContent=`${d.interval} ${d.frequency==="daily"?(d.interval===1?"dag":"dagen"):d.frequency==="weekly"?(d.interval===1?"week":"weken"):(d.interval===1?"maand":"maanden")}`;
+  overlay.querySelectorAll("[data-end]").forEach(b=>b.classList.toggle("selected",b.dataset.end===d.end));
+  overlay.querySelector(".repeat-end-date").hidden=d.end!=="date";
+  overlay.querySelector(".repeat-end-count").hidden=d.end!=="count";
+  overlay.querySelector("[data-repeat-end-date]").value=d.endDate||"";
+  overlay.querySelector("[data-repeat-count]").value=d.occurrences||10;
+};
+window.changeRepeatInterval=delta=>{const o=document.querySelector(".repeat-planner-overlay");if(!o)return;o._repeatDraft.interval=Math.min(99,Math.max(1,(Number(o._repeatDraft.interval)||1)+delta));haptic("select");renderRepeatPlanner()};
+window.closeRepeatTaskPlanner=()=>{const o=document.querySelector(".repeat-planner-overlay");if(!o)return;o.classList.remove("open");setTimeout(()=>o.remove(),180)};
+window.removeRepeatTask=()=>{newTaskRepeat=null;updateRepeatTaskSummary();closeRepeatTaskPlanner()};
+window.saveRepeatTaskPlanner=()=>{
+  const o=document.querySelector(".repeat-planner-overlay");if(!o)return;
+  const d=o._repeatDraft;
+  if(d.frequency==="weekly"&&!(d.days||[]).length)d.days=[(new Date().getDay()+6)%7];
+  if(d.end==="date"){d.endDate=o.querySelector("[data-repeat-end-date]").value;if(!d.endDate){o.querySelector("[data-repeat-end-date]").focus();return}}
+  if(d.end==="count")d.occurrences=Math.min(365,Math.max(2,Number(o.querySelector("[data-repeat-count]").value)||10));
+  newTaskRepeat=d;haptic("success");updateRepeatTaskSummary();closeRepeatTaskPlanner();
+};
+window.saveNewTask=()=>{const input=document.querySelector("#taskName"),size=document.querySelector(".size-card.selected")?.dataset.size||"normal";if(!input.value.trim()){input.focus();return}const values={small:["Kleine taak",10,"🌱"],normal:["Normale taak",25,"🔥"],large:["Grote taak",50,"⛰️"]}[size],repeat=newTaskRepeat?JSON.parse(JSON.stringify(newTaskRepeat)):null;state.tasks.unshift({id:`task-${Date.now()}`,title:input.value.trim(),meta:values[0],xp:values[1],icon:values[2],done:false,rewardClaimed:false,createdAt:new Date().toISOString(),repeat});newTaskRepeat=null;saveState();queueReminderBackendSync();render()};
 
 // ============================================================================
 // TASK COMPLETED SCREEN
@@ -1114,7 +1179,7 @@ window.openWorld=(options={})=>{
 // PROFILE / SETTINGS
 // Profieloverzicht, statistieken en gebruikersinstellingen.
 // ============================================================================
-const APP_VERSION="V.1.1.1.6";
+const APP_VERSION="V.1.1.1.7";
 
 const profileSettingIcon=name=>({
   sound:'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>',
