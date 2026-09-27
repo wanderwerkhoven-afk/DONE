@@ -3256,3 +3256,9 @@ body,
   .new-task-form label,.new-task-form legend{margin-bottom:7px!important}
   .repeat-task-toggle{margin-top:-1px!important;margin-bottom:8px!important}
 }
+
+/* V.1.1.1.5 — New Task header controls slightly higher; Hero stays untouched */
+@media(max-width:499px){
+  .new-task-header{padding-bottom:20px!important}
+  .new-task-header .back-btn{bottom:13px!important}
+}
