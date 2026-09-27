@@ -3262,3 +3262,13 @@ body,
   .new-task-header{padding-bottom:20px!important}
   .new-task-header .back-btn{bottom:13px!important}
 }
+
+/* V.1.1.1.6 — Lift the complete New Task form block; Hero remains fixed */
+@media(max-width:499px){
+  .new-task-form{
+    position:relative;
+    margin-top:-18px!important;
+    padding-top:8px!important;
+    z-index:3;
+  }
+}
