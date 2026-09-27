@@ -188,6 +188,59 @@ const archiveOldCompletedTasks=()=>{
 const saveState=()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}};
 
 // ============================================================================
+// RECURRING TASK ENGINE
+// recurringTasks bewaart de serie; state.tasks bevat alleen concrete voorkomens.
+// ============================================================================
+state.recurringTasks=Array.isArray(state.recurringTasks)?state.recurringTasks:[];
+const dateFromKey=key=>{const [y,m,d]=String(key).split("-").map(Number);return new Date(y,m-1,d,12)};
+const dayDiff=(a,b)=>Math.round((dateFromKey(b)-dateFromKey(a))/86400000);
+const mondayKey=key=>{const d=dateFromKey(key),offset=(d.getDay()+6)%7;d.setDate(d.getDate()-offset);return localDateKey(d)};
+const normalizedRepeat=repeat=>{
+  if(!repeat)return null;
+  if(typeof repeat==="string"){
+    if(repeat==="daily")return {frequency:"daily",interval:1,days:[],end:"never",endDate:"",occurrences:10};
+    if(repeat==="weekdays")return {frequency:"weekly",interval:1,days:[0,1,2,3,4],end:"never",endDate:"",occurrences:10};
+    return {frequency:"weekly",interval:1,days:[(new Date().getDay()+6)%7],end:"never",endDate:"",occurrences:10};
+  }
+  return {...repeat,frequency:["daily","weekly","monthly"].includes(repeat.frequency)?repeat.frequency:"weekly",interval:Math.max(1,Number(repeat.interval)||1),days:Array.isArray(repeat.days)?repeat.days.map(Number).filter(x=>x>=0&&x<=6):[],end:["never","date","count"].includes(repeat.end)?repeat.end:"never",occurrences:Math.max(2,Number(repeat.occurrences)||10)};
+};
+const recurringDueOn=(series,key)=>{
+  const r=series.repeat,start=series.startDate;
+  if(!r||key<start)return false;
+  if(r.end==="date"&&r.endDate&&key>r.endDate)return false;
+  if(r.end==="count"&&(series.generatedCount||0)>=r.occurrences)return false;
+  if(r.frequency==="daily")return dayDiff(start,key)%r.interval===0;
+  if(r.frequency==="monthly"){
+    const a=dateFromKey(start),b=dateFromKey(key),months=(b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth();
+    return months>=0&&months%r.interval===0&&b.getDate()===a.getDate();
+  }
+  const weekday=(dateFromKey(key).getDay()+6)%7;
+  const days=r.days.length?r.days:[(dateFromKey(start).getDay()+6)%7];
+  return days.includes(weekday)&&Math.floor(dayDiff(mondayKey(start),mondayKey(key))/7)%r.interval===0;
+};
+const migrateRecurringTasks=()=>{
+  state.tasks.forEach(task=>{
+    if(!task.repeat||task.seriesId)return;
+    const repeat=normalizedRepeat(task.repeat),seriesId=`series-${task.id||Date.now()}`,startDate=localDateKey(task.createdAt);
+    task.repeat=repeat;task.seriesId=seriesId;task.occurrenceDate=startDate;
+    state.recurringTasks.push({id:seriesId,startDate,repeat,generatedDates:[startDate],generatedCount:1,template:{title:task.title,meta:task.meta,xp:task.xp,icon:task.icon}});
+  });
+};
+const materializeRecurringTasks=()=>{
+  migrateRecurringTasks();
+  const today=localDateKey();
+  state.recurringTasks.forEach(series=>{
+    series.repeat=normalizedRepeat(series.repeat);
+    series.generatedDates=Array.isArray(series.generatedDates)?series.generatedDates:[];
+    series.generatedCount=Number(series.generatedCount)||series.generatedDates.length;
+    if(!recurringDueOn(series,today)||series.generatedDates.includes(today))return;
+    const t=series.template||{};
+    state.tasks.unshift({id:`task-${series.id}-${today}`,title:t.title||"Herhalende taak",meta:t.meta||"",xp:Number(t.xp)||10,icon:t.icon||"↻",done:false,rewardClaimed:false,createdAt:new Date().toISOString(),repeat:series.repeat,seriesId:series.id,occurrenceDate:today});
+    series.generatedDates.push(today);series.generatedCount++;
+  });
+};
+
+// ============================================================================
 // DAILY REMINDERS
 // Permission, reminder-state en backend-sync.
 // De lokale timer is alleen fallback wanneer geen pushbackend is geconfigureerd.
@@ -705,7 +758,7 @@ window.addEventListener("resize",()=>{
     positionNightFireflies();
   });
 });
-function render(options={}){cancelTaskLongPress?.();activeTaskEditIndex=null;archiveOldCompletedTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0,progressFrom=Number.isFinite(options.progressFrom)?Math.max(0,Math.min(100,options.progressFrom)):taskPct;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image" data-hero-period="${selectedHomeHeroPeriod()}" style="--home-hero-image:url('${homeHeroUrl()}')"><div class="hero-fireflies" aria-hidden="true">${homeNightFireflies()}</div><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>${homeGreeting()}</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${progressFrom}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.length?visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<div class="task-wrap" data-task-index="${i}"><button class="task ${t.done?"done":""}" onclick="handleTaskClick(event,${i})" onpointerdown="startTaskLongPress(event,${i},this)" onpointerup="endTaskLongPress(event)" onpointercancel="cancelTaskLongPress()" onpointerleave="cancelTaskLongPress()" onpointermove="trackTaskLongPress(event)" oncontextmenu="return false"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${escapeHtml(t.title)}</div>${t.meta?`<div class="taskmeta">${escapeHtml(t.meta)}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button><button class="task-delete-btn" type="button" aria-label="Verwijder taak ${escapeHtml(t.title)}" onclick="deleteTask(event,${i})"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button></div>`}).join(""):`<section class="tasks-empty-state" aria-label="Geen taken"><div class="tasks-empty-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"/><path d="m21 33 7 7 15-17"/></svg></div><h2>Alles afgevinkt</h2><p>Je hebt voor vandaag geen openstaande taken.</p><button type="button" onclick="openNewTask()">Nieuwe taak toevoegen</button></section>`}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button onclick="openWorld()"><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`;scheduleHomeHeroRefresh();requestAnimationFrame(()=>{positionNightFireflies();if(progressFrom!==taskPct){requestAnimationFrame(()=>{const fill=document.querySelector(".progress i");if(fill)fill.style.width=taskPct+"%"})}})}
+function render(options={}){cancelTaskLongPress?.();activeTaskEditIndex=null;archiveOldCompletedTasks();materializeRecurringTasks();saveState();const today=localDateKey(),visibleTasks=state.tasks.filter(t=>!t.done||!t.completedAt||localDateKey(t.completedAt)===today),done=visibleTasks.filter(t=>t.done).length,total=visibleTasks.length,taskPct=total?Math.round(done/total*100):0,xpPct=state.maxXp?Math.min(100,Math.round(state.xp/state.maxXp*100)):0,progressFrom=Number.isFinite(options.progressFrom)?Math.max(0,Math.min(100,options.progressFrom)):taskPct;document.querySelector("#app").innerHTML=`<div class="phone"><section class="hero hero-image" data-hero-period="${selectedHomeHeroPeriod()}" style="--home-hero-image:url('${homeHeroUrl()}')"><div class="hero-fireflies" aria-hidden="true">${homeNightFireflies()}</div><div class="brand"><div class="logo">DONE.</div><div class="tag">Small steps. A bigger you.</div></div><div class="level"><span class="fire">🔥</span><b>Lv. ${state.level}</b><div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="${state.maxXp}" aria-valuenow="${state.xp}"><i style="width:${xpPct}%"></i></div><small>${state.xp} / ${state.maxXp} XP</small></div></section><main class="content"><div class="greet"><h1>${homeGreeting()}</h1><p>Wat gaan we vandaag afmaken?</p></div><div class="progressrow"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${progressFrom}%"></i></div><div class="fraction">${done} / ${total}<br>${taskPct}%</div></div><div class="stats"><div class="stat"><span class="streak-fire" aria-hidden="true">🔥</span><div><strong>${state.streak}</strong><small>dag streak</small></div></div><div class="stat"><button class="coin-sprite" type="button" aria-label="Munt draaien" onclick="spinCoin(this)"></button><div><strong>${state.coins.toLocaleString("nl-NL")}</strong><small>coins</small></div></div></div><div class="tasks">${visibleTasks.length?visibleTasks.map(t=>{const i=state.tasks.indexOf(t);return `<div class="task-wrap" data-task-index="${i}"><button class="task ${t.done?"done":""}" onclick="handleTaskClick(event,${i})" onpointerdown="startTaskLongPress(event,${i},this)" onpointerup="endTaskLongPress(event)" onpointercancel="cancelTaskLongPress()" onpointerleave="cancelTaskLongPress()" onpointermove="trackTaskLongPress(event)" oncontextmenu="return false"><span class="check">${t.done?"✓":""}</span><span class="taskicon">${t.icon}</span><span><div class="tasktitle">${escapeHtml(t.title)}</div>${t.meta?`<div class="taskmeta">${escapeHtml(t.meta)}</div>`:""}</span><span class="reward">+${t.xp} XP</span></button><button class="task-delete-btn" type="button" aria-label="Verwijder taak ${escapeHtml(t.title)}" onclick="deleteTask(event,${i})"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button></div>`}).join(""):`<section class="tasks-empty-state" aria-label="Geen taken"><div class="tasks-empty-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"/><path d="m21 33 7 7 15-17"/></svg></div><h2>Alles afgevinkt</h2><p>Je hebt voor vandaag geen openstaande taken.</p><button type="button" onclick="openNewTask()">Nieuwe taak toevoegen</button></section>`}</div><button class="task-log-link" onclick="openTaskLog()">Takenlogboek <span>›</span></button></main><button class="add" aria-label="Taak toevoegen" onclick="openNewTask()">+</button><nav class="nav"><button class="active"><span class="ni">${navIcon("today")}</span>Vandaag</button><button onclick="openWorld()"><span class="ni">${navIcon("world")}</span>Wereld</button><button onclick="openAchievements()"><span class="ni">${navIcon("achievements")}</span>Achievements${achievementNavAlert()}</button><button onclick="openProfile()"><span class="ni">${navIcon("profile")}</span>Profiel</button></nav></div>`;scheduleHomeHeroRefresh();requestAnimationFrame(()=>{positionNightFireflies();if(progressFrom!==taskPct){requestAnimationFrame(()=>{const fill=document.querySelector(".progress i");if(fill)fill.style.width=taskPct+"%"})}})}
 
 // ============================================================================
 // PROGRESSION: XP, LEVELS & STREAK
@@ -989,7 +1042,7 @@ window.saveRepeatTaskPlanner=()=>{
   if(d.end==="count")d.occurrences=Math.min(365,Math.max(2,Number(o.querySelector("[data-repeat-count]").value)||10));
   newTaskRepeat=d;haptic("success");updateRepeatTaskSummary();closeRepeatTaskPlanner();
 };
-window.saveNewTask=()=>{const input=document.querySelector("#taskName"),size=document.querySelector(".size-card.selected")?.dataset.size||"normal";if(!input.value.trim()){input.focus();return}const values={small:["Kleine taak",10,"🌱"],normal:["Normale taak",25,"🔥"],large:["Grote taak",50,"⛰️"]}[size],repeat=newTaskRepeat?JSON.parse(JSON.stringify(newTaskRepeat)):null;state.tasks.unshift({id:`task-${Date.now()}`,title:input.value.trim(),meta:values[0],xp:values[1],icon:values[2],done:false,rewardClaimed:false,createdAt:new Date().toISOString(),repeat});newTaskRepeat=null;saveState();queueReminderBackendSync();render()};
+window.saveNewTask=()=>{const input=document.querySelector("#taskName"),size=document.querySelector(".size-card.selected")?.dataset.size||"normal";if(!input.value.trim()){input.focus();return}const values={small:["Kleine taak",10,"🌱"],normal:["Normale taak",25,"🔥"],large:["Grote taak",50,"⛰️"]}[size],repeat=newTaskRepeat?normalizedRepeat(JSON.parse(JSON.stringify(newTaskRepeat))):null,now=new Date(),today=localDateKey(now),base={title:input.value.trim(),meta:values[0],xp:values[1],icon:values[2]};if(repeat){const seriesId=`series-${Date.now()}`,series={id:seriesId,startDate:today,repeat,generatedDates:[],generatedCount:0,template:{...base}};state.recurringTasks.push(series);if(recurringDueOn(series,today)){state.tasks.unshift({id:`task-${Date.now()}`,...base,done:false,rewardClaimed:false,createdAt:now.toISOString(),repeat,seriesId,occurrenceDate:today});series.generatedDates.push(today);series.generatedCount=1}}else state.tasks.unshift({id:`task-${Date.now()}`,...base,done:false,rewardClaimed:false,createdAt:now.toISOString(),repeat:null});newTaskRepeat=null;saveState();queueReminderBackendSync();render()};
 
 // ============================================================================
 // TASK COMPLETED SCREEN
@@ -1179,7 +1232,7 @@ window.openWorld=(options={})=>{
 // PROFILE / SETTINGS
 // Profieloverzicht, statistieken en gebruikersinstellingen.
 // ============================================================================
-const APP_VERSION="V.1.1.1.7";
+const APP_VERSION="V.1.1.1.8";
 
 const profileSettingIcon=name=>({
   sound:'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>',
