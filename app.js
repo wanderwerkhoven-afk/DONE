@@ -1114,7 +1114,7 @@ window.openWorld=(options={})=>{
 // PROFILE / SETTINGS
 // Profieloverzicht, statistieken en gebruikersinstellingen.
 // ============================================================================
-const APP_VERSION="V.1.1.1.3";
+const APP_VERSION="V.1.1.1.4";
 
 const profileSettingIcon=name=>({
   sound:'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>',
