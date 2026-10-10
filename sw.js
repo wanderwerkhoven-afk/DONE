@@ -3,7 +3,8 @@
 // App shell is pre-cached; same-origin artwork is cached as it is used.
 // API requests and state transfers are NEVER cached. User state stays in localStorage.
 // ============================================================================
-const SHELL_CACHE="done-shell-v2";
+const SHELL_CACHE="done-shell-v3";
+const HERO_CACHE="done-heroes-v3";
 const ASSET_CACHE="done-assets-v2";
 const CACHE_PREFIX="done-";
 const APP_SHELL=[
@@ -16,6 +17,18 @@ const APP_SHELL=[
   "./install/install.css",
   "./install/install.js"
 ];
+// All hero variants are required offline, including time-of-day and task states.
+const HERO_IMAGES=[
+  "hero-home.png",
+  "hero-home-morning.png",
+  "hero-home-daytime.png",
+  "hero-home-sundown.png",
+  "hero-home-evening.png",
+  "hero-home-night.png",
+  "hero-new-task.png",
+  "hero-task-completed.png"
+].map(name=>`./assets/images/home/${name}`);
+const heroPathnames=new Set(HERO_IMAGES.map(path=>new URL(path,self.registration.scope).pathname));
 const INSTALL_PAGES=["illustration","simple"].flatMap(type=>
   Array.from({length:16},(_,i)=>`./install/${type}-${String(i+1).padStart(2,"0")}.html`)
 );
@@ -25,6 +38,10 @@ self.addEventListener("install",event=>{
     const cache=await caches.open(SHELL_CACHE);
     // Core files must all succeed before activating, preventing a broken offline shell.
     await cache.addAll(APP_SHELL);
+    // Complete the full hero download before activating the new worker.
+    // If storage/network fails, retain the previous working service worker.
+    const heroCache=await caches.open(HERO_CACHE);
+    await heroCache.addAll(HERO_IMAGES);
     // Install variants aren't critical to startup; cache them opportunistically.
     await Promise.allSettled(INSTALL_PAGES.map(page=>cache.add(page)));
     await self.skipWaiting();
@@ -35,7 +52,7 @@ self.addEventListener("activate",event=>{
   event.waitUntil((async()=>{
     const keys=await caches.keys();
     await Promise.all(keys.filter(key=>key.startsWith(CACHE_PREFIX)&&
-      key!==SHELL_CACHE&&key!==ASSET_CACHE).map(key=>caches.delete(key)));
+      key!==SHELL_CACHE&&key!==ASSET_CACHE&&key!==HERO_CACHE).map(key=>caches.delete(key)));
     await self.clients.claim();
   })());
 });
@@ -76,6 +93,20 @@ self.addEventListener("fetch",event=>{
           (await cachedShell(new URL("./index.html",scope)))||
           Response.error();
       }
+    })());
+    return;
+  }
+
+  if(heroPathnames.has(url.pathname)){
+    event.respondWith((async()=>{
+      const cache=await caches.open(HERO_CACHE);
+      const cached=await cache.match(request,{ignoreSearch:true});
+      if(cached)return cached;
+      try{
+        const response=await fetch(request);
+        if(isCacheableResponse(response))await cache.put(request,response.clone());
+        return response;
+      }catch{return Response.error();}
     })());
     return;
   }
