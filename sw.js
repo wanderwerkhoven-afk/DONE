@@ -44,8 +44,9 @@ const shellPathnames=new Set(APP_SHELL.map(path=>new URL(path,self.registration.
 const isCacheableResponse=response=>response&&response.ok&&response.type!=="opaque";
 const cacheAsset=async(request,response)=>{
   if(!isCacheableResponse(response))return;
+  const copy=response.clone();
   const cache=await caches.open(ASSET_CACHE);
-  await cache.put(request,response.clone());
+  await cache.put(request,copy);
 };
 const cachedShell=async request=>{
   const cache=await caches.open(SHELL_CACHE);
