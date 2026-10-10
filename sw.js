@@ -1,20 +1,114 @@
 // ============================================================================
-// DONE. — PUSH SERVICE WORKER
-// Alleen Web Push + notification click handling. Geen asset/offline caching.
+// DONE. — OFFLINE-FIRST PWA + PUSH
+// App shell is pre-cached; same-origin artwork is cached as it is used.
+// API requests and state transfers are NEVER cached. User state stays in localStorage.
 // ============================================================================
+const SHELL_CACHE="done-shell-v2";
+const ASSET_CACHE="done-assets-v2";
+const CACHE_PREFIX="done-";
+const APP_SHELL=[
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.js",
+  "./config.js",
+  "./manifest.webmanifest",
+  "./install/install.css",
+  "./install/install.js"
+];
+const INSTALL_PAGES=["illustration","simple"].flatMap(type=>
+  Array.from({length:16},(_,i)=>`./install/${type}-${String(i+1).padStart(2,"0")}.html`)
+);
 
-self.addEventListener("install",()=>{
-  self.skipWaiting();
+self.addEventListener("install",event=>{
+  event.waitUntil((async()=>{
+    const cache=await caches.open(SHELL_CACHE);
+    // Core files must all succeed before activating, preventing a broken offline shell.
+    await cache.addAll(APP_SHELL);
+    // Install variants aren't critical to startup; cache them opportunistically.
+    await Promise.allSettled(INSTALL_PAGES.map(page=>cache.add(page)));
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener("activate",event=>{
-  event.waitUntil(self.clients.claim());
+  event.waitUntil((async()=>{
+    const keys=await caches.keys();
+    await Promise.all(keys.filter(key=>key.startsWith(CACHE_PREFIX)&&
+      key!==SHELL_CACHE&&key!==ASSET_CACHE).map(key=>caches.delete(key)));
+    await self.clients.claim();
+  })());
 });
 
-// ============================================================================
-// PUSH EVENT
-// Toont payload uit de backend met veilige fallbackwaarden.
-// ============================================================================
+const shellPathnames=new Set(APP_SHELL.map(path=>new URL(path,self.registration.scope).pathname));
+const isCacheableResponse=response=>response&&response.ok&&response.type!=="opaque";
+const cacheAsset=async(request,response)=>{
+  if(!isCacheableResponse(response))return;
+  const cache=await caches.open(ASSET_CACHE);
+  await cache.put(request,response.clone());
+};
+const cachedShell=async request=>{
+  const cache=await caches.open(SHELL_CACHE);
+  return cache.match(request,{ignoreSearch:true});
+};
+
+self.addEventListener("fetch",event=>{
+  const request=event.request;
+  if(request.method!=="GET")return;
+  const url=new URL(request.url);
+  // External requests, including the push backend, must stay on the network.
+  if(url.origin!==self.location.origin)return;
+  const scope=new URL(self.registration.scope);
+  if(!url.pathname.startsWith(scope.pathname))return;
+
+  if(request.mode==="navigate"){
+    event.respondWith((async()=>{
+      try{
+        const response=await fetch(request);
+        if(isCacheableResponse(response)&&!url.searchParams.has("transfer")){
+          const cache=await caches.open(SHELL_CACHE);
+          await cache.put(request,response.clone());
+        }
+        return response;
+      }catch{
+        return (await cachedShell(request))||
+          (await cachedShell(new URL("./index.html",scope)))||
+          Response.error();
+      }
+    })());
+    return;
+  }
+
+  if(shellPathnames.has(url.pathname)){
+    event.respondWith((async()=>{
+      const cached=await cachedShell(request);
+      if(cached)return cached;
+      try{
+        const response=await fetch(request);
+        if(isCacheableResponse(response)){
+          const cache=await caches.open(SHELL_CACHE);
+          await cache.put(request,response.clone());
+        }
+        return response;
+      }catch{return Response.error();}
+    })());
+    return;
+  }
+
+  // Cache artwork and icons after first use, so navigation/reloads work offline.
+  if(url.pathname.includes("/assets/")||url.pathname.includes("/install/")){
+    event.respondWith((async()=>{
+      const cached=await caches.match(request,{ignoreSearch:true});
+      if(cached)return cached;
+      try{
+        const response=await fetch(request);
+        if(isCacheableResponse(response))event.waitUntil(cacheAsset(request,response));
+        return response;
+      }catch{return Response.error();}
+    })());
+  }
+});
+
 self.addEventListener("push",event=>{
   let payload={
     title:"DONE.",
