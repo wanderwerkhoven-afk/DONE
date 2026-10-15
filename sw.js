@@ -3,7 +3,7 @@
 // App shell is pre-cached; same-origin artwork is cached as it is used.
 // API requests and state transfers are NEVER cached. User state stays in localStorage.
 // ============================================================================
-const SHELL_CACHE="done-shell-v3";
+const SHELL_CACHE="done-shell-v4";
 const HERO_CACHE="done-heroes-v3";
 const ASSET_CACHE="done-assets-v2";
 const CACHE_PREFIX="done-";
