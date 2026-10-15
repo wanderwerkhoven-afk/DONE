@@ -235,7 +235,7 @@ const materializeRecurringTasks=()=>{
     series.generatedCount=Number(series.generatedCount)||series.generatedDates.length;
     if(!recurringDueOn(series,today)||series.generatedDates.includes(today))return;
     const t=series.template||{};
-    state.tasks.unshift({id:`task-${series.id}-${today}`,title:t.title||"Herhalende taak",meta:t.meta||"",xp:Number(t.xp)||10,icon:t.icon||"↻",done:false,rewardClaimed:false,createdAt:new Date().toISOString(),repeat:series.repeat,seriesId:series.id,occurrenceDate:today});
+    state.tasks.push({id:`task-${series.id}-${today}`,title:t.title||"Herhalende taak",meta:t.meta||"",xp:Number(t.xp)||10,icon:t.icon||"↻",done:false,rewardClaimed:false,createdAt:new Date().toISOString(),repeat:series.repeat,seriesId:series.id,occurrenceDate:today});
     series.generatedDates.push(today);series.generatedCount++;
   });
 };
@@ -1080,7 +1080,7 @@ window.saveRepeatTaskPlanner=()=>{
   if(d.end==="count")d.occurrences=Math.min(365,Math.max(2,Number(o.querySelector("[data-repeat-count]").value)||10));
   newTaskRepeat=d;haptic("success");updateRepeatTaskSummary();closeRepeatTaskPlanner();
 };
-window.saveNewTask=()=>{const input=document.querySelector("#taskName"),size=document.querySelector(".size-card.selected")?.dataset.size||"normal";if(!input.value.trim()){input.focus();return}const values={small:["Kleine taak",10,"🌱"],normal:["Normale taak",25,"🔥"],large:["Grote taak",50,"⛰️"]}[size],repeat=newTaskRepeat?normalizedRepeat(JSON.parse(JSON.stringify(newTaskRepeat))):null,now=new Date(),today=localDateKey(now),base={title:input.value.trim(),meta:values[0],xp:values[1],icon:values[2]};if(repeat){const seriesId=`series-${Date.now()}`,series={id:seriesId,startDate:today,repeat,generatedDates:[],generatedCount:0,template:{...base}};state.recurringTasks.push(series);if(recurringDueOn(series,today)){state.tasks.unshift({id:`task-${Date.now()}`,...base,done:false,rewardClaimed:false,createdAt:now.toISOString(),repeat,seriesId,occurrenceDate:today});series.generatedDates.push(today);series.generatedCount=1}}else state.tasks.unshift({id:`task-${Date.now()}`,...base,done:false,rewardClaimed:false,createdAt:now.toISOString(),repeat:null});newTaskRepeat=null;saveState();queueReminderBackendSync();render()};
+window.saveNewTask=()=>{const input=document.querySelector("#taskName"),size=document.querySelector(".size-card.selected")?.dataset.size||"normal";if(!input.value.trim()){input.focus();return}const values={small:["Kleine taak",10,"🌱"],normal:["Normale taak",25,"🔥"],large:["Grote taak",50,"⛰️"]}[size],repeat=newTaskRepeat?normalizedRepeat(JSON.parse(JSON.stringify(newTaskRepeat))):null,now=new Date(),today=localDateKey(now),base={title:input.value.trim(),meta:values[0],xp:values[1],icon:values[2]};if(repeat){const seriesId=`series-${Date.now()}`,series={id:seriesId,startDate:today,repeat,generatedDates:[],generatedCount:0,template:{...base}};state.recurringTasks.push(series);if(recurringDueOn(series,today)){state.tasks.push({id:`task-${Date.now()}`,...base,done:false,rewardClaimed:false,createdAt:now.toISOString(),repeat,seriesId,occurrenceDate:today});series.generatedDates.push(today);series.generatedCount=1}}else state.tasks.push({id:`task-${Date.now()}`,...base,done:false,rewardClaimed:false,createdAt:now.toISOString(),repeat:null});newTaskRepeat=null;saveState();queueReminderBackendSync();render()};
 
 // ============================================================================
 // TASK COMPLETED SCREEN
