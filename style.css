@@ -3331,3 +3331,16 @@ body,
 .task-wrap.task-copying{z-index:6}
 .task-wrap.task-copying .task-copy-btn{display:block}
 .task-wrap.task-copying .task{outline:2px solid #76e1dd;outline-offset:1px}
+
+
+/* WORLD MVP — touch camera, placement and controls */
+.world-stage{height:min(56vh,520px);min-height:350px;touch-action:none;user-select:none;background:#174a77!important}
+.world-map-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;z-index:3}
+.world-map-canvas:active{cursor:grabbing}
+.world-map-help{position:absolute;z-index:6;top:12px;left:12px;right:12px;width:max-content;max-width:calc(100% - 90px);padding:8px 12px;border-radius:12px;background:rgba(3,28,51,.78);font-size:11px;font-weight:700;pointer-events:none}
+.world-map-actions{position:absolute;right:12px;bottom:14px;z-index:7;display:grid;gap:7px}
+.world-map-actions button{width:39px;height:39px;border:1px solid #9dc6e3;border-radius:12px;background:#123e65;color:white;font-size:24px}
+.world-placement-actions{position:absolute;left:12px;bottom:14px;z-index:7;display:flex;gap:8px}
+.world-placement-actions[hidden]{display:none}
+.world-placement-actions button{border:1px solid #b9d3e6;border-radius:12px;padding:11px 13px;background:#133d62;color:white;font-weight:800}
+.world-placement-actions [data-place="confirm"]{background:#2f875f}
