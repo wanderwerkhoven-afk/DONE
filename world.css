@@ -1,0 +1,29 @@
+/* DONE World floating islands MVP */
+.dw-screen{height:100dvh;display:flex;flex-direction:column;background:#061a36;color:#fff;overflow:hidden}
+.dw-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(env(safe-area-inset-top) + 15px) 17px 12px}
+.dw-header h1{font-size:27px;line-height:1.1;margin:0;font-weight:900}.dw-header p{margin:4px 0 0;font-size:12px;color:#b8d1e5}
+.dw-wallet{white-space:nowrap;border:1px solid #7b7fd4;background:#123c63;padding:10px 12px;border-radius:20px;font-size:16px}
+.dw-main{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.dw-stage{position:relative;flex:1;min-height:230px;overflow:hidden;touch-action:none;user-select:none;background:radial-gradient(ellipse at 48% 48%,#4384b2 0%,#165a8d 53%,#0a345e 100%);cursor:grab}
+.dw-stage:active{cursor:grabbing}
+.dw-scene{position:absolute;left:50%;top:50%;width:0;height:0;transform-origin:0 0;will-change:transform}
+.dw-scene svg{position:absolute;left:-850px;top:-700px;width:1700px;height:1400px;overflow:visible}
+.dw-tile{fill:#79bd75;stroke:#4c8e62;stroke-width:1.3}
+.dw-tile:nth-child(3n){fill:#86c97b}.dw-tile:nth-child(5n){fill:#6bad6e}
+.dw-tile.dw-locked{fill:#647e89;stroke:#4d6778}
+.dw-bridge{cursor:pointer}.dw-bridge rect{fill:#c79860;stroke:#76543c;stroke-width:3}.dw-bridge.is-locked rect{fill:#758496;stroke:#5b6574;stroke-dasharray:5 4}
+.dw-object{cursor:pointer}.dw-object text{paint-order:stroke;stroke:rgba(16,51,39,.12);stroke-width:2}
+.dw-island-label{fill:#fff;font-size:20px;font-weight:800;text-anchor:middle;paint-order:stroke;stroke:#245373;stroke-width:5}
+.dw-hint{position:absolute;left:12px;right:64px;bottom:12px;z-index:2;padding:10px 12px;border-radius:14px;background:rgba(5,28,55,.85);color:#f3f8ff;font-size:12px;pointer-events:none}
+.dw-controls{position:absolute;right:12px;bottom:12px;display:grid;gap:6px;z-index:3}
+.dw-controls button{width:40px;height:40px;border:1px solid #9ec1d4;border-radius:12px;background:#123c63;color:white;font-size:24px}
+.dw-shop{flex:0 0 auto;background:#082849;padding:12px 12px 8px;border-top:1px solid #315776}
+.dw-shop-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.dw-shop-title strong{font-size:16px}.dw-cancel{border:1px solid #7795b1;border-radius:10px;padding:6px 10px;background:#17476d;color:#fff}
+.dw-shop-list{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:5px;scrollbar-width:thin}
+.dw-shop-item{flex:0 0 96px;display:flex;align-items:center;flex-direction:column;gap:3px;scroll-snap-align:start;min-height:102px;border:1px solid #3a6888;border-radius:15px;background:#12436a;color:#fff;padding:8px 5px}
+.dw-shop-item span{font-size:28px}.dw-shop-item strong{font-size:12px}.dw-shop-item small{font-size:11px;color:#ffdf85}
+.dw-bridge-note{margin:5px 0 0;font-size:10px;color:#a6c6dd}
+.dw-screen>.nav{flex:0 0 auto;position:relative;bottom:auto}
+@media(max-height:680px){.dw-shop-item{min-height:78px}.dw-shop-item span{font-size:21px}.dw-bridge-note{display:none}}
+@media(prefers-reduced-motion:reduce){.dw-scene{will-change:auto}}
