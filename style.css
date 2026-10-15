@@ -3319,3 +3319,15 @@ body,
     grid-template-columns:30px 32px minmax(0,1fr) auto;
   }
 }
+
+/* First word long-press: text selection + explicit copy action. */
+.task-first-word{user-select:text;-webkit-user-select:text;-webkit-touch-callout:default}
+.task-copy-btn{
+  display:none;position:absolute;z-index:5;right:7px;top:-13px;
+  min-height:34px;padding:6px 13px;border:1px solid #9bece7;
+  border-radius:18px;background:#0b4d63;color:#fff;font-size:12px;font-weight:800;
+  box-shadow:0 5px 15px #0019;cursor:pointer;
+}
+.task-wrap.task-copying{z-index:6}
+.task-wrap.task-copying .task-copy-btn{display:block}
+.task-wrap.task-copying .task{outline:2px solid #76e1dd;outline-offset:1px}
