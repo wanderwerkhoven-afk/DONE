@@ -7,7 +7,7 @@
 .dw-stage{position:relative;flex:1;min-height:230px;overflow:hidden;touch-action:none;user-select:none;background:radial-gradient(ellipse at 48% 48%,#4384b2 0%,#165a8d 53%,#0a345e 100%);cursor:grab}
 .dw-stage:active{cursor:grabbing}
 .dw-scene{position:absolute;left:50%;top:50%;width:0;height:0;transform-origin:0 0;will-change:transform}
-.dw-scene svg{position:absolute;left:-850px;top:-700px;width:1700px;height:1400px;overflow:visible}
+.dw-scene svg{position:absolute;left:-780px;top:-520px;width:1700px;height:1400px;overflow:visible}
 .dw-tile{fill:#79bd75;stroke:#4c8e62;stroke-width:1.3}
 .dw-tile:nth-child(3n){fill:#86c97b}.dw-tile:nth-child(5n){fill:#6bad6e}
 .dw-tile.dw-locked{fill:#647e89;stroke:#4d6778}
