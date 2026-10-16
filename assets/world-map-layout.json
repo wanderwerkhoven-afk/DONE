@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "artwork": {
+    "filename": "world-master.png",
+    "width": 1536,
+    "height": 1024,
+    "description": "Approved four-island concept. Visual guide; terrain polygons are approximate pending pixel-perfect art production.",
+    "imagePath": "assets/images/world/world-master.webp"
+  },
+  "islands": [
+    {
+      "id": "home",
+      "name": "Dorp",
+      "center": [
+        383,
+        245
+      ],
+      "polygon": [
+        [
+          167,
+          70
+        ],
+        [
+          335,
+          13
+        ],
+        [
+          560,
+          36
+        ],
+        [
+          731,
+          182
+        ],
+        [
+          695,
+          319
+        ],
+        [
+          476,
+          444
+        ],
+        [
+          215,
+          421
+        ],
+        [
+          43,
+          287
+        ],
+        [
+          69,
+          153
+        ]
+      ],
+      "buildableArea": "broad flat interior; water/trees along rim only",
+      "terrainLevelCount": 1
+    },
+    {
+      "id": "forest",
+      "name": "Bos",
+      "center": [
+        1164,
+        230
+      ],
+      "polygon": [
+        [
+          898,
+          58
+        ],
+        [
+          1101,
+          3
+        ],
+        [
+          1357,
+          21
+        ],
+        [
+          1511,
+          143
+        ],
+        [
+          1477,
+          323
+        ],
+        [
+          1318,
+          419
+        ],
+        [
+          1023,
+          403
+        ],
+        [
+          816,
+          290
+        ],
+        [
+          817,
+          134
+        ]
+      ],
+      "buildableArea": "low meadow and elevated river source plateau",
+      "terrainLevelCount": 2
+    },
+    {
+      "id": "garden",
+      "name": "Vallei",
+      "center": [
+        375,
+        730
+      ],
+      "polygon": [
+        [
+          177,
+          485
+        ],
+        [
+          405,
+          430
+        ],
+        [
+          641,
+          470
+        ],
+        [
+          756,
+          635
+        ],
+        [
+          735,
+          806
+        ],
+        [
+          560,
+          955
+        ],
+        [
+          285,
+          979
+        ],
+        [
+          70,
+          853
+        ],
+        [
+          44,
+          658
+        ]
+      ],
+      "buildableArea": "meadows divided by river, raised garden terrace",
+      "terrainLevelCount": 2
+    },
+    {
+      "id": "mountain",
+      "name": "Bergen",
+      "center": [
+        1177,
+        729
+      ],
+      "polygon": [
+        [
+          969,
+          489
+        ],
+        [
+          1212,
+          400
+        ],
+        [
+          1458,
+          478
+        ],
+        [
+          1535,
+          647
+        ],
+        [
+          1505,
+          832
+        ],
+        [
+          1344,
+          978
+        ],
+        [
+          1082,
+          978
+        ],
+        [
+          842,
+          844
+        ],
+        [
+          804,
+          646
+        ]
+      ],
+      "buildableArea": "terraced mountain shelves; several elevations",
+      "terrainLevelCount": 4
+    }
+  ],
+  "crossings": [
+    {
+      "id": "home-forest",
+      "from": "home",
+      "to": "forest",
+      "approximateEndpoints": [
+        [
+          740,
+          260
+        ],
+        [
+          817,
+          256
+        ]
+      ],
+      "purchasable": true
+    },
+    {
+      "id": "home-garden",
+      "from": "home",
+      "to": "garden",
+      "approximateEndpoints": [
+        [
+          392,
+          447
+        ],
+        [
+          400,
+          468
+        ]
+      ],
+      "purchasable": true
+    },
+    {
+      "id": "garden-mountain",
+      "from": "garden",
+      "to": "mountain",
+      "approximateEndpoints": [
+        [
+          761,
+          720
+        ],
+        [
+          808,
+          718
+        ]
+      ],
+      "purchasable": true
+    }
+  ],
+  "notes": [
+    "Image polygons are hand-estimated, not pixel-accurate masks.",
+    "All image pixels must be scaled uniformly with the renderer; no independent stretching.",
+    "The current terrainAt procedural map is authoritative for placement until masks are calibrated.",
+    "Bridges and stairs are purchasable objects; do not bake them into final artwork.",
+    "A 1536x1024 concept is insufficient as final multi-swipe high-zoom map; regenerate terrain at production resolution before shipping."
+  ]
+}
