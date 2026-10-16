@@ -842,6 +842,8 @@ window.startTaskLongPress=(event,index,button)=>{
   cancelTaskLongPress();
   taskLongPressTriggered=false;
   const copyZone=!!event.target.closest(".task-first-word");
+  // Prevent the browser selecting just the touched word before our long-press fires.
+  if(copyZone&&event.cancelable)event.preventDefault();
   taskLongPressStartPoint={x:event.clientX,y:event.clientY,pointerId:event.pointerId};
   taskLongPressTimer=setTimeout(()=>{
     taskLongPressTimer=null;
