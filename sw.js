@@ -3,7 +3,7 @@
 // App shell is pre-cached; same-origin artwork is cached as it is used.
 // API requests and state transfers are NEVER cached. User state stays in localStorage.
 // ============================================================================
-const SHELL_CACHE="done-shell-v7";
+const SHELL_CACHE="done-shell-v8";
 const HERO_CACHE="done-heroes-v3";
 const ASSET_CACHE="done-assets-v2";
 const CACHE_PREFIX="done-";
@@ -13,6 +13,7 @@ const APP_SHELL=[
   "./style.css",
   "./world.css",
   "./world.js",
+  "./world-map.js",
   "./app.js",
   "./config.js",
   "./manifest.webmanifest",
