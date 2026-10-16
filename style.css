@@ -3344,3 +3344,7 @@ body,
 .world-placement-actions[hidden]{display:none}
 .world-placement-actions button{border:1px solid #b9d3e6;border-radius:12px;padding:11px 13px;background:#133d62;color:white;font-weight:800}
 .world-placement-actions [data-place="confirm"]{background:#2f875f}
+
+/* Copy gesture selects the entire title programmatically, not the first word via iOS native callout. */
+.task-first-word{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.task-wrap.task-copying .tasktitle{-webkit-user-select:text;user-select:text}
