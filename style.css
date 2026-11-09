@@ -3348,3 +3348,25 @@ body,
 /* Copy gesture selects the entire title programmatically, not the first word via iOS native callout. */
 .task-first-word{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .task-wrap.task-copying .tasktitle{-webkit-user-select:text;user-select:text}
+
+/* Task copy confirmation */
+.task-copy-toast{
+  position:fixed;
+  left:50%;
+  bottom:calc(100px + env(safe-area-inset-bottom, 0px));
+  z-index:10000;
+  max-width:calc(100vw - 32px);
+  padding:11px 18px;
+  border-radius:999px;
+  background:#193f36;
+  color:#fff;
+  font-size:14px;
+  font-weight:600;
+  box-shadow:0 8px 28px rgba(0,0,0,.22);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,12px);
+  transition:opacity .2s ease,transform .2s ease;
+}
+.task-copy-toast.visible{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){.task-copy-toast{transition:none}}
