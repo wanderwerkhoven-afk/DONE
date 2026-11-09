@@ -3370,3 +3370,18 @@ body,
 }
 .task-copy-toast.visible{opacity:1;transform:translate(-50%,0)}
 @media(prefers-reduced-motion:reduce){.task-copy-toast{transition:none}}
+
+/* Unlimited-length task input: expand as text grows */
+textarea.task-input{
+  display:block;
+  height:auto;
+  min-height:80px;
+  max-height:none;
+  padding:18px;
+  line-height:1.5;
+  resize:none;
+  overflow-y:hidden;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  box-sizing:border-box;
+}
