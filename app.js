@@ -916,6 +916,25 @@ window.handleTaskClick=(event,index)=>{
   toggleTask(index);
 };
 
+let taskCopyToastTimer;
+function showTaskCopyToast(){
+  let toast=document.getElementById("task-copy-toast");
+  if(!toast){
+    toast=document.createElement("div");
+    toast.id="task-copy-toast";
+    toast.className="task-copy-toast";
+    toast.setAttribute("role","status");
+    toast.setAttribute("aria-live","polite");
+    document.body.appendChild(toast);
+  }
+  clearTimeout(taskCopyToastTimer);
+  toast.textContent="✓ Taak gekopieerd";
+  toast.classList.remove("visible");
+  void toast.offsetWidth;
+  toast.classList.add("visible");
+  taskCopyToastTimer=setTimeout(()=>toast.classList.remove("visible"),2300);
+}
+
 window.copyTaskTitle=async(event,index)=>{
   event.preventDefault();
   event.stopPropagation();
@@ -925,6 +944,7 @@ window.copyTaskTitle=async(event,index)=>{
     await navigator.clipboard.writeText(title);
     clearTaskCopyMode();
     window.getSelection()?.removeAllRanges();
+    showTaskCopyToast();
   }catch(error){
     console.warn("Kopiëren mislukt; tekst blijft geselecteerd",error);
   }
