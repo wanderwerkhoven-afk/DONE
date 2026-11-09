@@ -3385,3 +3385,21 @@ textarea.task-input{
   overflow-wrap:anywhere;
   box-sizing:border-box;
 }
+
+/* Expandable long task preview */
+.task-read-more{
+  display:block;
+  position:relative;
+  z-index:3;
+  margin:-3px 12px 9px 79px;
+  padding:5px 0;
+  border:0;
+  background:transparent;
+  color:#9dd8ff;
+  font-size:12px;
+  font-weight:750;
+  text-align:left;
+  cursor:pointer;
+}
+.task-read-more:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:3px}
+[data-theme="light"] .task-read-more{color:#256ca5}
